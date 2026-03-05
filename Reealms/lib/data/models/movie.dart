@@ -26,6 +26,43 @@ class Movie {
   factory Movie.fromJson(Map<String, dynamic> json, String sourceType) {
     // Parsing logic will vary slightly based on source_type,
     // but the model remains unified.
+    final genreSet = <String>{};
+
+    void addGenre(dynamic value) {
+      final text = value?.toString().trim() ?? '';
+      if (text.isNotEmpty) {
+        genreSet.add(text);
+      }
+    }
+
+    if (json['genres'] is List) {
+      for (final item in json['genres'] as List) {
+        addGenre(item);
+      }
+    } else {
+      final rawGenres = json['genres']?.toString() ?? '';
+      if (rawGenres.isNotEmpty) {
+        for (final item in rawGenres.split(',')) {
+          addGenre(item);
+        }
+      }
+    }
+
+    if (json['tags'] is List) {
+      for (final item in json['tags'] as List) {
+        addGenre(item);
+      }
+    }
+
+    if (json['tagV3s'] is List) {
+      for (final item in json['tagV3s'] as List) {
+        if (item is Map<String, dynamic>) {
+          addGenre(item['tagName']);
+          addGenre(item['tagEnName']);
+        }
+      }
+    }
+
     return Movie(
       id:
           json['id']?.toString() ??
@@ -71,9 +108,7 @@ class Movie {
       rating: (json['rating'] ?? 0.0).toDouble(),
       year: json['year']?.toString() ?? "",
       sourceType: sourceType,
-      genres: json['genres'] is List
-          ? List<String>.from(json['genres'])
-          : (json['genres']?.toString().split(',') ?? []),
+      genres: genreSet.toList(),
       totalChapters: json['total_chapters'] ?? 0,
     );
   }

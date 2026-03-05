@@ -31,6 +31,14 @@ void main() async {
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eWh0Ym5tbWJybnlqem52d3FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2MjU1OTAsImV4cCI6MjA4ODIwMTU5MH0.8Hp_H--1cUzPcTddibHq0E1jUFqmCd7I4seBhatRf38',
   );
 
+  final supabase = Supabase.instance.client;
+  final existingUser = supabase.auth.currentUser;
+  if (existingUser?.isAnonymous ?? false) {
+    try {
+      await supabase.auth.signOut(scope: SignOutScope.local);
+    } catch (_) {}
+  }
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => AppState(),
@@ -57,7 +65,30 @@ class ReealmsApp extends StatelessWidget {
         ),
         textTheme: GoogleFonts.outfitTextTheme(ThemeData.dark().textTheme),
       ),
-      home: const MainNavigationPage(),
+      home: const AppEntryGate(),
+    );
+  }
+}
+
+class AppEntryGate extends StatelessWidget {
+  const AppEntryGate({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AppState>(
+      builder: (context, state, child) {
+        if (!state.isAuthReady) {
+          return const Scaffold(
+            backgroundColor: Colors.black,
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+
+        if (state.currentUser == null) {
+          return const ProfilePage();
+        }
+        return const MainNavigationPage();
+      },
     );
   }
 }
@@ -83,50 +114,58 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, child) {
-        return Scaffold(
-          body: IndexedStack(index: _selectedIndex, children: _pages),
-          bottomNavigationBar: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (state.history.isNotEmpty)
-                _buildContinueWatching(context, state),
-              BottomNavigationBar(
-                currentIndex: _selectedIndex,
-                onTap: (index) {
-                  setState(() {
-                    _selectedIndex = index;
-                  });
-                },
-                type: BottomNavigationBarType.fixed,
-                backgroundColor: Colors.black,
-                selectedItemColor: Theme.of(context).primaryColor,
-                unselectedItemColor: Colors.grey,
-                selectedFontSize: 12,
-                unselectedFontSize: 12,
-                items: const [
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.home_outlined),
-                    activeIcon: Icon(Icons.home),
-                    label: "Beranda",
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.play_circle_outline),
-                    activeIcon: Icon(Icons.play_circle),
-                    label: "Jelajah",
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.history_outlined),
-                    activeIcon: Icon(Icons.history),
-                    label: "Riwayat",
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Icon(Icons.person_outline),
-                    activeIcon: Icon(Icons.person),
-                    label: "Profil",
-                  ),
-                ],
-              ),
-            ],
+        return PopScope(
+          canPop: _selectedIndex == 0,
+          onPopInvokedWithResult: (didPop, result) {
+            if (!didPop && _selectedIndex != 0) {
+              setState(() => _selectedIndex = 0);
+            }
+          },
+          child: Scaffold(
+            body: IndexedStack(index: _selectedIndex, children: _pages),
+            bottomNavigationBar: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (state.history.isNotEmpty)
+                  _buildContinueWatching(context, state),
+                BottomNavigationBar(
+                  currentIndex: _selectedIndex,
+                  onTap: (index) {
+                    setState(() {
+                      _selectedIndex = index;
+                    });
+                  },
+                  type: BottomNavigationBarType.fixed,
+                  backgroundColor: Colors.black,
+                  selectedItemColor: Theme.of(context).primaryColor,
+                  unselectedItemColor: Colors.grey,
+                  selectedFontSize: 12,
+                  unselectedFontSize: 12,
+                  items: const [
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.home_outlined),
+                      activeIcon: Icon(Icons.home),
+                      label: "Beranda",
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.play_circle_outline),
+                      activeIcon: Icon(Icons.play_circle),
+                      label: "Jelajah",
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.collections_bookmark_outlined),
+                      activeIcon: Icon(Icons.collections_bookmark),
+                      label: "Koleksi",
+                    ),
+                    BottomNavigationBarItem(
+                      icon: Icon(Icons.person_outline),
+                      activeIcon: Icon(Icons.person),
+                      label: "Profil",
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         );
       },

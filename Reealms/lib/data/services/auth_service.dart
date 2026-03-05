@@ -19,7 +19,7 @@ class AuthService {
   }
 
   Future<void> signOut() async {
-    await _supabase.auth.signOut();
+    await _supabase.auth.signOut(scope: SignOutScope.local);
   }
 
   Future<AuthResponse> signInAnonymously() async {

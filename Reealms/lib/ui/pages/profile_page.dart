@@ -141,7 +141,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 elevation: 0,
               ),
               child: const Text(
-                "Keluar Akun",
+                "Keluar",
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

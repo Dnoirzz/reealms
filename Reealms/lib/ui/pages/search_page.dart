@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:reealms_mobile/data/models/movie.dart';
 import 'package:reealms_mobile/ui/pages/detail_page.dart';
 import 'package:reealms_mobile/ui/widgets/movie_card.dart';
@@ -7,6 +8,20 @@ import 'package:reealms_mobile/logic/app_state.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shimmer/shimmer.dart';
 import 'dart:async';
+
+class _DramaboxCategory {
+  final String label;
+  final String query;
+  final Color color;
+  final List<String> matchKeywords;
+
+  const _DramaboxCategory({
+    required this.label,
+    required this.query,
+    required this.color,
+    this.matchKeywords = const [],
+  });
+}
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -20,6 +35,73 @@ class _SearchPageState extends State<SearchPage> {
   List<Movie> _results = [];
   bool _isLoading = false;
   Timer? _debounce;
+  String? _selectedDramaboxCategory;
+  final Map<String, String> _dramaboxCategoryPosters = {};
+  final Set<String> _loadingCategoryPosterQueries = {};
+  bool _isPrefetchingDramaboxPosters = false;
+
+  static const List<_DramaboxCategory> _dramaboxCategories = [
+    _DramaboxCategory(
+      label: "Balas Dendam",
+      query: "Balas Dendam",
+      color: Color(0xFF7B3633),
+      matchKeywords: ["Balas Dendam", "Revenge"],
+    ),
+    _DramaboxCategory(
+      label: "Romansa",
+      query: "Romansa",
+      color: Color(0xFF7F3D69),
+      matchKeywords: ["Romansa", "Cinta", "Love"],
+    ),
+    _DramaboxCategory(
+      label: "Mafia",
+      query: "Mafia",
+      color: Color(0xFF9B6C1D),
+      matchKeywords: ["Mafia"],
+    ),
+    _DramaboxCategory(
+      label: "CEO",
+      query: "CEO",
+      color: Color(0xFF0D376C),
+      matchKeywords: ["CEO", "Billionaire"],
+    ),
+    _DramaboxCategory(
+      label: "Keluarga",
+      query: "Intrik Keluarga",
+      color: Color(0xFF6D7707),
+      matchKeywords: ["Keluarga", "Intrik Keluarga", "Family"],
+    ),
+    _DramaboxCategory(
+      label: "Reinkarnasi",
+      query: "Reinkarnasi",
+      color: Color(0xFF0F617A),
+      matchKeywords: ["Reinkarnasi", "Rebirth"],
+    ),
+    _DramaboxCategory(
+      label: "Jalur Penyesalan",
+      query: "Penyesalan",
+      color: Color(0xFF004754),
+      matchKeywords: ["Penyesalan", "All-Too-Late"],
+    ),
+    _DramaboxCategory(
+      label: "Perselingkuhan",
+      query: "Perselingkuhan",
+      color: Color(0xFF7A3734),
+      matchKeywords: ["Perselingkuhan", "Betrayal"],
+    ),
+    _DramaboxCategory(
+      label: "Lintas Waktu",
+      query: "Perjalanan Waktu",
+      color: Color(0xFF813E66),
+      matchKeywords: ["Lintas Waktu", "Perjalanan Waktu", "Time Travel"],
+    ),
+    _DramaboxCategory(
+      label: "Intrik Istana",
+      query: "Bangsawan",
+      color: Color(0xFF9A6B1D),
+      matchKeywords: ["Intrik Istana", "Bangsawan", "Kerajaan", "Sejarah"],
+    ),
+  ];
 
   void _onSearchChanged(String query) {
     setState(() {}); // Immediate update for clear button
@@ -28,14 +110,21 @@ class _SearchPageState extends State<SearchPage> {
       if (query.trim().isNotEmpty) {
         _performSearch(query.trim());
       } else {
-        setState(() => _results = []);
+        setState(() {
+          _results = [];
+          _selectedDramaboxCategory = null;
+        });
       }
     });
   }
 
   Future<void> _performSearch(String query) async {
     if (!mounted) return;
-    setState(() => _isLoading = true);
+    final matchedCategoryQuery = _getMatchedCategoryQuery(query);
+    setState(() {
+      _isLoading = true;
+      _selectedDramaboxCategory = matchedCategoryQuery;
+    });
     try {
       final state = Provider.of<AppState>(context, listen: false);
       final results = await state.searchMovies(query);
@@ -51,6 +140,133 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
+  void _applyDramaboxCategory(_DramaboxCategory category) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _searchController.text = category.query;
+    _searchController.selection = TextSelection.fromPosition(
+      TextPosition(offset: _searchController.text.length),
+    );
+    setState(() => _selectedDramaboxCategory = category.query);
+    _performSearch(category.query);
+  }
+
+  String? _getMatchedCategoryQuery(String query) {
+    final normalized = query.trim().toLowerCase();
+    if (normalized.isEmpty) return null;
+
+    for (final category in _dramaboxCategories) {
+      final keywords = <String>{
+        category.label,
+        category.query,
+        ...category.matchKeywords,
+      };
+      for (final keyword in keywords) {
+        if (normalized == keyword.toLowerCase()) {
+          return category.query;
+        }
+      }
+    }
+    return null;
+  }
+
+  void _ensureDramaboxCategoryPostersPrefetched() {
+    if (_isPrefetchingDramaboxPosters) return;
+    final missingCategories = _dramaboxCategories
+        .where(
+          (category) => !_dramaboxCategoryPosters.containsKey(category.query),
+        )
+        .toList();
+    if (missingCategories.isEmpty) return;
+
+    _isPrefetchingDramaboxPosters = true;
+    unawaited(_prefetchDramaboxCategoryPosters(missingCategories));
+  }
+
+  Future<void> _prefetchDramaboxCategoryPosters(
+    List<_DramaboxCategory> categories,
+  ) async {
+    try {
+      final state = Provider.of<AppState>(context, listen: false);
+      for (final category in categories) {
+        if (!mounted || state.source != "dramabox") break;
+        await _loadCategoryPoster(state, category.query);
+        if (!mounted || state.source != "dramabox") break;
+        await Future.delayed(const Duration(milliseconds: 120));
+      }
+    } finally {
+      _isPrefetchingDramaboxPosters = false;
+    }
+  }
+
+  Future<void> _loadCategoryPoster(AppState state, String query) async {
+    if (_dramaboxCategoryPosters.containsKey(query) ||
+        _loadingCategoryPosterQueries.contains(query) ||
+        state.source != "dramabox") {
+      return;
+    }
+
+    if (mounted) {
+      setState(() => _loadingCategoryPosterQueries.add(query));
+    } else {
+      _loadingCategoryPosterQueries.add(query);
+    }
+
+    try {
+      final movies = await state.searchMovies(query);
+      String posterUrl = '';
+      for (final movie in movies) {
+        if (movie.posterUrl.isNotEmpty) {
+          posterUrl = movie.posterUrl;
+          break;
+        }
+      }
+
+      if (!mounted) return;
+      setState(() {
+        _dramaboxCategoryPosters[query] = posterUrl;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _dramaboxCategoryPosters[query] = '';
+      });
+    } finally {
+      if (mounted) {
+        setState(() => _loadingCategoryPosterQueries.remove(query));
+      } else {
+        _loadingCategoryPosterQueries.remove(query);
+      }
+    }
+  }
+
+  String _resolveCategoryPoster(AppState state, _DramaboxCategory category) {
+    final cachedPoster = _dramaboxCategoryPosters[category.query];
+    if (cachedPoster != null && cachedPoster.isNotEmpty) {
+      return cachedPoster;
+    }
+
+    final candidates = <String>{
+      category.label,
+      category.query,
+      ...category.matchKeywords,
+    };
+
+    for (final movie in state.homeMovies) {
+      if (movie.posterUrl.isEmpty) continue;
+      final title = movie.title.toLowerCase();
+      final genres = movie.genres.map((genre) => genre.toLowerCase()).toList();
+      final hasMatch = candidates.any((keyword) {
+        final keywordLower = keyword.toLowerCase();
+        return title.contains(keywordLower) ||
+            genres.any((genre) => genre.contains(keywordLower));
+      });
+      if (hasMatch) {
+        return movie.posterUrl;
+      }
+    }
+    return '';
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -60,6 +276,22 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final source = Provider.of<AppState>(context).source;
+    final isDramabox = source == "dramabox";
+    final query = _searchController.text.trim();
+    final showDramaboxFilters =
+        isDramabox && query.isEmpty && _results.isEmpty && !_isLoading;
+
+    if (showDramaboxFilters) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted &&
+            Provider.of<AppState>(context, listen: false).source ==
+                "dramabox") {
+          _ensureDramaboxCategoryPostersPrefetched();
+        }
+      });
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Container(
@@ -79,6 +311,8 @@ class _SearchPageState extends State<SearchPage> {
             Expanded(
               child: _isLoading
                   ? _buildShimmerGrid()
+                  : showDramaboxFilters
+                  ? _buildDramaboxCategoryGrid()
                   : _results.isEmpty
                   ? _buildEmptyState()
                   : _buildResultsGrid(),
@@ -105,7 +339,7 @@ class _SearchPageState extends State<SearchPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Search",
+                "Cari",
                 style: GoogleFonts.outfit(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -152,7 +386,9 @@ class _SearchPageState extends State<SearchPage> {
               },
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: "Cari film, anime, atau komik...",
+                hintText: source == "dramabox"
+                    ? "Cari drama atau pilih kategori..."
+                    : "Cari film, anime, atau komik...",
                 hintStyle: const TextStyle(color: Colors.white38),
                 prefixIcon: const Icon(Icons.search, color: Colors.white38),
                 suffixIcon: _searchController.text.isNotEmpty
@@ -160,7 +396,10 @@ class _SearchPageState extends State<SearchPage> {
                         icon: const Icon(Icons.clear, color: Colors.white38),
                         onPressed: () {
                           _searchController.clear();
-                          setState(() => _results = []);
+                          setState(() {
+                            _results = [];
+                            _selectedDramaboxCategory = null;
+                          });
                         },
                       )
                     : null,
@@ -216,6 +455,11 @@ class _SearchPageState extends State<SearchPage> {
           state.setSource(id);
           if (_searchController.text.isNotEmpty) {
             _performSearch(_searchController.text);
+          } else {
+            setState(() {
+              _results = [];
+              _selectedDramaboxCategory = null;
+            });
           }
         }
       },
@@ -231,6 +475,145 @@ class _SearchPageState extends State<SearchPage> {
         color: isSelected ? Colors.transparent : Colors.white.withOpacity(0.1),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 0),
+    );
+  }
+
+  Widget _buildDramaboxCategoryGrid() {
+    final state = Provider.of<AppState>(context);
+    return GridView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 1.7,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+      ),
+      itemCount: _dramaboxCategories.length,
+      itemBuilder: (context, index) {
+        final category = _dramaboxCategories[index];
+        final posterUrl = _resolveCategoryPoster(state, category);
+        final isSelected = _selectedDramaboxCategory == category.query;
+        final isPosterLoading = _loadingCategoryPosterQueries.contains(
+          category.query,
+        );
+        return _buildDramaboxCategoryCard(
+          category: category,
+          posterUrl: posterUrl,
+          isSelected: isSelected,
+          isPosterLoading: isPosterLoading,
+        );
+      },
+    );
+  }
+
+  Widget _buildDramaboxCategoryCard({
+    required _DramaboxCategory category,
+    required String posterUrl,
+    required bool isSelected,
+    required bool isPosterLoading,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => _applyDramaboxCategory(category),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          decoration: BoxDecoration(
+            color: category.color,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected
+                  ? Colors.white.withOpacity(0.85)
+                  : Colors.white.withOpacity(0.06),
+              width: isSelected ? 1.5 : 1,
+            ),
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                top: -26,
+                right: -24,
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withOpacity(0.08),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(14, 12, 82, 12),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    category.label,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.outfit(
+                      color: Colors.white,
+                      fontSize: 15.5,
+                      fontWeight: FontWeight.w700,
+                      height: 1.15,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                right: 10,
+                bottom: 6,
+                child: Transform.rotate(
+                  angle: -0.28,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(9),
+                    child: SizedBox(
+                      width: 52,
+                      height: 76,
+                      child: posterUrl.isEmpty
+                          ? (isPosterLoading
+                                ? _buildCategoryPosterLoading()
+                                : _buildCategoryPosterFallback())
+                          : CachedNetworkImage(
+                              imageUrl: posterUrl,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) =>
+                                  _buildCategoryPosterFallback(),
+                              errorWidget: (context, url, error) =>
+                                  _buildCategoryPosterFallback(),
+                            ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryPosterLoading() {
+    return Container(
+      color: Colors.white.withOpacity(0.18),
+      child: const Center(
+        child: SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryPosterFallback() {
+    return Container(
+      color: Colors.white.withOpacity(0.18),
+      child: Icon(
+        Icons.movie_creation_outlined,
+        color: Colors.white.withOpacity(0.65),
+        size: 24,
+      ),
     );
   }
 

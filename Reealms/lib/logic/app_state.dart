@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:reealms_mobile/data/models/movie.dart';
 import 'package:reealms_mobile/data/services/api_service.dart';
@@ -18,6 +20,9 @@ class AppState extends ChangeNotifier {
   bool _isLoading = false;
   String _currentSource = "dramabox";
   User? _currentUser;
+  bool _isAuthReady = false;
+  bool _allowAnonymousForCurrentLaunch = false;
+  bool _isClearingAnonymousSession = false;
 
   List<Movie> get homeMovies => _homeMovies;
   List<Movie> get history => _history;
@@ -27,27 +32,66 @@ class AppState extends ChangeNotifier {
   String get source => _currentSource;
   User? get currentUser => _currentUser;
   bool get isLoggedIn => _currentUser != null;
+  bool get isMemberLoggedIn =>
+      _currentUser != null && !(_currentUser?.isAnonymous ?? true);
+  bool get isAuthReady => _isAuthReady;
 
   AppState() {
-    _initAuth();
+    unawaited(_initAuth());
     refreshHome();
     loadHistory();
     loadFavorites();
   }
 
-  void _initAuth() {
+  Future<void> _initAuth() async {
     _currentUser = _authService.currentUser;
+    if (_currentUser?.isAnonymous ?? false) {
+      await _clearAnonymousSession(notify: false);
+    }
+
     _authService.authStateChanges.listen((data) {
-      final prevUser = _currentUser;
-      _currentUser = data.session?.user;
-
-      // Sync when user logs in
-      if (_currentUser != null && prevUser == null) {
-        syncFromCloud();
-      }
-
-      notifyListeners();
+      unawaited(_handleAuthStateChange(data));
     });
+
+    _isAuthReady = true;
+    notifyListeners();
+  }
+
+  Future<void> _handleAuthStateChange(AuthState data) async {
+    final incomingUser = data.session?.user;
+    if ((incomingUser?.isAnonymous ?? false) &&
+        !_allowAnonymousForCurrentLaunch) {
+      await _clearAnonymousSession();
+      return;
+    }
+
+    final prevUser = _currentUser;
+    _currentUser = incomingUser;
+
+    final isMemberNow =
+        _currentUser != null && !(_currentUser?.isAnonymous ?? true);
+    final wasMember = prevUser != null && !(prevUser.isAnonymous);
+
+    // Sync only for authenticated non-guest accounts.
+    if (isMemberNow && !wasMember) {
+      unawaited(syncFromCloud());
+    }
+
+    notifyListeners();
+  }
+
+  Future<void> _clearAnonymousSession({bool notify = true}) async {
+    if (_isClearingAnonymousSession) return;
+    _isClearingAnonymousSession = true;
+    try {
+      await _authService.signOut();
+    } catch (_) {}
+    _currentUser = null;
+    _allowAnonymousForCurrentLaunch = false;
+    _isClearingAnonymousSession = false;
+    if (notify) {
+      notifyListeners();
+    }
   }
 
   Future<void> syncFromCloud() async {
@@ -106,7 +150,7 @@ class AppState extends ChangeNotifier {
     await _storageService.addToHistory(movie);
     await loadHistory();
 
-    if (isLoggedIn) {
+    if (isMemberLoggedIn) {
       await _syncService.saveHistory(_history);
     }
   }
@@ -115,7 +159,7 @@ class AppState extends ChangeNotifier {
     await _storageService.toggleFavorite(movie);
     await loadFavorites();
 
-    if (isLoggedIn) {
+    if (isMemberLoggedIn) {
       final isFavNow = await isFavorite(movie.id);
       await _syncService.saveFavorite(movie, isFavNow);
     }
@@ -154,18 +198,27 @@ class AppState extends ChangeNotifier {
 
   // --- Auth Actions ---
   Future<void> signIn(String email, String password) async {
+    _allowAnonymousForCurrentLaunch = false;
     await _authService.signInWithEmail(email, password);
   }
 
   Future<void> signUp(String email, String password) async {
+    _allowAnonymousForCurrentLaunch = false;
     await _authService.signUpWithEmail(email, password);
   }
 
   Future<void> signOut() async {
+    _allowAnonymousForCurrentLaunch = false;
     await _authService.signOut();
   }
 
   Future<void> signInGuest() async {
-    await _authService.signInAnonymously();
+    _allowAnonymousForCurrentLaunch = true;
+    try {
+      await _authService.signInAnonymously();
+    } catch (e) {
+      _allowAnonymousForCurrentLaunch = false;
+      rethrow;
+    }
   }
 }

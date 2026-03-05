@@ -28,6 +28,12 @@ class ApiService {
   String _source = "dramabox";
   String _lang = "in";
   String _captainToken = AppConstants.defaultCaptainToken;
+  final Map<String, List<Movie>> _dramaboxSearchCache = {};
+  final Map<String, DateTime> _dramaboxSearchCacheAt = {};
+  DateTime? _dramaboxRateLimitedUntil;
+
+  static const Duration _dramaboxSearchCacheTtl = Duration(minutes: 2);
+  static const Duration _dramaboxRateLimitCooldown = Duration(seconds: 65);
 
   Map<String, String> get _headers => {
     'User-Agent':
@@ -1227,53 +1233,84 @@ class ApiService {
   }
 
   Future<List<Movie>> _searchDramabox(String query) async {
-    final encodedQuery = Uri.encodeComponent(query);
-    // Try both search formats just in case
+    final trimmedQuery = query.trim();
+    if (trimmedQuery.isEmpty) return [];
+
+    final normalizedKey = trimmedQuery.toLowerCase();
+    final now = DateTime.now();
+
+    final cachedAt = _dramaboxSearchCacheAt[normalizedKey];
+    final cached = _dramaboxSearchCache[normalizedKey];
+    if (cachedAt != null &&
+        cached != null &&
+        now.difference(cachedAt) <= _dramaboxSearchCacheTtl) {
+      return cached;
+    }
+
+    if (_dramaboxRateLimitedUntil != null &&
+        now.isBefore(_dramaboxRateLimitedUntil!)) {
+      return cached ?? [];
+    }
+
+    final encodedQuery = Uri.encodeComponent(trimmedQuery);
+    // Use `query` first because Dramabox now requires this parameter.
     final urls = [
       Uri.parse(
-        "${AppConstants.dramaboxBaseUrl}/search?q=$encodedQuery&lang=$_lang",
+        "${AppConstants.dramaboxBaseUrl}/search?query=$encodedQuery&lang=$_lang",
       ),
       Uri.parse(
-        "${AppConstants.dramaboxBaseUrl}/search?query=$encodedQuery&lang=$_lang",
+        "${AppConstants.dramaboxBaseUrl}/search?q=$encodedQuery&lang=$_lang",
       ),
     ];
 
     for (var url in urls) {
       try {
         final response = await _client.get(url, headers: _headers);
-        if (response.statusCode == 200) {
-          final dynamic decoded = json.decode(response.body);
-          List<dynamic> data = [];
-
-          if (decoded is List) {
-            data = decoded;
-          } else if (decoded is Map) {
-            data =
-                decoded['data'] ??
-                decoded['result'] ??
-                decoded['books'] ??
-                decoded['list'] ??
-                decoded['bookList'] ??
-                decoded['shortPlayList'] ??
-                decoded['items'] ??
-                [];
-          }
-
-          if (data.isNotEmpty) {
-            return data
-                .where((item) => item is Map)
-                .map(
-                  (json) =>
-                      Movie.fromJson(json as Map<String, dynamic>, "dramabox"),
-                )
-                .toList();
-          }
+        if (response.statusCode == 429) {
+          _dramaboxRateLimitedUntil = DateTime.now().add(
+            _dramaboxRateLimitCooldown,
+          );
+          print(
+            "ApiService: Dramabox search rate-limited, pausing new search requests temporarily.",
+          );
+          return cached ?? [];
         }
+
+        if (response.statusCode != 200) {
+          continue;
+        }
+
+        final dynamic decoded = json.decode(response.body);
+        List<dynamic> data = [];
+
+        if (decoded is List) {
+          data = decoded;
+        } else if (decoded is Map) {
+          data =
+              decoded['data'] ??
+              decoded['result'] ??
+              decoded['books'] ??
+              decoded['list'] ??
+              decoded['bookList'] ??
+              decoded['shortPlayList'] ??
+              decoded['items'] ??
+              [];
+        }
+
+        final movies = data
+            .whereType<Map<String, dynamic>>()
+            .map((json) => Movie.fromJson(json, "dramabox"))
+            .toList();
+
+        _dramaboxSearchCache[normalizedKey] = movies;
+        _dramaboxSearchCacheAt[normalizedKey] = DateTime.now();
+        return movies;
       } catch (e) {
         print("ApiService: Try search $url failed: $e");
       }
     }
-    return [];
+
+    return cached ?? [];
   }
 
   // Removed _searchNetshort from here as it's now integrated above
