@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:reealms_mobile/logic/app_state.dart';
 import 'package:reealms_mobile/ui/pages/home_page.dart';
@@ -70,8 +71,35 @@ class ReealmsApp extends StatelessWidget {
   }
 }
 
-class AppEntryGate extends StatelessWidget {
+class AppEntryGate extends StatefulWidget {
   const AppEntryGate({super.key});
+
+  @override
+  State<AppEntryGate> createState() => _AppEntryGateState();
+}
+
+class _AppEntryGateState extends State<AppEntryGate>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      final appState = Provider.of<AppState>(context, listen: false);
+      unawaited(appState.clearGuestSessionIfNeeded());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +112,7 @@ class AppEntryGate extends StatelessWidget {
           );
         }
 
-        if (state.currentUser == null) {
+        if (!state.canEnterMainNavigation) {
           return const ProfilePage();
         }
         return const MainNavigationPage();

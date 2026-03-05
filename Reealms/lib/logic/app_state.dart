@@ -35,6 +35,12 @@ class AppState extends ChangeNotifier {
   bool get isMemberLoggedIn =>
       _currentUser != null && !(_currentUser?.isAnonymous ?? true);
   bool get isAuthReady => _isAuthReady;
+  bool get canEnterMainNavigation {
+    final user = _currentUser;
+    if (user == null) return false;
+    if (!user.isAnonymous) return true;
+    return _allowAnonymousForCurrentLaunch;
+  }
 
   AppState() {
     unawaited(_initAuth());
@@ -91,6 +97,12 @@ class AppState extends ChangeNotifier {
     _isClearingAnonymousSession = false;
     if (notify) {
       notifyListeners();
+    }
+  }
+
+  Future<void> clearGuestSessionIfNeeded() async {
+    if (_currentUser?.isAnonymous ?? false) {
+      await _clearAnonymousSession();
     }
   }
 
