@@ -1,10 +1,11 @@
 import 'dart:convert';
-import 'dart:developer' as developer;
+
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:reealms_mobile/data/models/playback_source.dart';
 import 'package:video_player/video_player.dart';
 
 class _QualityOption {
@@ -23,7 +24,7 @@ Future<List<_QualityOption>> _parseVideoPlayerQualityOptions({
   required String sourceUrl,
   required http.Client client,
 }) async {
-  developer.log('[QualityParser] Received URL: $sourceUrl');
+  print('[QualityParser] Received URL: $sourceUrl');
 
   final uri = Uri.tryParse(sourceUrl);
   final defaultOption = _QualityOption(
@@ -33,16 +34,16 @@ Future<List<_QualityOption>> _parseVideoPlayerQualityOptions({
   );
 
   if (uri == null) {
-    developer.log('[QualityParser] URI parse failed');
+    print('[QualityParser] URI parse failed');
     return [defaultOption];
   }
 
   if (!uri.path.toLowerCase().endsWith('.m3u8')) {
-    developer.log('[QualityParser] Not an .m3u8 URL, path: ${uri.path}');
+    print('[QualityParser] Not an .m3u8 URL, path: ${uri.path}');
     return [defaultOption];
   }
 
-  developer.log('[QualityParser] Parsing m3u8 playlist');
+  print('[QualityParser] Parsing m3u8 playlist');
 
   const requestHeaders = {
     'User-Agent':
@@ -75,7 +76,9 @@ Future<List<_QualityOption>> _parseVideoPlayerQualityOptions({
       if (nextPath == null) continue;
 
       final resolvedUrl = playlistUri.resolve(nextPath).toString();
-      final label = height != null ? '${height}p' : 'Varian ${variants.length + 1}';
+      final label = height != null
+          ? '${height}p'
+          : 'Varian ${variants.length + 1}';
       variants.add(
         _QualityOption(label: label, url: resolvedUrl, rank: height ?? 0),
       );
@@ -94,80 +97,97 @@ Future<List<_QualityOption>> _parseVideoPlayerQualityOptions({
   }
 
   try {
-    developer.log('[QualityParser] Fetching playlist: $uri');
+    print('[QualityParser] Fetching playlist: $uri');
     final response = await client
         .get(uri, headers: requestHeaders)
         .timeout(const Duration(seconds: 8));
 
-    developer.log('[QualityParser] Response status: ${response.statusCode}');
+    print('[QualityParser] Response status: ${response.statusCode}');
 
     if (response.statusCode != 200) {
-      developer.log('[QualityParser] Non-200 response, returning Auto only');
+      print('[QualityParser] Non-200 response, returning Auto only');
       return [defaultOption];
     }
 
-    developer.log('[QualityParser] Response body length: ${response.body.length}');
-    developer.log('[QualityParser] Response body preview: ${response.body.substring(0, response.body.length > 200 ? 200 : response.body.length)}');
+    print('[QualityParser] Response body length: ${response.body.length}');
+    print(
+      '[QualityParser] Response body preview: ${response.body.substring(0, response.body.length > 200 ? 200 : response.body.length)}',
+    );
 
     final directVariants = parseMasterPlaylist(uri, response.body);
-    developer.log('[QualityParser] Direct variants found: ${directVariants.length}');
+    print('[QualityParser] Direct variants found: ${directVariants.length}');
 
     if (directVariants.isNotEmpty) {
-      developer.log('[QualityParser] Returning ${directVariants.length + 1} options (including Auto)');
+      print(
+        '[QualityParser] Returning ${directVariants.length + 1} options (including Auto)',
+      );
       return [defaultOption, ...directVariants];
     }
 
     final pathSegments = uri.pathSegments;
-    developer.log('[QualityParser] Path segments: ${pathSegments.length}, attempting master playlist recovery');
+    print(
+      '[QualityParser] Path segments: ${pathSegments.length}, attempting master playlist recovery',
+    );
 
     final recoveryPatterns = <(Uri, String)>[];
 
-    if (pathSegments.length >= 1) {
+    if (pathSegments.isNotEmpty) {
       final lastSegment = pathSegments.last;
-      final parentUri = uri.resolve('..');
 
       if (lastSegment.toLowerCase().contains('index')) {
         recoveryPatterns.add((uri.resolve('../master.m3u8'), 'master.m3u8'));
-        recoveryPatterns.add((uri.resolve('../playlist.m3u8'), 'playlist.m3u8'));
+        recoveryPatterns.add((
+          uri.resolve('../playlist.m3u8'),
+          'playlist.m3u8',
+        ));
       }
 
       if (lastSegment.toLowerCase().contains('.m3u8')) {
         final segmentName = lastSegment.toLowerCase();
-        if (segmentName.contains('720') || segmentName.contains('1080') || segmentName.contains('480')) {
+        if (segmentName.contains('720') ||
+            segmentName.contains('1080') ||
+            segmentName.contains('480')) {
           recoveryPatterns.add((uri.resolve('../master.m3u8'), 'master.m3u8'));
           recoveryPatterns.add((uri.resolve('../index.m3u8'), 'index.m3u8'));
-          recoveryPatterns.add((uri.resolve('../../master.m3u8'), '../../master.m3u8'));
+          recoveryPatterns.add((
+            uri.resolve('../../master.m3u8'),
+            '../../master.m3u8',
+          ));
         }
       }
     }
 
     for (final (candidateUri, label) in recoveryPatterns) {
-      developer.log('[QualityParser] Trying $label: $candidateUri');
+      print('[QualityParser] Trying $label: $candidateUri');
       try {
         final response = await client
             .get(candidateUri, headers: requestHeaders)
             .timeout(const Duration(seconds: 8));
 
-        developer.log('[QualityParser] $label response status: ${response.statusCode}');
+        print('[QualityParser] $label response status: ${response.statusCode}');
 
         if (response.statusCode == 200) {
           final variants = parseMasterPlaylist(candidateUri, response.body);
-          developer.log('[QualityParser] $label variants found: ${variants.length}');
+          print('[QualityParser] $label variants found: ${variants.length}');
 
           if (variants.isNotEmpty) {
-            developer.log('[QualityParser] Found ${variants.length} variants via $label');
+            print(
+              '[QualityParser] Found ${variants.length} variants via $label',
+            );
             return [defaultOption, ...variants];
           }
         }
       } catch (e) {
-        developer.log('[QualityParser] $label error: $e');
+        print('[QualityParser] $label error: $e');
       }
     }
 
-    developer.log('[QualityParser] No variants found after recovery attempts, returning Auto only');
+    print(
+      '[QualityParser] No variants found after recovery attempts, returning Auto only',
+    );
     return [defaultOption];
   } catch (e) {
-    developer.log('[QualityParser] Exception: $e');
+    print('[QualityParser] Exception: $e');
     return [defaultOption];
   }
 }
@@ -181,6 +201,7 @@ class VideoPlayerPage extends StatefulWidget {
   final bool autoPlayNext;
   final bool disablePlaybackInitializationForTesting;
   final bool preferLandscapeOnStart;
+  final List<PlaybackQualityOption>? qualityOptionsOverride;
 
   static http.Client Function() httpClientFactory = () => http.Client();
 
@@ -205,6 +226,7 @@ class VideoPlayerPage extends StatefulWidget {
     this.autoPlayNext = false,
     this.disablePlaybackInitializationForTesting = false,
     this.preferLandscapeOnStart = false,
+    this.qualityOptionsOverride,
   });
 
   @override
@@ -230,6 +252,25 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   static const double _swipeMinDistance = 36;
   static const double _swipeMinVelocity = 320;
 
+  List<_QualityOption> _buildOverrideQualityOptions(String defaultUrl) {
+    final provided = widget.qualityOptionsOverride ?? const [];
+    if (provided.isEmpty) {
+      return [_QualityOption(label: 'Auto', url: defaultUrl, rank: 9999)];
+    }
+
+    final options = <_QualityOption>[
+      _QualityOption(label: 'Auto', url: defaultUrl, rank: 9999),
+    ];
+    final seenLabels = <String>{'Auto'};
+    for (final option in provided) {
+      if (option.url.trim().isEmpty || !seenLabels.add(option.label)) continue;
+      options.add(
+        _QualityOption(label: option.label, url: option.url, rank: option.rank),
+      );
+    }
+    return options;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -243,9 +284,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       _wasInFullScreen = true;
     }
     if (widget.disablePlaybackInitializationForTesting) {
-      _qualityOptions = [
-        _QualityOption(label: 'Auto', url: widget.videoUrl, rank: 9999),
-      ];
+      _qualityOptions = _buildOverrideQualityOptions(widget.videoUrl);
       _selectedQualityLabel = 'Auto';
       _isLoading = false;
       return;
@@ -291,15 +330,11 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
 
     if (mounted) {
       setState(() {
-        _qualityOptions = [
-          _QualityOption(label: 'Auto', url: initialUrl, rank: 9999),
-        ];
+        _qualityOptions = _buildOverrideQualityOptions(initialUrl);
         _selectedQualityLabel = 'Auto';
       });
     } else {
-      _qualityOptions = [
-        _QualityOption(label: 'Auto', url: initialUrl, rank: 9999),
-      ];
+      _qualityOptions = _buildOverrideQualityOptions(initialUrl);
       _selectedQualityLabel = 'Auto';
     }
 
@@ -410,7 +445,21 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   }
 
   Future<void> _loadQualityOptions(String sourceUrl) async {
-    developer.log('[VideoPlayerPage] Loading quality options for: $sourceUrl');
+    print('[VideoPlayerPage] Loading quality options for: $sourceUrl');
+
+    final overrideOptions = widget.qualityOptionsOverride ?? const [];
+    if (overrideOptions.isNotEmpty) {
+      final parsedOptions = _buildOverrideQualityOptions(sourceUrl);
+      print(
+        '[VideoPlayerPage] Using ${parsedOptions.length} provided quality options',
+      );
+      if (!mounted) return;
+      setState(() {
+        _qualityOptions = parsedOptions;
+        _selectedQualityLabel = 'Auto';
+      });
+      return;
+    }
 
     final client = VideoPlayerPage.httpClientFactory();
     final parsedOptions = await _parseVideoPlayerQualityOptions(
@@ -419,9 +468,9 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     );
     client.close();
 
-    developer.log('[VideoPlayerPage] Parsed ${parsedOptions.length} quality options');
+    print('[VideoPlayerPage] Parsed ${parsedOptions.length} quality options');
     for (final option in parsedOptions) {
-      developer.log('[VideoPlayerPage]   - ${option.label}: ${option.url}');
+      print('[VideoPlayerPage]   - ${option.label}: ${option.url}');
     }
 
     if (!mounted) return;

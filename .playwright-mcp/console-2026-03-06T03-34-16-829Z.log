@@ -1,0 +1,4 @@
+[    1358ms] TypeError: window.jwplayer is not a function
+    at p (https://filedon.co/build/assets/embed-BiqJ1wZC.js:7:1451)
+    at https://filedon.co/build/assets/embed-BiqJ1wZC.js:7:1602
+[   61113ms] [ERROR] Failed to play with sound: NotSupportedError: The element has no supported sources. @ https://filedon.co/build/assets/AdsVideo-lSPZWIpm.js:0

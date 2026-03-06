@@ -610,9 +610,10 @@ class _DetailPageState extends State<DetailPage> {
     } else if (widget.movie.sourceType == "otakudesu") {
       setState(() => _isLoading = true);
       try {
-        final directMirrorUrl = await _apiService.getBestOtakudesuPlayableUrl(
+        final playableSource = await _apiService.getBestOtakudesuPlayableSource(
           ep.id,
         );
+        final directMirrorUrl = playableSource?.url ?? '';
         if (!mounted) return;
 
         // Preferred path: direct playable URL in native in-app video player.
@@ -630,6 +631,7 @@ class _DetailPageState extends State<DetailPage> {
                     videoUrl: directMirrorUrl,
                     title: ep.title,
                     preferLandscapeOnStart: true,
+                    qualityOptionsOverride: playableSource?.qualityOptions,
                   ),
             ),
           );

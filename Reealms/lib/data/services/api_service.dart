@@ -1,8 +1,9 @@
 import 'dart:convert';
-import 'dart:developer' as developer;
+
 import 'package:http/http.dart' as http;
 import 'package:reealms_mobile/core/app_constants.dart';
 import 'package:reealms_mobile/data/models/movie.dart';
+import 'package:reealms_mobile/data/models/playback_source.dart';
 
 class _OtakudesuMirrorCandidate {
   final String provider;
@@ -17,10 +18,40 @@ class _OtakudesuMirrorCandidate {
 }
 
 class _AnimeMirrorProbeResult {
-  final String url;
-  final bool isMaster;
+  final ResolvedPlayableSource source;
+  final _AnimePlayableBucket bucket;
 
-  const _AnimeMirrorProbeResult({required this.url, required this.isMaster});
+  const _AnimeMirrorProbeResult({required this.source, required this.bucket});
+
+  String get url => source.url;
+
+  String get bucketLabel {
+    switch (bucket) {
+      case _AnimePlayableBucket.masterM3u8:
+        return 'master';
+      case _AnimePlayableBucket.mediaM3u8:
+        return 'media';
+      case _AnimePlayableBucket.directFile:
+        return 'direct';
+    }
+  }
+}
+
+enum _AnimePlayableBucket { masterM3u8, mediaM3u8, directFile }
+
+class _AnimeMirrorProbeBuckets {
+  _AnimeMirrorProbeResult? master;
+  _AnimeMirrorProbeResult? media;
+  _AnimeMirrorProbeResult? direct;
+
+  _AnimeMirrorProbeResult? get best => master ?? media ?? direct;
+}
+
+class _BloggerPlayableVariant {
+  final String url;
+  final int itag;
+
+  const _BloggerPlayableVariant({required this.url, required this.itag});
 }
 
 class ApiService {
@@ -355,6 +386,11 @@ class ApiService {
     final uri = Uri.tryParse(rawUrl);
     if (uri == null || uri.host.isEmpty) return false;
     final path = uri.path.toLowerCase();
+    final host = uri.host.toLowerCase();
+    if (host.contains('googlevideo.com') && path.contains('videoplayback')) {
+      final mime = uri.queryParameters['mime']?.toLowerCase() ?? '';
+      return mime.startsWith('video/');
+    }
     return path.endsWith('.m3u8') ||
         path.endsWith('.mp4') ||
         path.endsWith('.m4v') ||
@@ -365,6 +401,11 @@ class ApiService {
 
   int _extractQualityHint(String rawUrl) {
     final normalized = rawUrl.toLowerCase();
+    final uri = Uri.tryParse(rawUrl);
+    final itag = int.tryParse(uri?.queryParameters['itag'] ?? '');
+    final itagHeight = _bloggerHeightForItag(itag);
+    if (itagHeight > 0) return itagHeight;
+
     for (final value in const [2160, 1440, 1080, 720, 540, 480, 360, 240]) {
       if (normalized.contains('${value}p') || normalized.contains('$value')) {
         return value;
@@ -381,6 +422,21 @@ class ApiService {
     final isMp4 = normalized.contains('.mp4');
     // Prefer higher quality first, then prefer HLS master/variant playlists.
     return (quality * 100) + (isM3u8 ? 10 : 0) + (isMp4 ? 1 : 0);
+  }
+
+  int _bloggerHeightForItag(int? itag) {
+    switch (itag) {
+      case 37:
+        return 1080;
+      case 22:
+        return 720;
+      case 59:
+        return 480;
+      case 18:
+        return 360;
+      default:
+        return 0;
+    }
   }
 
   String _pickLikelyMasterM3u8Candidate(List<String> m3u8Candidates) {
@@ -418,7 +474,7 @@ class ApiService {
 
   void _logAnimePlayableDecision(String label, String value) {
     _animePlayableLogger?.call(label, value);
-    developer.log('AnimePlayable: $label => $value', name: 'ApiServiceAnime');
+    print('AnimePlayable: $label => $value');
   }
 
   bool _isMasterM3u8Content(String body) {
@@ -495,29 +551,64 @@ class ApiService {
   ) async {
     if (mirrors.isEmpty) return null;
 
-    _logAnimePlayableDecision('mirror-candidates-count', mirrors.length.toString());
+    _logAnimePlayableDecision(
+      'mirror-candidates-count',
+      mirrors.length.toString(),
+    );
 
-    _AnimeMirrorProbeResult? bestNonMaster;
+    final buckets = _AnimeMirrorProbeBuckets();
     for (final mirrorUrl in mirrors) {
-      final direct = await _resolveDirectPlayableUrlFromPage(mirrorUrl);
-      if (direct.isEmpty) continue;
+      final source = await _resolvePlayableSourceFromPage(mirrorUrl);
+      if (source == null || source.url.isEmpty) continue;
 
-      final isMaster = direct.toLowerCase().contains('.m3u8')
-          ? await _isMasterM3u8Url(direct)
-          : false;
+      final bucket = await _classifyDirectPlayableBucket(source.url);
+      if (bucket == null) continue;
 
-      if (isMaster) {
-        _logAnimePlayableDecision('playable-selected', 'master:$direct');
-        return _AnimeMirrorProbeResult(url: direct, isMaster: true);
+      final candidate = _AnimeMirrorProbeResult(source: source, bucket: bucket);
+      _logAnimePlayableDecision(
+        'playable-candidate',
+        '${candidate.bucketLabel}:${source.url}',
+      );
+
+      switch (bucket) {
+        case _AnimePlayableBucket.masterM3u8:
+          buckets.master ??= candidate;
+          break;
+        case _AnimePlayableBucket.mediaM3u8:
+          buckets.media ??= candidate;
+          break;
+        case _AnimePlayableBucket.directFile:
+          buckets.direct ??= candidate;
+          break;
       }
-
-      bestNonMaster ??= _AnimeMirrorProbeResult(url: direct, isMaster: false);
     }
 
-    if (bestNonMaster != null) {
-      _logAnimePlayableDecision('playable-selected', 'fallback:${bestNonMaster.url}');
+    final selected = buckets.best;
+    if (selected != null) {
+      _logAnimePlayableDecision('bucket-selected', selected.bucketLabel);
+      _logAnimePlayableDecision(
+        'playable-selected',
+        '${selected.bucketLabel}:${selected.url}',
+      );
     }
-    return bestNonMaster;
+    return selected;
+  }
+
+  Future<_AnimePlayableBucket?> _classifyDirectPlayableBucket(
+    String directUrl,
+  ) async {
+    if (!_isDirectPlayableVideoUrl(directUrl)) return null;
+
+    if (!directUrl.toLowerCase().contains('.m3u8')) {
+      return _AnimePlayableBucket.directFile;
+    }
+
+    final isMaster = await _isMasterM3u8Url(directUrl);
+    if (isMaster) {
+      return _AnimePlayableBucket.masterM3u8;
+    }
+
+    return _AnimePlayableBucket.mediaM3u8;
   }
 
   String _extractDirectPlayableUrlFromDynamic(dynamic node, String baseUrl) {
@@ -550,18 +641,161 @@ class ApiService {
     return '';
   }
 
-  Future<String> _resolveDirectPlayableUrlFromPage(String pageUrl) async {
-    if (_isDirectPlayableVideoUrl(pageUrl)) return pageUrl;
-    if (pageUrl.isEmpty || !pageUrl.startsWith('http')) return '';
+  PlaybackQualityOption _buildBloggerQualityOption(
+    _BloggerPlayableVariant variant,
+    int index,
+  ) {
+    final height = _bloggerHeightForItag(variant.itag);
+    final label = height > 0 ? '${height}p' : 'Varian ${index + 1}';
+    return PlaybackQualityOption(label: label, url: variant.url, rank: height);
+  }
+
+  List<_BloggerPlayableVariant> _extractBloggerPlayableVariants(
+    String rawBody,
+  ) {
+    if (rawBody.isEmpty) return const [];
+
+    final normalized = rawBody
+        .replaceAll(r'\/', '/')
+        .replaceAll(r'\u003d', '=')
+        .replaceAll(r'\u0026', '&')
+        .replaceAll(r'\u003f', '?');
+    final regex = RegExp(
+      r'https://[^"\s]+googlevideo\.com/videoplayback[^"\s]+',
+      caseSensitive: false,
+    );
+
+    final variants = <_BloggerPlayableVariant>[];
+    final seen = <String>{};
+    for (final match in regex.allMatches(normalized)) {
+      final url = (match.group(0) ?? '').trim().replaceAll(RegExp(r'\\+$'), '');
+      if (url.isEmpty || !seen.add(url) || !_isDirectPlayableVideoUrl(url)) {
+        continue;
+      }
+
+      final uri = Uri.tryParse(url);
+      final itag = int.tryParse(uri?.queryParameters['itag'] ?? '') ?? 0;
+      variants.add(_BloggerPlayableVariant(url: url, itag: itag));
+    }
+
+    variants.sort((a, b) {
+      final rankA = _bloggerHeightForItag(a.itag);
+      final rankB = _bloggerHeightForItag(b.itag);
+      if (rankA != rankB) return rankB.compareTo(rankA);
+      return a.url.length.compareTo(b.url.length);
+    });
+
+    return variants;
+  }
+
+  Future<ResolvedPlayableSource?> _resolveBloggerPlayableSource(
+    String pageUrl,
+  ) async {
+    final pageUri = Uri.tryParse(pageUrl);
+    final token = pageUri?.queryParameters['token']?.trim() ?? '';
+    if (pageUri == null || token.isEmpty) return null;
+
+    try {
+      final pageResponse = await _client
+          .get(pageUri, headers: _headers)
+          .timeout(const Duration(seconds: 10));
+      if (pageResponse.statusCode != 200) return null;
+
+      final html = pageResponse.body;
+      final fSid =
+          RegExp(r'''"FdrFJe":"([^"]+)"''').firstMatch(html)?.group(1) ?? '';
+      final bl =
+          RegExp(r'''"cfb2h":"([^"]+)"''').firstMatch(html)?.group(1) ?? '';
+      if (fSid.isEmpty || bl.isEmpty) return null;
+
+      final args = json.encode([token, '', 0]);
+      final requestBody = json.encode([
+        [
+          ['WcwnYd', args, null, 'generic'],
+        ],
+      ]);
+      final batchUri = Uri.https(
+        'www.blogger.com',
+        '/_/BloggerVideoPlayerUi/data/batchexecute',
+        {
+          'rpcids': 'WcwnYd',
+          'source-path': '/video.g',
+          'f.sid': fSid,
+          'bl': bl,
+          'hl': 'en-US',
+          '_reqid': '60000',
+          'rt': 'c',
+        },
+      );
+
+      final response = await _client
+          .post(
+            batchUri,
+            headers: {
+              ..._headers,
+              'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+            },
+            body: 'f.req=${Uri.encodeQueryComponent(requestBody)}&',
+          )
+          .timeout(const Duration(seconds: 10));
+      if (response.statusCode != 200) return null;
+
+      final variants = _extractBloggerPlayableVariants(response.body);
+      if (variants.isEmpty) return null;
+
+      final qualityOptions = <PlaybackQualityOption>[];
+      final seenLabels = <String>{};
+      for (var i = 0; i < variants.length; i++) {
+        final option = _buildBloggerQualityOption(variants[i], i);
+        if (!seenLabels.add(option.label)) continue;
+        qualityOptions.add(option);
+      }
+      if (qualityOptions.isEmpty) return null;
+
+      _logAnimePlayableDecision(
+        'blogger-variants',
+        qualityOptions.map((option) => option.label).join(','),
+      );
+      return ResolvedPlayableSource(
+        url: qualityOptions.first.url,
+        qualityOptions: qualityOptions,
+      );
+    } catch (e) {
+      print('Error resolving blogger playable source: $e');
+    }
+
+    return null;
+  }
+
+  Future<ResolvedPlayableSource?> _resolvePlayableSourceFromPage(
+    String pageUrl, {
+    int depth = 0,
+  }) async {
+    if (_isDirectPlayableVideoUrl(pageUrl)) {
+      return ResolvedPlayableSource(url: pageUrl);
+    }
+    if (pageUrl.isEmpty || !pageUrl.startsWith('http') || depth > 2) {
+      return null;
+    }
+
+    final pageUri = Uri.tryParse(pageUrl);
+    final isBloggerPage =
+        pageUri != null &&
+        pageUri.host.toLowerCase().contains('blogger.com') &&
+        pageUri.path.toLowerCase().contains('video.g');
+    if (isBloggerPage) {
+      return _resolveBloggerPlayableSource(pageUrl);
+    }
 
     try {
       final response = await _client
           .get(Uri.parse(pageUrl), headers: _headers)
           .timeout(const Duration(seconds: 10));
-      if (response.statusCode != 200) return '';
+      if (response.statusCode != 200) return null;
 
       final html = response.body;
       final candidates = <String>{};
+      final iframeCandidates = <String>{};
 
       void collect(RegExp regex) {
         for (final match in regex.allMatches(html)) {
@@ -588,6 +822,15 @@ class ApiService {
         RegExp(r'''["']([^"']+\.m3u8[^"']*)["']''', caseSensitive: false),
       );
       collect(RegExp(r'''["']([^"']+\.mp4[^"']*)["']''', caseSensitive: false));
+      for (final match in RegExp(
+        r'''<iframe[^>]+src=["']([^"']+)["']''',
+        caseSensitive: false,
+      ).allMatches(html)) {
+        final raw = match.group(1);
+        if (raw == null || raw.isEmpty) continue;
+        final normalized = _normalizeExtractedUrl(raw, pageUrl);
+        if (normalized.isNotEmpty) iframeCandidates.add(normalized);
+      }
 
       final decodedHtml = _decodeHtmlEntities(html);
       if (decodedHtml != html) {
@@ -661,7 +904,7 @@ class ApiService {
           final isMaster = await _isMasterM3u8Url(m3u8Url);
           if (isMaster) {
             _logAnimePlayableDecision('page-m3u8', 'selected master $m3u8Url');
-            return m3u8Url;
+            return ResolvedPlayableSource(url: m3u8Url);
           }
         }
 
@@ -670,23 +913,51 @@ class ApiService {
           'page-m3u8',
           'master probe inconclusive, fallback $fallbackM3u8',
         );
-        return fallbackM3u8;
+        return ResolvedPlayableSource(url: fallbackM3u8);
       }
 
       if (playableCandidates.isNotEmpty) {
         final picked = playableCandidates.first;
         _logAnimePlayableDecision('page-direct', picked);
-        return picked;
+        return ResolvedPlayableSource(url: picked);
+      }
+
+      if (depth < 2) {
+        for (final iframeUrl in iframeCandidates) {
+          if (_isBlockedAnimeUrl(iframeUrl)) continue;
+
+          final iframeUri = Uri.tryParse(iframeUrl);
+          final isNestedBlogger =
+              iframeUri != null &&
+              iframeUri.host.toLowerCase().contains('blogger.com') &&
+              iframeUri.path.toLowerCase().contains('video.g');
+          if (!isNestedBlogger && !_isSafeAnimeMirrorUrl(iframeUrl)) continue;
+
+          final resolved = await _resolvePlayableSourceFromPage(
+            iframeUrl,
+            depth: depth + 1,
+          );
+          if (resolved != null && resolved.url.isNotEmpty) {
+            _logAnimePlayableDecision('page-iframe', iframeUrl);
+            return resolved;
+          }
+        }
       }
     } catch (e) {
       print('Error resolving direct playable URL: $e');
     }
 
-    return '';
+    return null;
   }
 
   /// Scrape episode list directly from Otakudesu anime HTML page.
   /// Uses otakudesu_url stored in movie.synopsis.
+  int _extractEpisodeNumberFromText(String value) {
+    final match = RegExp(r'(?<!\d)(\d+)(?!\d)').firstMatch(value);
+    if (match == null) return 0;
+    return int.tryParse(match.group(1) ?? '') ?? 0;
+  }
+
   Future<List<Episode>> scrapeOtakudesuEpisodes(String animePageUrl) async {
     if (animePageUrl.isEmpty || !animePageUrl.startsWith('http')) return [];
     try {
@@ -707,31 +978,38 @@ class ApiService {
       // Deduplicate by URL
       final seen = <String>{};
       final episodes = <Episode>[];
-      int order = 1;
+      var fallbackOrder = 1;
       for (final m in matches) {
         final url = m.group(1)!;
         var title =
             m.group(3)?.replaceAll(RegExp(r'<[^>]+>'), '').trim() ??
-            'Episode $order';
+            'Episode $fallbackOrder';
         // Clean up title - keep only "Episode N" format
-        final epNumMatch = RegExp(r'[Ee]pisode\s*(\d+)').firstMatch(title);
-        if (epNumMatch != null) {
-          title = 'Episode ${epNumMatch.group(1)}';
+        final titleEpisodeNumber = _extractEpisodeNumberFromText(title);
+        if (titleEpisodeNumber > 0) {
+          title = 'Episode $titleEpisodeNumber';
         }
         if (!seen.contains(url)) {
           seen.add(url);
+          final urlEpisodeNumber = _extractEpisodeNumberFromText(
+            Uri.tryParse(url)?.pathSegments.join(' ') ?? url,
+          );
+          final episodeOrder = titleEpisodeNumber > 0
+              ? titleEpisodeNumber
+              : (urlEpisodeNumber > 0 ? urlEpisodeNumber : fallbackOrder);
           episodes.add(
             Episode(
               id: url, // use full URL as ID for direct opening
               title: title,
-              order: order++,
+              order: episodeOrder,
               streamUrl: '',
             ),
           );
+          fallbackOrder++;
         }
       }
-      // Reverse so newest episode comes first
-      return episodes.reversed.toList();
+      episodes.sort((a, b) => a.order.compareTo(b.order));
+      return episodes;
     } catch (e) {
       print("Error scraping Otakudesu episodes: $e");
     }
@@ -899,7 +1177,9 @@ class ApiService {
     return '';
   }
 
-  Future<List<String>> _collectOtakudesuMirrorCandidates(String episodeUrl) async {
+  Future<List<String>> _collectOtakudesuMirrorCandidates(
+    String episodeUrl,
+  ) async {
     if (episodeUrl.isEmpty || !episodeUrl.startsWith('http')) return const [];
 
     try {
@@ -1071,7 +1351,9 @@ class ApiService {
 
   /// Return direct playable URL for in-app video player.
   /// Will not return Otakudesu episode pages.
-  Future<String> getBestOtakudesuPlayableUrl(String episodeUrl) async {
+  Future<ResolvedPlayableSource?> getBestOtakudesuPlayableSource(
+    String episodeUrl,
+  ) async {
     final rankedMirrors = await _collectOtakudesuMirrorCandidates(episodeUrl);
     String streamUrl = '';
 
@@ -1080,9 +1362,9 @@ class ApiService {
       if (probeResult != null && probeResult.url.isNotEmpty) {
         _logAnimePlayableDecision(
           'mirror-selected',
-          probeResult.isMaster ? 'master:${probeResult.url}' : probeResult.url,
+          '${probeResult.bucketLabel}:${probeResult.url}',
         );
-        return probeResult.url;
+        return probeResult.source;
       }
 
       _logAnimePlayableDecision('playable-from-mirrors', 'empty');
@@ -1094,7 +1376,7 @@ class ApiService {
     }
     if (streamUrl.isEmpty) {
       _logAnimePlayableDecision('stream-url', 'empty');
-      return '';
+      return null;
     }
 
     if (_isDirectPlayableVideoUrl(streamUrl)) {
@@ -1107,17 +1389,22 @@ class ApiService {
       } else {
         _logAnimePlayableDecision('direct-video', streamUrl);
       }
-      return streamUrl;
+      return ResolvedPlayableSource(url: streamUrl);
     }
 
-    final directFromPage = await _resolveDirectPlayableUrlFromPage(streamUrl);
-    if (directFromPage.isNotEmpty) {
-      _logAnimePlayableDecision('resolved-from-page', directFromPage);
+    final directFromPage = await _resolvePlayableSourceFromPage(streamUrl);
+    if (directFromPage != null && directFromPage.url.isNotEmpty) {
+      _logAnimePlayableDecision('resolved-from-page', directFromPage.url);
       return directFromPage;
     }
 
     _logAnimePlayableDecision('resolver-empty', episodeUrl);
-    return '';
+    return null;
+  }
+
+  Future<String> getBestOtakudesuPlayableUrl(String episodeUrl) async {
+    final source = await getBestOtakudesuPlayableSource(episodeUrl);
+    return source?.url ?? '';
   }
 
   // DRAMABOX LATEST (Using existing logic from Python)

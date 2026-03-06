@@ -1,0 +1,1265 @@
+PS D:\Project_Gabut\reealms\Reealms> flutter run
+Resolving dependencies...
+Downloading packages...
+  app_links 6.4.1 (7.0.0 available)
+  characters 1.4.0 (1.4.1 available)
+  matcher 0.12.17 (0.12.19 available)
+  material_color_utilities 0.11.1 (0.13.0 available)
+  meta 1.17.0 (1.18.1 available)
+  test_api 0.7.7 (0.7.10 available)
+  video_player_avfoundation 2.9.3 (2.9.4 available)
+  win32 5.15.0 (6.0.0 available)
+Got dependencies!
+8 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+Launching lib\main.dart on 2412DPC0AG in debug mode...
+Running Gradle task 'assembleDebug'...                             14.2s
+✓ Built build\app\outputs\flutter-apk\app-debug.apk
+Installing build\app\outputs\flutter-apk\app-debug.apk...           5.2s
+D/FlutterJNI( 4166): Beginning load of flutter...
+D/FlutterJNI( 4166): flutter (null) was loaded normally!
+I/flutter ( 4166): [IMPORTANT:flutter/shell/platform/android/android_context_vk_impeller.cc(62)] Using the Impeller rendering backend (Vulkan).
+I/flutter ( 4166): supabase.supabase_flutter: INFO: ***** Supabase init completed *****
+D/HWUI    ( 4166): [HWUI] Flag vulkan_enhance_pipeline_cache enabled
+D/HWUI    ( 4166): [HWUI] EnhanceVkPipelineCache is enabled
+D/HWUI    ( 4166): [HWUI] Flag ddre enabled
+I/Choreographer( 4166): Skipped 59 frames!  The application may be doing too much work on its main thread.
+I/ComputilityLevel( 4166): getComputilityLevel(): 4
+I/WindowExtensionsImpl( 4166): Initializing Window Extensions, vendor API level=9, activity embedding enabled=true
+I/.reealms_mobile( 4166): Compiler allocated 6307KB to compile void android.view.ViewRootImpl.performTraversals()
+E/.reealms_mobile( 4166): [perfctl] 4166 4166 FPSGO ver:7
+E/.reealms_mobile( 4166): [perfctl] 1 1 1 0
+D/BufferQueueConsumer( 4166): [](id:104600000000,api:0,p:-1,c:4166) connect: controlledByApp=false
+D/BLASTBufferQueue( 4166): [VRI[MainActivity]#0](f:0,a:0) constructor()
+D/BLASTBufferQueue( 4166): [VRI[MainActivity]#0](f:0,a:0) update width=1220 height=2712 format=-3 mTransformHint=0
+D/VRI[MainActivity]( 4166): vri.reportNextDraw 0 Rect(0, 0 - 1220, 2712) android.view.ViewRootImpl.performTraversals:5606 android.view.ViewRootImpl.doTraversal:4159 android.view.ViewRootImpl$TraversalRunnable.run:12555 android.view.Choreographer$CallbackRecord.run:2040 android.view.Choreographer$CallbackRecord.run:2049
+D/SurfaceView( 4166): UPDATE null, mIsCastMode = false
+D/ViewRootImplStubImpl( 4166): onSurfaceViewAttached:
+D/ViewRootImplStubImpl( 4166): , vri:android.view.ViewRootImpl@e04b707, com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity
+D/ViewRootImplStubImpl( 4166): , vri size:1220x2712
+D/ViewRootImplStubImpl( 4166): , surfaceView:io.flutter.embedding.android.FlutterSurfaceView{e664946 V.E...... ......ID 0,0-1220,2712}, SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]
+D/ViewRootImplStubImpl( 4166): , surfaceView size:1220x2712
+D/ViewRootImplStubImpl( 4166): , surfaceControl:Surface(name=e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity](BLAST)#392541)/@0xe304034
+D/BufferQueueConsumer( 4166): [](id:104600000001,api:0,p:-1,c:4166) connect: controlledByApp=false
+D/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:0,a:0) constructor()
+D/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:0,a:0) update width=1220 height=2712 format=4 mTransformHint=0
+I/.reealms_mobile( 4166): AssetManager2(0xb4000078319a1e18) locale list changing from [] to [in-ID]
+I/.reealms_mobile( 4166): AssetManager2(0xb4000078319a2138) locale list changing from [] to [in-ID]
+I/.reealms_mobile( 4166): AssetManager2(0xb40000783199ccd8) locale list changing from [] to [in-ID]
+I/.reealms_mobile( 4166): AssetManager2(0xb4000078319a1198) locale list changing from [] to [in-ID]
+I/.reealms_mobile( 4166): AssetManager2(0xb4000078319a4078) locale list changing from [] to [in-ID]
+I/.reealms_mobile( 4166): AssetManager2(0xb4000078319a6c38) locale list changing from [] to [in-ID]
+I/.reealms_mobile( 4166): AssetManager2(0xb4000078319a0b58) locale list changing from [] to [in-ID]
+I/.reealms_mobile( 4166): AssetManager2(0xb4000078319a6918) locale list changing from [] to [in-ID]
+I/.reealms_mobile( 4166): AssetManager2(0xb4000078319a5018) locale list changing from [] to [in-ID]
+W/1.raster( 4166): type=1400 audit(0.0:7327704): avc:  denied  { read } for  name="u:object_r:vendor_displayfeature_prop:s0" dev="tmpfs" ino=675 scontext=u:r:untrusted_app:s0:c162,c258,c512,c768 tcontext=u:object_r:vendor_displayfeature_prop:s0 tclass=file permissive=0 app=com.reealms.reealms_mobile
+I/GrallocExtra( 4166): gralloc_extra_query:is_SW3D 0
+I/.reealms_mobile( 4166): Support mwdf product rodin:
+D/.reealms_mobile( 4166): MWDF parse error: No such file or directory
+I/GrallocExtra( 4166): gralloc_extra_query:is_SW3D 0
+W/libc    ( 4166): Access denied finding property "ro.vendor.display.iris_x7.support"
+D/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:0,a:1) acquireNextBufferLocked size=1220x2712 mFrameNumber=1 applyTransaction=true mTimestamp=1195017104362458(auto) mPendingTransactions.size=0 graphicBufferId=17892833755146 transform=0
+D/WmSystemUiDebug( 4166): set navigation bar color,Alpha=1.0, RGB:0,0,0 caller:io.flutter.plugin.platform.PlatformPlugin.setSystemChromeSystemUIOverlayStyle:503 io.flutter.plugin.platform.PlatformPlugin.access$700:36 io.flutter.plugin.platform.PlatformPlugin$1.setSystemUiOverlayStyle:123 io.flutter.embedding.engine.systemchannels.PlatformChannel$1.onMethodCall:130 io.flutter.plugin.common.MethodChannel$IncomingMethodCallHandler.onMessage:267 io.flutter.embedding.engine.dart.DartMessenger.invokeHandler:292 io.flutter.embedding.engine.dart.DartMessenger.lambda$dispatchMessageToQueue$0$io-flutter-embedding-engine-dart-DartMessenger:319 io.flutter.embedding.engine.dart.DartMessenger$$ExternalSyntheticLambda0.run:0 android.os.Handler.handleCallback:1029 android.os.Handler.dispatchMessage:107
+D/SurfaceView( 4166): UPDATE Surface(name=e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#392540)/@0x9da4491, mIsProjectionMode = false
+D/VRI[MainActivity]( 4166): vri.Setup new sync=wmsSync-VRI[MainActivity]#1
+I/SKIA    ( 4166): CreateGraphicsPipeline pipeline cache hit. elpased time: 0.34 ms.
+D/BLASTBufferQueue( 4166): [VRI[MainActivity]#0](f:0,a:1) acquireNextBufferLocked size=1220x2712 mFrameNumber=1 applyTransaction=true mTimestamp=1195017134637766(auto) mPendingTransactions.size=0 graphicBufferId=17892833755152 transform=0
+D/VRI[MainActivity]( 4166): vri.reportDrawFinished 0 0 Rect(0, 0 - 1220, 2712)
+I/NativeTurboSchedManager( 4166): Load libmiui_runtime
+D/WindowLayoutComponentImpl( 4166): Register WindowLayoutInfoListener on Context=com.reealms.reealms_mobile.MainActivity@b3b76c2, of which baseContext=android.app.ContextImpl@a321485
+I/HandWritingStubImpl( 4166): refreshLastKeyboardType: 1
+I/HandWritingStubImpl( 4166): getCurrentKeyboardType: 1
+D/InsetsController( 4166): hide(ime(), fromIme=false)
+I/ImeTracker( 4166): com.reealms.reealms_mobile:3de410e9: onCancelled at PHASE_CLIENT_ALREADY_HIDDEN
+I/HandWritingStubImpl( 4166): getCurrentKeyboardType: 1
+Syncing files to device 2412DPC0AG...                              193ms
+
+Flutter run key commands.
+r Hot reload. 🔥🔥🔥
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate "flutter run" but leave application running).
+c Clear the screen
+q Quit (terminate the application on the device).
+
+A Dart VM Service on 2412DPC0AG is available at: http://127.0.0.1:58166/u_cNbrGzdBc=/
+The Flutter DevTools debugger and profiler on 2412DPC0AG is available at:
+http://127.0.0.1:58166/u_cNbrGzdBc=/devtools/?uri=ws://127.0.0.1:58166/u_cNbrGzdBc=/ws
+D/ProfileInstaller( 4166): Installing profile for com.reealms.reealms_mobile
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_DOWN, id[0]=0, pointerCount=1, eventTime=1195020858, downTime=1195020858, phoneEventTime=16:21:10.214 } moveCount:0
+D/VRI[MainActivity]( 4166): getMiuiFreeformStackInfo mTmpFrames.miuiFreeFormStackInfo: null
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_UP, id[0]=0, pointerCount=1, eventTime=1195020908, downTime=1195020858, phoneEventTime=16:21:10.264 } moveCount:0
+E/.reealms_mobile( 4166): FrameInsert open fail: No such file or directory
+E/LB      ( 4166): fail to open file: No such file or directory
+W/1.raster( 4166): type=1400 audit(0.0:7327720): avc:  denied  { getattr } for  path="/sys/module/metis/parameters/minor_window_app" dev="sysfs" ino=138537 scontext=u:r:untrusted_app:s0:c162,c258,c512,c768 tcontext=u:object_r:sysfs_migt:s0 tclass=file permissive=0 app=com.reealms.reealms_mobile
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+W/.reealms_mobile( 4166): userfaultfd: MOVE ioctl seems unsupported: Connection timed out
+W/FinalizerDaemon( 4166): type=1400 audit(0.0:7327721): avc:  denied  { getopt } for  path="/dev/socket/usap_pool_primary" scontext=u:r:untrusted_app:s0:c162,c258,c512,c768 tcontext=u:r:zygote:s0 tclass=unix_stream_socket permissive=0 app=com.reealms.reealms_mobile
+D/ActivityThread( 4166): invoke error.
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_DOWN, id[0]=0, pointerCount=1, eventTime=1195026122, downTime=1195026122, phoneEventTime=16:21:15.478 } moveCount:0
+D/VRI[MainActivity]( 4166): getMiuiFreeformStackInfo mTmpFrames.miuiFreeFormStackInfo: null
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_UP, id[0]=0, pointerCount=1, eventTime=1195026166, downTime=1195026122, phoneEventTime=16:21:15.523 } moveCount:0
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_DOWN, id[0]=0, pointerCount=1, eventTime=1195027113, downTime=1195027113, phoneEventTime=16:21:16.470 } moveCount:0
+D/VRI[MainActivity]( 4166): getMiuiFreeformStackInfo mTmpFrames.miuiFreeFormStackInfo: null
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_UP, id[0]=0, pointerCount=1, eventTime=1195027179, downTime=1195027113, phoneEventTime=16:21:16.535 } moveCount:0
+W/WindowOnBackDispatcher( 4166): sendCancelIfRunning: isInProgress=false callback=io.flutter.embedding.android.FlutterActivity$1@9f0e9df
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_DOWN, id[0]=0, pointerCount=1, eventTime=1195034563, downTime=1195034563, phoneEventTime=16:21:23.919 } moveCount:0
+D/VRI[MainActivity]( 4166): getMiuiFreeformStackInfo mTmpFrames.miuiFreeFormStackInfo: null
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_UP, id[0]=0, pointerCount=1, eventTime=1195034607, downTime=1195034563, phoneEventTime=16:21:23.963 } moveCount:0
+
+══╡ EXCEPTION CAUGHT BY SCHEDULER LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during a scheduler callback:
+There are multiple heroes that share the same tag within a subtree.
+Within each subtree for which heroes are to be animated (i.e. a PageRoute subtree), each Hero must
+have a unique non-null tag.
+In this case, multiple heroes had the following tag: movie_poster_eris-seihai-sub-indo
+├# Here is the subtree for one of the offending heroes: Hero
+
+When the exception was thrown, this was the stack:
+#0      Hero._allHeroesFor.inviteHero.<anonymous closure> (package:flutter/src/widgets/heroes.dart:277:11)
+#1      Hero._allHeroesFor.inviteHero (package:flutter/src/widgets/heroes.dart:293:8)
+#2      Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:311:11)
+#3      MultiChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7228:16)
+#4      Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#5      ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#6      Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#7      MultiChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7228:16)
+#8      Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#9      SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#10     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#11     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#12     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#13     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#14     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#15     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#16     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#17     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#18     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#19     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#20     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#21     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#22     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#23     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#24     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#25     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#26     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#27     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#28     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#29     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#30     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#31     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#32     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#33     List.forEach (dart:core-patch/growable_array.dart:428:8)
+#34     SliverMultiBoxAdaptorElement.visitChildren (package:flutter/src/widgets/sliver.dart:1264:52)
+#35     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#36     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#37     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#38     MultiChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7228:16)
+#39     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#40     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#41     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#42     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#43     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#44     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#45     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#46     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#47     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#48     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#49     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#50     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#51     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#52     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#53     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#54     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#55     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#56     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#57     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#58     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#59     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#60     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#61     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#62     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#63     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#64     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#65     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#66     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#67     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#68     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#69     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#70     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#71     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#72     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#73     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#74     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#75     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#76     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#77     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#78     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#79     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#80     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#81     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#82     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#83     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#84     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#85     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#86     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#87     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#88     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#89     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#90     SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#91     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#92     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#93     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#94     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#95     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#96     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#97     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#98     ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#99     Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#100    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#101    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#102    List.forEach (dart:core-patch/growable_array.dart:428:8)
+#103    SliverMultiBoxAdaptorElement.visitChildren (package:flutter/src/widgets/sliver.dart:1264:52)
+#104    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#105    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#106    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#107    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#108    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#109    MultiChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7228:16)
+#110    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#111    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#112    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#113    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#114    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#115    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#116    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#117    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#118    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#119    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#120    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#121    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#122    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#123    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#124    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#125    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#126    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#127    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#128    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#129    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#130    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#131    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#132    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#133    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#134    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#135    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#136    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#137    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#138    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#139    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#140    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#141    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#142    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#143    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#144    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#145    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#146    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#147    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#148    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#149    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#150    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#151    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#152    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#153    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#154    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#155    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#156    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#157    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#158    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#159    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#160    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#161    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#162    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#163    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#164    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#165    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#166    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#167    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#168    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#169    MultiChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7228:16)
+#170    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#171    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#172    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#173    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#174    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#175    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#176    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#177    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#178    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#179    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#180    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#181    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#182    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#183    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#184    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#185    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#186    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#187    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#188    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#189    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#190    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#191    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#192    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#193    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#194    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#195    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#196    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#197    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#198    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#199    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#200    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#201    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#202    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#203    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#204    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#205    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#206    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#207    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#208    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#209    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#210    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#211    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#212    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#213    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#214    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#215    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#216    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#217    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#218    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#219    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#220    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#221    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#222    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#223    MultiChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7228:16)
+#224    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#225    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#226    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#227    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#228    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#229    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#230    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#231    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#232    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#233    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#234    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#235    MultiChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7228:16)
+#236    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#237    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#238    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#239    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#240    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#241    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#242    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#243    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#244    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#245    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#246    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#247    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#248    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#249    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#250    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#251    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#252    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#253    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#254    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#255    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#256    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#257    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#258    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#259    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#260    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#261    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#262    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#263    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#264    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#265    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#266    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#267    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#268    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#269    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#270    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#271    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#272    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#273    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#274    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#275    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#276    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#277    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#278    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#279    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#280    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#281    ComponentElement.visitChildren (package:flutter/src/widgets/framework.dart:5874:14)
+#282    Hero._allHeroesFor.visitor (package:flutter/src/widgets/heroes.dart:326:15)
+#283    SingleChildRenderObjectElement.visitChildren (package:flutter/src/widgets/framework.dart:7104:14)
+#284    Element.visitChildElements (package:flutter/src/widgets/framework.dart:3934:5)
+#285    Hero._allHeroesFor (package:flutter/src/widgets/heroes.dart:329:13)
+#286    HeroController._startHeroTransition (package:flutter/src/widgets/heroes.dart:991:16)
+#287    HeroController._maybeStartHeroTransition.<anonymous closure> (package:flutter/src/widgets/heroes.dart:947:9)
+#288    SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1434:15)
+#289    SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1361:11)
+#290    SchedulerBinding._handleDrawFrame (package:flutter/src/scheduler/binding.dart:1200:5)
+#291    _invoke (dart:ui/hooks.dart:356:13)
+#292    PlatformDispatcher._drawFrame (dart:ui/platform_dispatcher.dart:444:5)
+#293    _drawFrame (dart:ui/hooks.dart:328:31)
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_DOWN, id[0]=0, pointerCount=1, eventTime=1195035670, downTime=1195035670, phoneEventTime=16:21:25.026 } moveCount:0
+D/VRI[MainActivity]( 4166): getMiuiFreeformStackInfo mTmpFrames.miuiFreeFormStackInfo: null
+I/PowerHalMgrImpl( 4166): perfLockAcq is supported.
+I/PowerHalWrapper( 4166): PowerHalWrapper.getInstance
+E/.reealms_mobile( 4166): legacy_receive_flag: 1
+D/.reealms_mobile( 4166): /proc/perfmgr_sbe/sbe_ioctl not exists: No such file or directory
+I/PowerHalMgrImpl( 4166): hdl:1323963, pid:4166
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_UP, id[0]=0, pointerCount=1, eventTime=1195035772, downTime=1195035670, phoneEventTime=16:21:25.128 } moveCount:9
+I/ScrollIdentify( 4166): on fling
+I/PowerHalWrapper( 4166): PowerHalWrapper.getInstance
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_DOWN, id[0]=0, pointerCount=1, eventTime=1195036579, downTime=1195036579, phoneEventTime=16:21:25.935 } moveCount:0
+D/VRI[MainActivity]( 4166): getMiuiFreeformStackInfo mTmpFrames.miuiFreeFormStackInfo: null
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_UP, id[0]=0, pointerCount=1, eventTime=1195036637, downTime=1195036579, phoneEventTime=16:21:25.993 } moveCount:0
+D/CompatChangeReporter( 4166): Compat change id reported: 351566728; UID 10674; state: ENABLED
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+I/MIUIInput( 4166): [KeyEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', KeyEvent { action=ACTION_DOWN, keyCode=KEYCODE_VOLUME_DOWN, scanCode=114, metaState=0, flags=0x8, repeatCount=0, eventTime=1195045592278000, downTime=1195045592278000, deviceId=2, source=0x101, displayId=-1 }, phoneEventTime=16:21:34.948
+I/MIUIInput( 4166): [KeyEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', KeyEvent { action=ACTION_UP, keyCode=KEYCODE_VOLUME_DOWN, scanCode=114, metaState=0, flags=0x8, repeatCount=0, eventTime=1195045726149000, downTime=1195045592278000, deviceId=2, source=0x101, displayId=-1 }, phoneEventTime=16:21:35.083
+I/flutter ( 4166): AnimePlayable: mirror-candidates-count => 11
+I/flutter ( 4166): AnimePlayable: inertia-data-page => https://filedon.4ee42e7b34bf3c2aec4681b9c17de08f.r2.cloudflarestorage.com/users/467/Complate/Domestic/Otakudesu.io_MSnS.S2--09_720p.mp4?response-content-disposition=attachment%3B%20filename%3D%22Otakudesu.io_MSnS.S2--09_720p.mp4%22&response-cache-control=public%2C%20max-age%3D3600&response-content-type=application%2Foctet-stream&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=41c0d949cad0166116cd6bdbe51a46a4%2F20260306%2FAPAC%2Fs3%2Faws4_request&X-Amz-Date=20260306T092128Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=01e1e63a8fb777b536276b95fa6e3f590491b28253ccd23b37b784f01bc4ef52
+I/flutter ( 4166): AnimePlayable: page-direct => https://filedon.4ee42e7b34bf3c2aec4681b9c17de08f.r2.cloudflarestorage.com/users/467/Complate/Domestic/Otakudesu.io_MSnS.S2--09_720p.mp4?response-content-disposition=attachment%3B%20filename%3D%22Otakudesu.io_MSnS.S2--09_720p.mp4%22&response-cache-control=public%2C%20max-age%3D3600&response-content-type=application%2Foctet-stream&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=41c0d949cad0166116cd6bdbe51a46a4%2F20260306%2FAPAC%2Fs3%2Faws4_request&X-Amz-Date=20260306T092128Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=01e1e63a8fb777b536276b95fa6e3f590491b28253ccd23b37b784f01bc4ef52
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+I/flutter ( 4166): AnimePlayable: playable-selected => fallback:https://filedon.4ee42e7b34bf3c2aec4681b9c17de08f.r2.cloudflarestorage.com/users/467/Complate/Domestic/Otakudesu.io_MSnS.S2--09_720p.mp4?response-content-disposition=attachment%3B%20filename%3D%22Otakudesu.io_MSnS.S2--09_720p.mp4%22&response-cache-control=public%2C%20max-age%3D3600&response-content-type=application%2Foctet-stream&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=41c0d949cad0166116cd6bdbe51a46a4%2F20260306%2FAPAC%2Fs3%2Faws4_request&X-Amz-Date=20260306T092128Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=01e1e63a8fb777b536276b95fa6e3f590491b28253ccd23b37b784f01bc4ef52
+I/flutter ( 4166): AnimePlayable: mirror-selected => https://filedon.4ee42e7b34bf3c2aec4681b9c17de08f.r2.cloudflarestorage.com/users/467/Complate/Domestic/Otakudesu.io_MSnS.S2--09_720p.mp4?response-content-disposition=attachment%3B%20filename%3D%22Otakudesu.io_MSnS.S2--09_720p.mp4%22&response-cache-control=public%2C%20max-age%3D3600&response-content-type=application%2Foctet-stream&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=41c0d949cad0166116cd6bdbe51a46a4%2F20260306%2FAPAC%2Fs3%2Faws4_request&X-Amz-Date=20260306T092128Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=01e1e63a8fb777b536276b95fa6e3f590491b28253ccd23b37b784f01bc4ef52
+I/ExoPlayerImpl( 4166): Init bfc468a [AndroidXMedia3/1.9.2] [rodin, 2412DPC0AG, Xiaomi, 36]
+D/BufferQueueConsumer( 4166): [](id:104600000002,api:0,p:-1,c:4166) connect: controlledByApp=true
+D/AudioSystem( 4166): onNewServiceWithAdapter: media.audio_flinger service obtained 0xb400007881a653c0
+D/AudioSystem( 4166): getService: checking for service media.audio_flinger: 0xb4000078c19ad930
+D/InsetsController( 4166): Setting requestedVisibleTypes to -16 (was -9)
+D/VRI[MainActivity]( 4166): getMiuiFreeformStackInfo mTmpFrames.miuiFreeFormStackInfo: null
+D/InsetsController( 4166): default animation onReady types: 3 controller=android.view.InsetsAnimationControlImpl@33d301d
+D/ViewRootImplStubImpl( 4166): requestedTypes: 7
+I/.reealms_mobile( 4166): AssetManager2(0xb4000078319ed138) locale list changing from [] to [in-ID]
+D/ActivityThread( 4166): Activity = com.reealms.reealms_mobile.MainActivity@b3b76c2, onConfigurationChanged = {1.0 510mcc1mnc [id_ID] ldltr sw375dp w834dp h375dp 520dpi nrml long hdr widecg land night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 2712, 1220) mAppBounds=Rect(0, 0 - 2712, 1220) mMaxBounds=Rect(0, 0 - 2712, 1220) mDisplayRotation=ROTATION_90 mWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_90 mInSplitScreen=false letterBoxed=false foScaled=false isSpecificEmbedded=false embeddingScale=1.0} as.21 s.3 fontWeightAdjustment=0/d/0 themeChanged=0 themeChangedFlags=0 display=0 extraData = Bundle[{}] screenType=0/0}
+D/VRI[MainActivity]( 4166): updateConfiguration: {1.0 510mcc1mnc [id_ID] ldltr sw375dp w834dp h375dp 520dpi nrml long hdr widecg land night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 2712, 1220) mAppBounds=Rect(0, 0 - 2712, 1220) mMaxBounds=Rect(0, 0 - 2712, 1220) mDisplayRotation=ROTATION_90 mWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_90 mInSplitScreen=false letterBoxed=false foScaled=false isSpecificEmbedded=false embeddingScale=1.0} as.21 s.3 fontWeightAdjustment=0/d/0 themeChanged=0 themeChangedFlags=0 display=0 extraData = Bundle[{}] screenType=0/0}, ViewRootImpl: android.view.ViewRootImpl@e04b707, context: com.android.internal.policy.DecorContext@f01b119
+I/ForceDarkHelperStubImpl( 4166): setViewRootImplForceDark: false for com.reealms.reealms_mobile.MainActivity@b3b76c2, reason: AppDarkModeEnable
+D/VRI[MainActivity]( 4166): vri.reportNextDraw 0 Rect(0, 0 - 2712, 1220) android.view.ViewRootImpl.handleResized:3278 android.view.ViewRootImpl.-$$Nest$mhandleResized:0 android.view.ViewRootImpl$W.resized:13762 android.app.servertransaction.WindowStateResizeItem.execute:93 android.app.servertransaction.WindowStateTransactionItem.execute:62
+D/VRI[MainActivity]( 4166): getMiuiFreeformStackInfo mTmpFrames.miuiFreeFormStackInfo: null
+D/BLASTBufferQueue( 4166): [VRI[MainActivity]#0](f:0,a:2) update width=2712 height=1220 format=-3 mTransformHint=4
+W/.reealms_mobile( 4166): Binder 0xb400007931993f00 destroyed after setInheritRt before being parceled.
+D/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:0,a:4) update width=2712 height=1220 format=4 mTransformHint=4
+D/VRI[MainActivity]( 4166): vri.Setup new sync=wmsSync-VRI[MainActivity]#4
+D/BLASTBufferQueue( 4166): [VRI[MainActivity]#0](f:0,a:3) producer disconnected before acquireNextBufferLocked
+D/VRI[MainActivity]( 4166): vri.reportDrawFinished 0 0 Rect(0, 0 - 2712, 1220)
+E/Surface ( 4166): freeAllBuffers: 1 buffers were freed while being dequeued!
+W/.reealms_mobile( 4166): Binder 0xb400007931994140 destroyed after setInheritRt before being parceled.
+D/VRI[MainActivity]( 4166): vri.reportNextDraw 0 Rect(0, 0 - 2712, 1220) android.view.ViewRootImpl.handleResized:3278 android.view.ViewRootImpl.-$$Nest$mhandleResized:0 android.view.ViewRootImpl$W.resized:13762 android.app.servertransaction.WindowStateResizeItem.execute:93 android.app.servertransaction.WindowStateTransactionItem.execute:62
+D/VRI[MainActivity]( 4166): vri.Setup new sync=wmsSync-VRI[MainActivity]#6
+D/VRI[MainActivity]( 4166): vri.reportDrawFinished 0 0 Rect(0, 0 - 2712, 1220)
+D/InsetsController( 4166): onAnimationFinish showOnFinish: false
+W/InteractionJankMonitor( 4166): Initializing without READ_DEVICE_CONFIG permission. enabled=false, interval=1, missedFrameThreshold=3, frameTimeThreshold=64, package=com.reealms.reealms_mobile
+D/InsetsAnimationCtrlImpl( 4166): notifyFinished shown: false, currentAlpha: 1,000000, currentInsets: Insets{left=0, top=0, right=0, bottom=0}
+D/InsetsController( 4166): cancelAnimation of types:3 animType:1 host:com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity invokeCallback=false
+D/InsetsController( 4166): notifyFinished. shown: false runner=android.view.InsetsAnimationControlImpl@33d301d
+D/InsetsAnimationCtrlImpl( 4166): Animation finished abruptly.
+E/BLASTBufferQueue( 4166): [e664946 SurfaceView[com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity]#1](f:1,a:5) acquireNextBufferLocked: Can't acquire next buffer. Already acquired max frames 5 max:3 + 2
+W/AudioCapabilities( 4166): Unsupported mediaType audio/iamf
+W/VideoCapabilities( 4166): Unsupported mime image/vnd.android.heic
+W/VideoCapabilities( 4166): Unsupported mime image/vnd.android.heic
+W/VideoCapabilities( 4166): Unsupported mime video/dolby-vision
+W/VideoCapabilities( 4166): Unsupported mime video/dolby-vision
+W/AudioCapabilities( 4166): Unsupported mime audio/iamf
+W/VideoCapabilities( 4166): Unsupported mime image/vnd.android.heic
+W/VideoCapabilities( 4166): Unsupported mime image/vnd.android.heic
+W/VideoCapabilities( 4166): Unsupported mime image/vnd.android.heic
+W/VideoCapabilities( 4166): Unsupported mime image/vnd.android.heic
+W/VideoCapabilities( 4166): Unsupported mime video/dolby-vision
+W/VideoCapabilities( 4166): Unsupported mime video/dolby-vision
+D/AudioSystem( 4166): onNewService: media.audio_policy service obtained 0xb4000078c19a3980
+D/AudioSystem( 4166): getService: checking for service media.audio_policy: 0xb4000078c19a3980
+I/DMCodecAdapterFactory( 4166): Creating an asynchronous MediaCodec adapter for track type video
+D/MediaCodec( 4166): CreateByComponentName: name c2.mtk.avc.decoder
+I/MediaCodec( 4166): MediaCodec::MediaCodec()
+D/CCodecBufferChannel( 4166): mBufferCountTrace=0 mIsUserLoad=1
+I/MediaCodec( 4166): init video box disabled for codec not supported
+D/MediaCodec( 4166): [0xb400007861ee3c00] init: CCodec 0xb400007781b4fa40, CCodecBufferChannel 0xb400007821a54f30
+D/MediaCodec( 4166): [0xb400007861ee3c00] setState: 1
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] setState: INITIALIZING
+D/CCodec  ( 4166): allocate(c2.mtk.avc.decoder)
+I/ApexCodecsLazy( 4166): Failed to load libcom.android.media.swcodec.apexcodecs.so: dlopen failed: library "libcom.android.media.swcodec.apexcodecs.so" not found
+I/Codec2Client( 4166): Available Codec2 services: "default" "default9" "dolby" "software"
+I/CCodec  ( 4166): setting up 'default' as default (vendor) store
+I/CCodec  ( 4166): Created component [c2.mtk.avc.decoder] for [c2.mtk.avc.decoder]
+D/CCodecBufferChannel( 4166): [0xb400007821a54f30] setComponent: mName c2.mtk.avc.decoder#427, mPipelineWatcher 0xb400007821a55428
+D/CCodecBufferChannel( 4166): PipelineWatcher debug info [c2.mtk.avc.decoder#427] enable=0
+D/CCodecConfig( 4166): read media type: video/avc
+D/ReflectedParamUpdater( 4166): extent() != 1 for single value type: algo.buffers.max-count.values
+D/ReflectedParamUpdater( 4166): extent() != 1 for single value type: output.subscribed-indices.values
+D/ReflectedParamUpdater( 4166): extent() != 1 for single value type: input.buffers.allocator-ids.values
+D/ReflectedParamUpdater( 4166): extent() != 1 for single value type: output.buffers.allocator-ids.values
+D/ReflectedParamUpdater( 4166): extent() != 1 for single value type: algo.buffers.allocator-ids.values
+D/ReflectedParamUpdater( 4166): extent() != 1 for single value type: output.buffers.pool-ids.values
+D/ReflectedParamUpdater( 4166): extent() != 1 for single value type: algo.buffers.pool-ids.values
+D/ReflectedParamUpdater( 4166): ignored struct field coded.color-format.locations
+D/CCodecConfig( 4166): ignoring local param raw.size (0xd2001800) as it is already supported
+D/CCodecConfig( 4166): ignoring local param raw.crop (0xd2001801) as it is already supported
+D/CCodecConfig( 4166): ignoring local param default.color (0x5200180b) as it is already supported
+D/CCodecConfig( 4166): ignoring local param raw.hdr-static-info (0xd200180a) as it is already supported
+I/CCodecConfig( 4166): query failed after returning 18 values (BAD_INDEX)
+D/CCodecConfig( 4166): c2 config diff is Dict {
+D/CCodecConfig( 4166):   c2::u32 algo.low-latency.value = 0
+D/CCodecConfig( 4166):   c2::i32 algo.priority.value = 1
+D/CCodecConfig( 4166):   c2::float algo.rate.value = 0
+D/CCodecConfig( 4166):   c2::float coded.frame-rate.value = 0
+D/CCodecConfig( 4166):   c2::u32 coded.pl.level = 20496
+D/CCodecConfig( 4166):   c2::u32 coded.pl.profile = 20481
+D/CCodecConfig( 4166):   c2::u32 coded.vui.color.matrix = 0
+D/CCodecConfig( 4166):   c2::u32 coded.vui.color.primaries = 0
+D/CCodecConfig( 4166):   c2::u32 coded.vui.color.range = 0
+D/CCodecConfig( 4166):   c2::u32 coded.vui.color.transfer = 0
+D/CCodecConfig( 4166):   c2::u32 default.color.matrix = 0
+D/CCodecConfig( 4166):   c2::u32 default.color.primaries = 0
+D/CCodecConfig( 4166):   c2::u32 default.color.range = 0
+D/CCodecConfig( 4166):   c2::u32 default.color.transfer = 0
+D/CCodecConfig( 4166):   c2::u32 input.buffers.max-size.value = 2097152
+D/CCodecConfig( 4166):   c2::u32 input.delay.value = 0
+D/CCodecConfig( 4166):   string input.media-type.value = "video/avc"
+D/CCodecConfig( 4166):   c2::u32 output.delay.value = 12
+D/CCodecConfig( 4166):   string output.media-type.value = "video/raw"
+D/CCodecConfig( 4166):   c2::u32 raw.color.matrix = 0
+D/CCodecConfig( 4166):   c2::u32 raw.color.primaries = 0
+D/CCodecConfig( 4166):   c2::u32 raw.color.range = 0
+D/CCodecConfig( 4166):   c2::u32 raw.color.transfer = 0
+D/CCodecConfig( 4166):   c2::u32 raw.crop.height = 239
+D/CCodecConfig( 4166):   c2::u32 raw.crop.left = 0
+D/CCodecConfig( 4166):   c2::u32 raw.crop.top = 0
+D/CCodecConfig( 4166):   c2::u32 raw.crop.width = 319
+D/CCodecConfig( 4166):   c2::float raw.hdr-static-info.master
+W/ColorUtils( 4166): expected specified color aspects (0:0:0:0)
+D/MediaCodec( 4166): [0xb400007861ee3c00] setState: 2
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] setState: INITIALIZED
+I/MediaCodec( 4166): MediaCodec will operate in async mode
+D/MediaCodec( 4166): [0xb400007861ee3c00] init: CCodec 0xb400007781b4fa40, CCodecBufferChannel 0xb400007821a54f30
+D/AppSceneRecognizer( 4166): AppUsageScene: Unspecified
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] configure: ClientName: com.reealms.reealms_mobile ComponentName: c2.mtk.avc.decoder
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] configure: ClientFormat: AMessage(what = 0x00000000) = {
+I/MediaCodec( 4166):   int32_t max-height = 720
+I/MediaCodec( 4166):   string log-session-id = "65MBTd6cykvt_xuM"
+I/MediaCodec( 4166):   int32_t importance = 1000
+I/MediaCodec( 4166):   string mime = "video/avc"
+I/MediaCodec( 4166):   int32_t priority = 0
+I/MediaCodec( 4166):   int32_t color-standard = 1
+I/MediaCodec( 4166):   Buffer csd-1 = {
+I/MediaCodec( 4166):     00000000:  00 00 00 01 68 ef 89 c8                           ....h...
+I/MediaCodec( 4166):   }
+I/MediaCodec( 4166):   int32_t color-transfer = 3
+I/MediaCodec( 4166):   int32_t max-width = 1280
+I/MediaCodec( 4166):   int32_t width = 1280
+I/MediaCodec( 4166):   int32_t color-range = 2
+I/MediaCodec( 4166):   float frame-rate = 24.000000
+I/MediaCodec( 4166):   int32_t rotation-degrees = 0
+I/MediaCodec( 4166):   int32_t max-input-size = 164305
+I/MediaCodec( 4166):   int32_t height = 720
+I/MediaCodec( 4166):   Buffer csd-0 = {
+I/MediaCodec( 4166):     00000000:  00 00 00 01 67 4d 40 1f  ec a0 28 02 dd 80 b5 01  ....gM@...(.....
+I/MediaCodec( 4166):     00000010:  01 01 40 00 00 03 00 40  00 af c8 03 c6 0c 65 80  ..@....@......e.
+I/MediaCodec( 4166):   }
+I/MediaCodec( 4166): }
+E/MediaCodec( 4166): Media Quality Service not found.
+I/MediaCodec( 4166): MediaStub sendFrameRate
+V/MediaStub( 4166): Loading library from path: libmediaimpl.so
+V/MediaStub( 4166): MediaStub::GetImplInstance created instance 0xb4000077e1a05eb0
+D/MediaImpl( 4166): MediaImpl::sendFrameRate: 24
+I/MediaCodec( 4166): MediaStub sendWidth/sendHeight
+I/MediaCodec( 4166): MediaStub sendMine
+D/MediaImpl( 4166): MediaImpl::sendMine: video/avc
+D/MediaStub( 4166): MediaStub::sendMine video/avc
+I/MediaCodec( 4166): MediaStub sendDolbyVision
+I/MediaCodec( 4166): MediaStub sendPackageName
+D/MediaImpl( 4166): MediaImpl::sendPackageName: com.reealms.reealms_mobile
+D/MediaStub( 4166): MediaStub::sendPackageName com.reealms.reealms_mobile
+I/MiMediaCodec( 4166): fps video to display enabled
+I/MiMediaCodec( 4166): The Fps from player is 24.000000  frameRateFloat 24.000000 frameRateInt -1
+D/.reealms_mobile( 4166): VideoServiceClientImpl::reportCodecStatus
+I/MediaCodec( 4166): configure : init video box disabled
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] connectToSurface: surface 0xb400007821a59600, mSurface 0x0
+D/MediaCodec( 4166): [0xb400007861ee3c00] [c2.mtk.avc.decoder] connectToSurface: surface 0xb400007821a59600, mSurface 0x0
+D/SurfaceUtils( 4166): connecting to surface 0xb400007821a59610, reason connectToSurface
+I/MediaCodec( 4166): [c2.mtk.avc.decoder] setting surface generation to 4265985
+D/SurfaceUtils( 4166): disconnecting from surface 0xb400007821a59610, reason connectToSurface(reconnect)
+D/SurfaceUtils( 4166): connecting to surface 0xb400007821a59600, reason connectToSurface(reconnect-with-listener)
+W/.reealms_mobile( 4166): Binder 0xb4000079319d4ac0 destroyed after setInheritRt before being parceled.
+D/MediaCodec( 4166): [0xb400007861ee3c00] setState: 3
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] setState: CONFIGURING
+D/MediaCodec( 4166): [c2.mtk.avc.decoder] config set c2 sleep timeout 1500 kC2SleepTimeoutMs=1500
+D/CCodec  ( 4166): [c2.mtk.avc.decoder] buffers are bound to CCodec for this session
+D/CCodecConfig( 4166): no c2 equivalents for log-session-id
+D/CCodecConfig( 4166): no c2 equivalents for importance
+D/CCodecConfig( 4166): no c2 equivalents for color-standard
+D/CCodecConfig( 4166): no c2 equivalents for csd-1
+D/CCodecConfig( 4166): no c2 equivalents for native-window
+D/CCodecConfig( 4166): no c2 equivalents for native-window-generation
+D/CCodecConfig( 4166): no c2 equivalents for flags
+D/ReflectedParamUpdater( 4166): input.size.height found, but param #-771735520 isn't present to update
+D/ReflectedParamUpdater( 4166): input.size.width found, but param #-771735520 isn't present to update
+D/CCodecConfig( 4166): c2 config diff is   c2::i32 algo.priority.value = 0
+D/CCodecConfig( 4166):   c2::float coded.frame-rate.value = 24
+D/CCodecConfig( 4166):   c2::u32 default.color.matrix = 1
+D/CCodecConfig( 4166):   c2::u32 default.color.primaries = 1
+D/CCodecConfig( 4166):   c2::u32 default.color.range = 2
+D/CCodecConfig( 4166):   c2::u32 default.color.transfer = 3
+D/CCodecConfig( 4166):   c2::u32 input.buffers.max-size.value = 2094080
+D/CCodecConfig( 4166):   c2::u32 raw.max-size.height = 720
+D/CCodecConfig( 4166):   c2::u32 raw.max-size.width = 1280
+D/CCodecConfig( 4166):   c2::u32 raw.pixel-format.value = 34
+D/CCodecConfig( 4166):   c2::u32 raw.size.height = 720
+D/CCodecConfig( 4166):   c2::u32 raw.size.width = 1280
+D/CCodecConfig( 4166):   c2::u32 vendor.mtk.vdec.buffer.fetch.timeout.ms.value = 1500
+D/CCodec  ( 4166): client requested max input size 164305, which is smaller than what component recommended (2094080); overriding with component recommendation.
+W/CCodec  ( 4166): This behavior is subject to change. It is recommended that app developers double check whether the requested max input size is in reasonable range.
+D/CCodec  ( 4166): encoding statistics level = 0
+D/CCodec  ( 4166): setup formats input: AMessage(what = 0x00000000) = {
+D/CCodec  ( 4166):   string mime = "video/avc"
+D/CCodec  ( 4166):   int32_t width = 1280
+D/CCodec  ( 4166):   int32_t profile = 65536
+D/CCodec  ( 4166):   int32_t priority = 0
+D/CCodec  ( 4166):   int32_t frame-rate = 24
+D/CCodec  ( 4166):   int32_t height = 720
+D/CCodec  ( 4166):   int32_t level = 65536
+D/CCodec  ( 4166):   int32_t max-input-size = 2094080
+D/CCodec  ( 4166):   Rect crop(0, 0, 318, 238)
+D/CCodec  ( 4166): }
+D/CCodec  ( 4166): setup formats output: AMessage(what = 0x00000000) = {
+D/CCodec  ( 4166):   int32_t android._color-format = 2130708361
+D/CCodec  ( 4166):   int32_t android._video-scaling = 1
+D/CCodec  ( 4166):   int32_t sar-width = 1
+D/CCodec  ( 4166):   int32_t color-standard = 4
+D/CCodec  ( 4166):   int32_t color-range = 2
+D/CCodec  ( 4166):   int32_t color-transfer = 3
+D/CCodec  ( 4166):   int32_t sar-height = 1
+D/CCodec  ( 4166):   int32_t width = 1280
+D/CCodec  ( 4166):   int32_t priority = 0
+D/CCodec  ( 4166):   int32_t rotation-degrees = 0
+D/CCodec  ( 4166):   int32_t max-height = 720
+D/CCodec  ( 4166):   int32_t height = 720
+D/CCodec  ( 4166):   string mime = "video/raw"
+D/CCodec  ( 4166):   int32_t max-width = 1280
+D/CCodec  ( 4166):   Rect crop(0, 0, 318, 238)
+D/CCodec  ( 4166):   Buffer hdr-static-info = {
+D/CCodec  ( 4166):     00000000:  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+D/CCodec  ( 4166):     00000010:  00 00 00 00 00 00 00 00  00                       .........
+D/CCodec  ( 4166):   }
+D/CCodec  ( 4166):   int32_t frame-rate = 24
+D/CCodec  ( 4166):   int32_t android._dataspace = 259
+D/CCodec  ( 4166):   int32_t color-format = 2130708361
+D/CCodec  ( 4166): }
+I/CCodecConfig( 4166): query failed after returning 19 values (BAD_INDEX)
+D/CCodecConfig( 4166): c2 config diff is   c2::u32 raw.color.matrix = 1
+D/CCodecConfig( 4166):   c2::u32 raw.color.primaries = 1
+D/CCodecConfig( 4166):   c2::u32 raw.color.range = 2
+D/CCodecConfig( 4166):   c2::u32 raw.color.transfer = 3
+E/.reealms_mobile( 4166): Failed to query component interface for required system resources: 6
+D/MediaCodec( 4166): [0xb400007861ee3c00] setState: 4
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] setState: CONFIGURED
+W/libc    ( 4166): Access denied finding property "vendor.mm.loading.state"
+D/CCodecConfig( 4166): no recognized params in: Dict {
+D/CCodecConfig( 4166): }
+D/MediaCodec( 4166): keep callback message for reclaim
+D/MediaCodec( 4166): [0xb400007861ee3c00] setState: 5
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] setState: STARTING
+D/C2Store ( 4166): Using DMABUF Heaps
+D/CCodecBufferChannel( 4166): [c2.mtk.avc.decoder#427] Created input block pool with allocatorID 16 => poolID 17 - OK (0)
+I/CCodecBufferChannel( 4166): [mId: 0] [video-debug-dec] start: inputFormat: AMessage(what = 0x00000000) = {
+I/CCodecBufferChannel( 4166):   string mime = "video/avc"
+I/CCodecBufferChannel( 4166):   int32_t width = 1280
+I/CCodecBufferChannel( 4166):   int32_t profile = 65536
+I/CCodecBufferChannel( 4166):   int32_t priority = 0
+I/CCodecBufferChannel( 4166):   int32_t frame-rate = 24
+I/CCodecBufferChannel( 4166):   int32_t height = 720
+I/CCodecBufferChannel( 4166):   int32_t level = 65536
+I/CCodecBufferChannel( 4166):   int32_t max-input-size = 2094080
+I/CCodecBufferChannel( 4166):   Rect crop(0, 0, 318, 238)
+I/CCodecBufferChannel( 4166): }
+D/CCodecBufferChannel( 4166): [c2.mtk.avc.decoder#427] Query output surface allocator returned 0 params => BAD_INDEX (6)
+D/Codec2Client( 4166): GraphicBufferAllocator created
+I/CCodecBufferChannel( 4166): [c2.mtk.avc.decoder#427] Created output block pool with allocatorID 18 => poolID 8884 - OK
+D/CCodecBufferChannel( 4166): [c2.mtk.avc.decoder#427] Configured output block pool ids 8884 => OK
+D/CCodecBufferChannel( 4166): [0xb400007821a54f30] [c2.mtk.avc.decoder#427] start: output->outputDelay 12, output->numSlots 16
+I/CCodecBufferChannel( 4166): [mId: 0] [video-debug-dec] start: outputFormat: AMessage(what = 0x00000000) = {
+I/CCodecBufferChannel( 4166):   int32_t android._color-format = 2130708361
+I/CCodecBufferChannel( 4166):   int32_t android._video-scaling = 1
+I/CCodecBufferChannel( 4166):   int32_t sar-width = 1
+I/CCodecBufferChannel( 4166):   int32_t color-standard = 1
+I/CCodecBufferChannel( 4166):   int32_t color-range = 2
+I/CCodecBufferChannel( 4166):   int32_t color-transfer = 3
+I/CCodecBufferChannel( 4166):   int32_t sar-height = 1
+I/CCodecBufferChannel( 4166):   int32_t width = 1280
+I/CCodecBufferChannel( 4166):   int32_t priority = 0
+I/CCodecBufferChannel( 4166):   int32_t rotation-degrees = 0
+I/CCodecBufferChannel( 4166):   int32_t max-height = 720
+I/CCodecBufferChannel( 4166):   int32_t height = 720
+I/CCodecBufferChannel( 4166):   string mime = "video/raw"
+I/CCodecBufferChannel( 4166):   int32_t max-width = 1280
+I/CCodecBufferChannel( 4166):   Rect crop(0, 0, 318, 238)
+I/CCodecBufferChannel( 4166):   Buffer hdr-static-info = {
+I/CCodecBufferChannel( 4166):     00000000:  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+I/CCodecBufferChannel( 4166):     00000010:  00 00 00 00 00 00 00 00  00                       .........
+I/CCodecBufferChannel( 4166):   }
+I/CCodecBufferChannel( 4166):   int32_t frame-rate = 24
+I/CCodecBufferChannel( 4166):   int32_t android._dataspace = 260
+I/CCodecBufferChannel( 4166):   int32_t color-format = 2130708361
+I/CCodecBufferChannel( 4166): }
+D/GraphicsTracker( 4166): new surface in configuration: maxDequeueRequested(0), maxDequeueCommitted(3)
+D/GraphicsTracker( 4166): new surface configured with id:17892833755138 gen:4265985 maxDequeue:3
+D/GraphicsTracker( 4166): maxDequeueCount committed to IGBP: 19
+D/GraphicsTracker( 4166): Cache size 0 -> 0: maybe_cleared(0), dequeued(0)
+D/GraphicsTracker( 4166): maxDqueueCount change 3 -> 19: pending: 0
+D/Codec2Client( 4166): setOutputSurface -- generation=4265985 consumer usage=0x900
+I/DMABUFHEAPS( 4166): Using DMA-BUF heap named: mtk_mm
+D/MediaCodec( 4166): [0xb400007861ee3c00] setState: 6
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] setState: STARTED
+D/CCodecBufferChannel( 4166): The csd Sample queue
+D/CCodecBufferChannel( 4166): [c2.mtk.avc.decoder#427] send inputSlots num:4 to codec
+I/DMCodecAdapterFactory( 4166): Creating an asynchronous MediaCodec adapter for track type audio
+D/MediaCodec( 4166): CreateByComponentName: name c2.android.aac.decoder
+W/.reealms_mobile( 4166): AIBinder_linkToDeath is being called with a non-null cookie and no onUnlink callback set. This might not be intended. AIBinder_DeathRecipient_setOnUnlinked should be called first.
+I/MediaCodec( 4166): MediaCodec::MediaCodec()
+D/CCodecBufferChannel( 4166): mBufferCountTrace=0 mIsUserLoad=1
+I/MediaCodec( 4166): init video box disabled for codec not supported
+D/MediaCodec( 4166): [0xb400007861f014d0] init: CCodec 0xb400007781b11c80, CCodecBufferChannel 0xb400007821a56280
+D/MediaCodec( 4166): [0xb400007861f014d0] setState: 1
+I/MediaCodec( 4166): [mId: 1] [audio-debug-dec] setState: INITIALIZING
+D/CCodec  ( 4166): allocate(c2.android.aac.decoder)
+I/MiMediaCodec( 4166): send fps to display with mFpsFromPlayer:24.000000 state:1 id:0
+I/CCodec  ( 4166): setting up 'default' as default (vendor) store
+D/BatteryNotifier( 4166): Batteryhandler init with status: 0
+D/CCodecBufferChannel( 4166): The csd Sample queue
+D/CCodecConfig( 4166): c2 config diff is   c2::u32 input.delay.value = 4
+D/CCodecConfig( 4166):   c2::u32 output.delay.value = 16
+D/GraphicsTracker( 4166): maxDequeueCount committed to IGBP: 23
+D/GraphicsTracker( 4166): Cache size 1 -> 1: maybe_cleared(0), dequeued(0)
+D/GraphicsTracker( 4166): maxDqueueCount change 19 -> 23: pending: 0
+D/CCodecBufferChannel( 4166): [c2.mtk.avc.decoder#427] Ignoring stale input buffer done callback: last flush index = 0, frameIndex = 0
+W/.reealms_mobile( 4166): AIBinder_linkToDeath is being called with a non-null cookie and no onUnlink callback set. This might not be intended. AIBinder_DeathRecipient_setOnUnlinked should be called first.
+I/CCodec  ( 4166): Created component [c2.android.aac.decoder] for [c2.android.aac.decoder]
+D/CCodecBufferChannel( 4166): [0xb400007821a56280] setComponent: mName c2.android.aac.decoder#602, mPipelineWatcher 0xb400007821a56778
+D/CCodecBufferChannel( 4166): PipelineWatcher debug info [c2.android.aac.decoder#602] enable=0
+D/CCodecConfig( 4166): read media type: audio/mp4a-latm
+D/ReflectedParamUpdater( 4166): extent() != 1 for single value type: algo.buffers.max-count.values
+D/ReflectedParamUpdater( 4166): extent() != 1 for single value type: output.subscribed-indices.values
+D/ReflectedParamUpdater( 4166): extent() != 1 for single value type: input.buffers.allocator-ids.values
+D/ReflectedParamUpdater( 4166): extent() != 1 for single value type: output.buffers.allocator-ids.values
+D/ReflectedParamUpdater( 4166): extent() != 1 for single value type: algo.buffers.allocator-ids.values
+D/ReflectedParamUpdater( 4166): extent() != 1 for single value type: output.buffers.pool-ids.values
+D/ReflectedParamUpdater( 4166): extent() != 1 for single value type: algo.buffers.pool-ids.values
+I/CCodecConfig( 4166): query failed after returning 21 values (BAD_INDEX)
+D/CCodecConfig( 4166): c2 config diff is Dict {
+D/CCodecConfig( 4166):   c2::u32 coded.aac-packaging.value = 0
+D/CCodecConfig( 4166):   c2::u32 coded.bitrate.value = 64000
+D/CCodecConfig( 4166):   c2::u32 coded.pl.level = 0
+D/CCodecConfig( 4166):   c2::u32 coded.pl.profile = 8192
+D/CCodecConfig( 4166):   c2::i32 coding.drc.album-mode.value = 0
+D/CCodecConfig( 4166):   c2::float coding.drc.attenuation-factor.value = 1
+D/CCodecConfig( 4166):   c2::float coding.drc.boost-factor.value = 1
+D/CCodecConfig( 4166):   c2::i32 coding.drc.compression-mode.value = 3
+D/CCodecConfig( 4166):   c2::i32 coding.drc.effect-type.value = 3
+D/CCodecConfig( 4166):   c2::float coding.drc.encoded-level.value = 0.25
+D/CCodecConfig( 4166):   c2::float coding.drc.reference-level.value = -16
+D/CCodecConfig( 4166):   c2::u32 input.buffers.max-size.value = 8192
+D/CCodecConfig( 4166):   c2::u32 input.delay.value = 0
+D/CCodecConfig( 4166):   string input.media-type.value = "audio/mp4a-latm"
+D/CCodecConfig( 4166):   c2::u32 output.delay.value = 2
+D/CCodecConfig( 4166):   c2::float output.drc.output-loudness.value = 0.25
+D/CCodecConfig( 4166):   c2::u32 output.large-frame.max-size = 0
+D/CCodecConfig( 4166):   c2::u32 output.large-frame.threshold-size = 0
+D/CCodecConfig( 4166):   string output.media-type.value = "audio/raw"
+D/CCodecConfig( 4166):   c2::u32 raw.channel-count.value = 1
+D/CCodecConfig( 4166):   c2::u32 raw.channel-mask.value = 0
+D/CCodecConfig( 4166):   c2::u32 raw.max-channel-count.value = 8
+D/CCodecConfig( 4166):   c2::u32 raw.sample-rate.value = 44100
+D/CCodecConfig( 4166): }
+D/MediaCodec( 4166): [0xb400007861f014d0] setState: 2
+I/MediaCodec( 4166): [mId: 1] [audio-debug-dec] setState: INITIALIZED
+I/MediaCodec( 4166): MediaCodec will operate in async mode
+D/MediaCodec( 4166): [0xb400007861f014d0] init: CCodec 0xb400007781b11c80, CCodecBufferChannel 0xb400007821a56280
+I/MediaCodec( 4166): [mId: 1] [audio-debug-dec] configure: ClientName: com.reealms.reealms_mobile ComponentName: c2.android.aac.decoder
+I/MediaCodec( 4166): [mId: 1] [audio-debug-dec] configure: ClientFormat: AMessage(what = 0x00000000) = {
+I/MediaCodec( 4166):   float operating-rate = 48000.000000
+I/MediaCodec( 4166):   string log-session-id = "65MBTd6cykvt_xuM"
+I/MediaCodec( 4166):   int32_t sample-rate = 48000
+I/MediaCodec( 4166):   int32_t importance = 1000
+I/MediaCodec( 4166):   string mime = "audio/mp4a-latm"
+I/MediaCodec( 4166):   int32_t channel-count = 2
+I/MediaCodec( 4166):   int32_t priority = 0
+I/MediaCodec( 4166):   int32_t max-output-channel-count = 99
+I/MediaCodec( 4166):   int32_t max-input-size = 1276
+I/MediaCodec( 4166):   Buffer csd-0 = {
+I/MediaCodec( 4166):     00000000:  11 90 56 e5 00                                    ..V..
+I/MediaCodec( 4166):   }
+I/MediaCodec( 4166): }
+E/MediaCodec( 4166): Media Quality Service not found.
+I/MediaCodec( 4166): configure : init video box disabled
+D/MediaCodec( 4166): [0xb400007861f014d0] setState: 3
+I/MediaCodec( 4166): [mId: 1] [audio-debug-dec] setState: CONFIGURING
+D/CCodec  ( 4166): [c2.android.aac.decoder] buffers are bound to CCodec for this session
+D/CCodecConfig( 4166): no c2 equivalents for log-session-id
+D/CCodecConfig( 4166): no c2 equivalents for importance
+D/CCodecConfig( 4166): no c2 equivalents for flags
+D/CCodecConfig( 4166): c2 config diff is   c2::u32 raw.channel-count.value = 2
+D/CCodecConfig( 4166):   c2::u32 raw.sample-rate.value = 48000
+D/CCodec  ( 4166): client requested max input size 1276, which is smaller than what component recommended (8192); overriding with component recommendation.
+W/CCodec  ( 4166): This behavior is subject to change. It is recommended that app developers double check whether the requested max input size is in reasonable range.
+D/CCodec  ( 4166): encoding statistics level = 0
+D/CCodec  ( 4166): setup formats input: AMessage(what = 0x00000000) = {
+D/CCodec  ( 4166):   int32_t aac-drc-album-mode = 0
+D/CCodec  ( 4166):   int32_t aac-drc-boost-level = 127
+D/CCodec  ( 4166):   int32_t aac-drc-cut-level = 127
+D/CCodec  ( 4166):   int32_t aac-drc-effect-type = 3
+D/CCodec  ( 4166):   int32_t aac-encoded-target-level = -1
+D/CCodec  ( 4166):   int32_t aac-max-output-channel_count = 8
+D/CCodec  ( 4166):   int32_t aac-target-ref-level = 64
+D/CCodec  ( 4166):   int32_t bitrate = 64000
+D/CCodec  ( 4166):   int32_t channel-count = 2
+D/CCodec  ( 4166):   int32_t channel-mask = 0
+D/CCodec  ( 4166):   int32_t level = 0
+D/CCodec  ( 4166):   int32_t max-input-size = 8192
+D/CCodec  ( 4166):   int32_t max-output-channel-count = 8
+D/CCodec  ( 4166):   string mime = "audio/mp4a-latm"
+D/CCodec  ( 4166):   int32_t profile = 2
+D/CCodec  ( 4166):   int32_t sample-rate = 48000
+D/CCodec  ( 4166): }
+D/CCodec  ( 4166): setup formats output: AMessage(what = 0x00000000) = {
+D/CCodec  ( 4166):   int32_t aac-drc-album-mode = 0
+D/CCodec  ( 4166):   int32_t aac-drc-boost-level = 127
+D/CCodec  ( 4166):   int32_t aac-drc-cut-level = 127
+D/CCodec  ( 4166):   int32_t aac-drc-effect-type = 3
+D/CCodec  ( 4166):   int32_t aac-drc-output-loudness = -1
+D/CCodec  ( 4166):   int32_t aac-encoded-target-level = -1
+D/CCodec  ( 4166):   int32_t aac-max-output-channel_count = 8
+D/CCodec  ( 4166):   int32_t aac-target-ref-level = 64
+D/CCodec  ( 4166):   int32_t buffer-batch-max-output-size = 0
+D/CCodec  ( 4166):   int32_t buffer-batch-threshold-output-size = 0
+D/CCodec  ( 4166):   int32_t channel-count = 2
+D/CCodec  ( 4166):   int32_t channel-mask = 0
+D/CCodec  ( 4166):   int32_t max-output-channel-count = 8
+D/CCodec  ( 4166):   string mime = "audio/raw"
+D/CCodec  ( 4166):   int32_t sample-rate = 48000
+D/CCodec  ( 4166):   int32_t android._config-pcm-encoding = 2
+D/CCodec  ( 4166): }
+I/CCodecConfig( 4166): query failed after returning 21 values (BAD_INDEX)
+E/.reealms_mobile( 4166): Failed to query component interface for required system resources: 6
+D/MediaCodec( 4166): [0xb400007861f014d0] setState: 4
+I/MediaCodec( 4166): [mId: 1] [audio-debug-dec] setState: CONFIGURED
+D/MediaCodec( 4166): keep callback message for reclaim
+D/MediaCodec( 4166): [0xb400007861f014d0] setState: 5
+I/MediaCodec( 4166): [mId: 1] [audio-debug-dec] setState: STARTING
+D/CCodecBufferChannel( 4166): [c2.android.aac.decoder#602] Created input block pool with allocatorID 16 => poolID 18 - OK (0)
+I/CCodecBufferChannel( 4166): [mId: 1] [audio-debug-dec] start: inputFormat: AMessage(what = 0x00000000) = {
+I/CCodecBufferChannel( 4166):   int32_t aac-drc-album-mode = 0
+I/CCodecBufferChannel( 4166):   int32_t aac-drc-boost-level = 127
+I/CCodecBufferChannel( 4166):   int32_t aac-drc-cut-level = 127
+I/CCodecBufferChannel( 4166):   int32_t aac-drc-effect-type = 3
+I/CCodecBufferChannel( 4166):   int32_t aac-encoded-target-level = -1
+I/CCodecBufferChannel( 4166):   int32_t aac-max-output-channel_count = 8
+I/CCodecBufferChannel( 4166):   int32_t aac-target-ref-level = 64
+I/CCodecBufferChannel( 4166):   int32_t bitrate = 64000
+I/CCodecBufferChannel( 4166):   int32_t channel-count = 2
+I/CCodecBufferChannel( 4166):   int32_t channel-mask = 0
+I/CCodecBufferChannel( 4166):   int32_t level = 0
+I/CCodecBufferChannel( 4166):   int32_t max-input-size = 8192
+I/CCodecBufferChannel( 4166):   int32_t max-output-channel-count = 8
+I/CCodecBufferChannel( 4166):   string mime = "audio/mp4a-latm"
+I/CCodecBufferChannel( 4166):   int32_t profile = 2
+I/CCodecBufferChannel( 4166):   int32_t sample-rate = 48000
+I/CCodecBufferChannel( 4166): }
+I/CCodecBufferChannel( 4166): [c2.android.aac.decoder#602] Created output block pool with allocatorID 16 => poolID 20849 - OK
+D/CCodecBufferChannel( 4166): [c2.android.aac.decoder#602] Configured output block pool ids 20849 => OK
+D/CCodecBufferChannel( 4166): [0xb400007821a56280] [c2.android.aac.decoder#602] start: output->outputDelay 2, output->numSlots 6
+I/CCodecBufferChannel( 4166): [mId: 1] [audio-debug-dec] start: outputFormat: AMessage(what = 0x00000000) = {
+I/CCodecBufferChannel( 4166):   int32_t aac-drc-album-mode = 0
+I/CCodecBufferChannel( 4166):   int32_t aac-drc-boost-level = 127
+I/CCodecBufferChannel( 4166):   int32_t aac-drc-cut-level = 127
+I/CCodecBufferChannel( 4166):   int32_t aac-drc-effect-type = 3
+I/CCodecBufferChannel( 4166):   int32_t aac-drc-output-loudness = -1
+I/CCodecBufferChannel( 4166):   int32_t aac-encoded-target-level = -1
+I/CCodecBufferChannel( 4166):   int32_t aac-max-output-channel_count = 8
+I/CCodecBufferChannel( 4166):   int32_t aac-target-ref-level = 64
+I/CCodecBufferChannel( 4166):   int32_t buffer-batch-max-output-size = 0
+I/CCodecBufferChannel( 4166):   int32_t buffer-batch-threshold-output-size = 0
+I/CCodecBufferChannel( 4166):   int32_t channel-count = 2
+I/CCodecBufferChannel( 4166):   int32_t channel-mask = 0
+I/CCodecBufferChannel( 4166):   int32_t max-output-channel-count = 8
+I/CCodecBufferChannel( 4166):   string mime = "audio/raw"
+I/CCodecBufferChannel( 4166):   int32_t sample-rate = 48000
+I/CCodecBufferChannel( 4166):   int32_t android._config-pcm-encoding = 2
+I/CCodecBufferChannel( 4166): }
+D/CCodecBuffers( 4166): [c2.android.aac.decoder#602:1D-Output.Impl[N]] converted 0 buffers to array mode of 6
+D/MediaCodec( 4166): [0xb400007861f014d0] setState: 6
+I/MediaCodec( 4166): [mId: 1] [audio-debug-dec] setState: STARTED
+D/CCodecBufferChannel( 4166): The csd Sample queue
+W/.reealms_mobile( 4166): AIBinder_linkToDeath is being called with a non-null cookie and no onUnlink callback set. This might not be intended. AIBinder_DeathRecipient_setOnUnlinked should be called first.
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] queueInputBuffer: index: 2 pts: 1000000000000 timediff: 0
+D/CCodecBufferChannel( 4166): [c2.mtk.avc.decoder#427] send inputSlots num:8 to codec
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] queueInputBuffer: index: 3 pts: 1000000166666 timediff: 3
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] queueInputBuffer: index: 4 pts: 1000000083333 timediff: 1
+D/CCodecConfig( 4166): c2 config diff is   c2::u32 raw.crop.height = 720
+D/CCodecConfig( 4166):   c2::u32 raw.crop.width = 1280
+D/CCodecConfig( 4166):   c2::u32 raw.pixel-format.value = 2130706448
+D/CCodecBuffers( 4166): [c2.mtk.avc.decoder#427:2D-Output] popFromStashAndRegister: at 1000000000000us, output format changed to AMessage(what = 0x00000000) = {
+D/CCodecBuffers( 4166):   int32_t android._color-format = 2130706448
+D/CCodecBuffers( 4166):   int32_t android._video-scaling = 1
+D/CCodecBuffers( 4166):   int32_t sar-width = 1
+D/CCodecBuffers( 4166):   int32_t color-standard = 1
+D/CCodecBuffers( 4166):   int32_t color-range = 2
+D/CCodecBuffers( 4166):   int32_t color-transfer = 3
+D/CCodecBuffers( 4166):   int32_t sar-height = 1
+D/CCodecBuffers( 4166):   int32_t width = 1280
+D/CCodecBuffers( 4166):   int32_t priority = 0
+D/CCodecBuffers( 4166):   int32_t rotation-degrees = 0
+D/CCodecBuffers( 4166):   int32_t max-height = 720
+D/CCodecBuffers( 4166):   int32_t height = 720
+D/CCodecBuffers( 4166):   string mime = "video/raw"
+D/CCodecBuffers( 4166):   int32_t max-width = 1280
+D/CCodecBuffers( 4166):   Rect crop(0, 0, 1279, 719)
+D/CCodecBuffers( 4166):   Buffer hdr-static-info = {
+D/CCodecBuffers( 4166):     00000000:  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  ................
+D/CCodecBuffers( 4166):     00000010:  00 00 00 00 00 00 00 00  00                       .........
+D/CCodecBuffers( 4166):   }
+D/CCodecBuffers( 4166):   int32_t frame-rate = 24
+D/CCodecBuffers( 4166):   int32_t android._dataspace = 260
+D/CCodecBuffers( 4166):   int32_t color-format = 2130708361
+D/CCodecBuffers( 4166): }
+I/MediaCodec( 4166): isHDR: standard =1,transfer = 3
+I/MediaCodec( 4166): [mId: 1] [audio-debug-dec] queueInputBuffer: index: 1 pts: 1000000000000 timediff: 0
+I/MediaCodec( 4166): [mId: 1] [audio-debug-dec] queueInputBuffer: index: 2 pts: 1000000021333 timediff: 1
+I/MediaCodec( 4166): [mId: 1] [audio-debug-dec] queueInputBuffer: index: 3 pts: 1000000042666 timediff: 2
+D/CCodecConfig( 4166): c2 config diff is   c2::u32 raw.channel-mask.value = 12
+D/CCodecBuffers( 4166): [c2.android.aac.decoder#602:Output[N]] popFromStashAndRegister: at 1000000000000us, output format changed to AMessage(what = 0x00000000) = {
+D/CCodecBuffers( 4166):   int32_t aac-drc-album-mode = 0
+D/CCodecBuffers( 4166):   int32_t aac-drc-boost-level = 127
+D/CCodecBuffers( 4166):   int32_t aac-drc-cut-level = 127
+D/CCodecBuffers( 4166):   int32_t aac-drc-effect-type = 3
+D/CCodecBuffers( 4166):   int32_t aac-drc-output-loudness = -1
+D/CCodecBuffers( 4166):   int32_t aac-encoded-target-level = -1
+D/CCodecBuffers( 4166):   int32_t aac-max-output-channel_count = 8
+D/CCodecBuffers( 4166):   int32_t aac-target-ref-level = 64
+D/CCodecBuffers( 4166):   int32_t buffer-batch-max-output-size = 0
+D/CCodecBuffers( 4166):   int32_t buffer-batch-threshold-output-size = 0
+D/CCodecBuffers( 4166):   int32_t channel-count = 2
+D/CCodecBuffers( 4166):   int32_t channel-mask = 12
+D/CCodecBuffers( 4166):   int32_t max-output-channel-count = 8
+D/CCodecBuffers( 4166):   string mime = "audio/raw"
+D/CCodecBuffers( 4166):   int32_t sample-rate = 48000
+D/CCodecBuffers( 4166):   int32_t android._config-pcm-encoding = 2
+D/CCodecBuffers( 4166): }
+I/MediaCodec( 4166): isHDR: standard =0,transfer = 0
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] onReleaseOutputBuffer index 0 pts: 1000000000000 ptsdiff: 1000000000000 timediff: 1195066891 render: 1
+D/CCodecBufferChannel( 4166): [c2.mtk.avc.decoder#427] first render dataSpace=260
+D/AudioTrack( 4166): getMinFrameCount(): getMinFrameCount = 4100: afFrameCount = 2048, afSampleRate = 48000, afLatency = 128
+E/AudioTrack( 4166): Failed to load XML file: odm/etc/audio/audio_lowpower_app_list.xml
+D/AudioTrack( 4166): INSP: type=audio,case=1,set=0xb400007821a568f0,stream_type=-1,sample_rate=48000,format=0x1,channel_mask=0x3,frame_count=16400,flags=0x0,notification_frames=0,session_id=113033,transfer_type=3,uid=10674,pid=4166
+D/AudioTrack( 4166): INSP: type=audio,case=1,attributes=1,content_type=3,usage=1,source=-1,flags=0xa00
+I/AudioTrackImpl( 4166): initAudioTrackImpl()
+D/AudioTrack( 4166): set(): (sessionId=113033), mcallback is 1, streamType -1, sampleRate 48000, format 0x1, channelMask 0x3, frameCount 16400, flags 0, notificationFrames 0,transferType 3, mClientAttributionSource AttributionSourceState{pid: 4166, uid: 10674, deviceId: 0, packageName: com.reealms.reealms_mobile, attributionTag: (null), token: binder:0xb4000079319ce9f0, renouncedPermissions: [], next: []}
+D/AudioTrack( 4166): set(): Building AudioTrack with attributes: usage = 1, content = 3, flags = 0xa00, tags = []
+D/AudioTrack( 4166): set(): 0xb400007821a568f0, Create AudioTrackThread, tid = 11763
+D/AudioTrack( 4166): 0xb400007821a568f0 adjust notify for com.reealms.reealms_mobile from 0 to 2048.
+D/AudioTrack( 4166): createTrack_l(21451): 0xb400007821a568f0, mCblk = 0x7750582000, mLatency = 469, mAfLatency = 128, frameCount = 16400, mSampleRate = 48000, mFlags = 0x8, mReqFrameCount = 16400, mNotificationFramesAct = 2048
+I/.reealms_mobile( 4166): hiddenapi: Accessing hidden method Landroid/media/AudioTrack;->getLatency()I (runtime_flags=0, domain=platform, api=unsupported) from Landroidx/media3/exoplayer/audio/AudioTrackPositionTracker; (domain=app, TargetSdkVersion=36) using reflection: allowed
+D/android.media.AudioTrack( 4166): setStereoVolume setParameters is 1.0, rightVolume is 1.0, isMuted is false, mIsLastMute is false, mNeedNotifyedNative is true
+D/AudioTrackImpl( 4166): setMediaSetMute(21451): Parameter media_set_track_muted is 0 return
+I/AudioTrackImpl( 4166): before scaleVolumeForVideo L:1.000000 R:1.000000 and the pakage is com.reealms.reealms_mobile
+D/AudioTrack( 4166): AudioTrack::setVolume L:1.000000 R:1.000000 sessionid=113033
+D/BatteryNotifier( 4166): batteryHandler::send audio track volume update msg! 10674, 4166, 113033
+D/BatteryNotifier( 4166): BatteryNotifier::update TrackVolume to power insight! 10674, 4166, 113033, volume 1.000000 1.000000
+D/AudioSystem( 4166): +setParameters(): AudioTrack-Process=4166;AudioTrack-AudioThread=11718
+I/flutter ( 4166): [VideoPlayerPage] Loading quality options for: https://filedon.4ee42e7b34bf3c2aec4681b9c17de08f.r2.cloudflarestorage.com/users/467/Complate/Domestic/Otakudesu.io_MSnS.S2--09_720p.mp4?response-content-disposition=attachment%3B%20filename%3D%22Otakudesu.io_MSnS.S2--09_720p.mp4%22&response-cache-control=public%2C%20max-age%3D3600&response-content-type=application%2Foctet-stream&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=41c0d949cad0166116cd6bdbe51a46a4%2F20260306%2FAPAC%2Fs3%2Faws4_request&X-Amz-Date=20260306T092128Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=01e1e63a8fb777b536276b95fa6e3f590491b28253ccd23b37b784f01bc4ef52
+I/flutter ( 4166): [QualityParser] Received URL: https://filedon.4ee42e7b34bf3c2aec4681b9c17de08f.r2.cloudflarestorage.com/users/467/Complate/Domestic/Otakudesu.io_MSnS.S2--09_720p.mp4?response-content-disposition=attachment%3B%20filename%3D%22Otakudesu.io_MSnS.S2--09_720p.mp4%22&response-cache-control=public%2C%20max-age%3D3600&response-content-type=application%2Foctet-stream&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=41c0d949cad0166116cd6bdbe51a46a4%2F20260306%2FAPAC%2Fs3%2Faws4_request&X-Amz-Date=20260306T092128Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=01e1e63a8fb777b536276b95fa6e3f590491b28253ccd23b37b784f01bc4ef52
+I/flutter ( 4166): [QualityParser] Not an .m3u8 URL, path: /users/467/Complate/Domestic/Otakudesu.io_MSnS.S2--09_720p.mp4
+I/flutter ( 4166): [VideoPlayerPage] Parsed 1 quality options
+I/flutter ( 4166): [VideoPlayerPage]   - Auto: https://filedon.4ee42e7b34bf3c2aec4681b9c17de08f.r2.cloudflarestorage.com/users/467/Complate/Domestic/Otakudesu.io_MSnS.S2--09_720p.mp4?response-content-disposition=attachment%3B%20filename%3D%22Otakudesu.io_MSnS.S2--09_720p.mp4%22&response-cache-control=public%2C%20max-age%3D3600&response-content-type=application%2Foctet-stream&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=41c0d949cad0166116cd6bdbe51a46a4%2F20260306%2FAPAC%2Fs3%2Faws4_request&X-Amz-Date=20260306T092128Z&X-Amz-SignedHeaders=host&X-Amz-Expires=3600&X-Amz-Signature=01e1e63a8fb777b536276b95fa6e3f590491b28253ccd23b37b784f01bc4ef52
+I/AudioTrack( 4166): start(21451): prior state:STATE_STOPPED packageName: com.reealms.reealms_mobile
+D/AudioRepeatStartCheck( 4166): [AudioRepeatStartStopCheck], enter: uid = 10674, session = 113033, uidnowTime = 0
+D/AudioRepeatStartCheck( 4166): [AudioRepeatStartStopCheck] isAnomaly = 0
+W/EpFrameworkFactory( 4166): activated: false jar exist: false
+D/AudioTrack( 4166): onAudioDeviceUpdate AudioPortDebug[ID:00000003] deviceType:AUDIO_DEVICE_OUT_SPEAKER(00000002)
+D/BatteryNotifier( 4166): batteryHandler::send audio device update msg! 10674, 4166, 113033, 2
+D/BatteryNotifier( 4166): BatteryNotifier::update device to power insight! 10674, 4166, 113033, 2
+D/AudioTrack( 4166): getTimestamp_l(21451): device stall time corrected using current time 1195067318437769
+D/AudioTrack( 4166): getTimestamp_l(21451): stale timestamp time corrected, currentTimeNanos: 1194969264450686 < limitNs: 1195066937142461 < mStartNs: 1195067065142461
+W/AudioTrack( 4166): getTimestamp_l(21451): retrograde timestamp time corrected, 1195066937142461 < 1195067328396538
+W/MediaCodec( 4166): [mId: 0] [video-debug-dec] onReleaseOutputBuffer: Render time interval reaches 490ms before pts: 1000000041666
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] onReleaseOutputBuffer index 1 pts: 1000000041666 ptsdiff: 41666 timediff: 490 render: 1
+D/MediaCodec( 4166): AV Sync Warning: delta=466656us (content=41666us vs render=508322us)
+D/MediaCodec( 4166): Current mediaTime: 1000000041666us, Last mediaTime: 1000000000000us
+D/MediaCodec( 4166): Current renderTime: 1195067399286us, Last renderTime: 1195066890964us
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] onReleaseOutputBuffer index 2 pts: 1000000083333 ptsdiff: 41667 timediff: 20 render: 1
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] onReleaseOutputBuffer index 3 pts: 1000000125000 ptsdiff: 41667 timediff: 42 render: 1
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] queueInputBuffer: index: 1 pts: 1000001291666 timediff: 382
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] queueInputBuffer: index: 2 pts: 1000001333333 timediff: 31
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] queueInputBuffer: index: 3 pts: 1000001375000 timediff: 53
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 1s(f:0 m:0 s:0 k:0 z:1003) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 2s(f:0 m:0 s:0 k:0 z:2005) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 3s(f:0 m:0 s:0 k:0 z:3002) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/PipelineWatcher( 4166): [0xb400007821a56778] pipelineFull: too many frames in pipeline (6)
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 4s(f:0 m:0 s:0 k:0 z:4000) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] Stats 5053ms:Client:com.reealms.reealms_mobile,Component:c2.mtk.avc.decoder,Qin:132(Avg:38ms),DQin:0/0,Render:108(Avg:46ms),Drop:0,DQout:0/0
+I/MediaCodec( 4166): [mId: 1] [audio-debug-dec] Stats 5036ms:Client:com.reealms.reealms_mobile,Component:c2.android.aac.decoder,Qin:245,DQin:0/0,Render:0,Drop:234,DQout:0/0
+D/AidlBufferPool( 4166): bufferpool2 0xb400007781b5c3d8 : 5(40960 size) total buffers - 1(8192 size) used buffers - 243/248 (recycle/alloc) - 5/247 (fetch/transfer)
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 5s(f:0 m:0 s:0 k:0 z:5009) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+D/AidlBufferPool( 4166): bufferpool2 0xb400007781aa41b8 : 9(18846720 size) total buffers - 8(16752640 size) used buffers - 137/146 (recycle/alloc) - 9/143 (fetch/transfer)
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_DOWN, id[0]=0, pointerCount=1, eventTime=1195072421, downTime=1195072421, phoneEventTime=16:22:01.777 } moveCount:0
+D/VRI[MainActivity]( 4166): getMiuiFreeformStackInfo mTmpFrames.miuiFreeFormStackInfo: null
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_UP, id[0]=0, pointerCount=1, eventTime=1195072465, downTime=1195072421, phoneEventTime=16:22:01.821 } moveCount:0
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 6s(f:0 m:0 s:0 k:0 z:6002) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_DOWN, id[0]=0, pointerCount=1, eventTime=1195073478, downTime=1195073478, phoneEventTime=16:22:02.834 } moveCount:0
+D/VRI[MainActivity]( 4166): getMiuiFreeformStackInfo mTmpFrames.miuiFreeFormStackInfo: null
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_UP, id[0]=0, pointerCount=1, eventTime=1195073559, downTime=1195073478, phoneEventTime=16:22:02.915 } moveCount:0
+D/AudioTrack( 4166): pause(21451): 0xb400007821a568f0, prior state:STATE_ACTIVE packageName: com.reealms.reealms_mobile
+D/AudioTrackShared( 4166): this(0xb4000077d1a06950), mCblk(0x7750582000), front(307200), mIsOut 1, interrupt() FUTEX_WAKE
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_DOWN, id[0]=0, pointerCount=1, eventTime=1195074241, downTime=1195074241, phoneEventTime=16:22:03.597 } moveCount:0
+D/VRI[MainActivity]( 4166): getMiuiFreeformStackInfo mTmpFrames.miuiFreeFormStackInfo: null
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_UP, id[0]=0, pointerCount=1, eventTime=1195074314, downTime=1195074241, phoneEventTime=16:22:03.670 } moveCount:0
+W/MediaCodec( 4166): [mId: 0] [video-debug-dec] queueInputBuffer: Input time interval reaches 1059ms before pts: 1000007541666
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] queueInputBuffer: index: 3 pts: 1000007541666 timediff: 1059
+I/MiMediaCodec( 4166): send last fps
+I/MiMediaCodec( 4166): send fps to display with mLastSendedFps:24.000000 state:1 id:0
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] queueInputBuffer: index: 5 pts: 1000007458333 timediff: 4
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 7s(f:0 m:0 s:0 k:0 z:7674) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+I/RenderPoller( 4166): [mId: 0] [video-debug-dec] render status from smooth to not smooth
+D/send_data_to_xlog( 4166): send_video_render_quality_to_xlog appName: com.reealms.reealms_mobile, id: 0, render smooth: 0
+V/xlog_client( 4166):  xlog_send  msg_id: 45
+V/xlog_client( 4166):  xlog_send
+D/xlog_client( 4166): xlog_open: Error in open xlog
+D/xlog_client( 4166): xlog open fail
+D/xlog_client( 4166): xlog_format_msg: send msg 45
+D/.reealms_mobile( 4166): EventReporter , Link to mediaGatherservice death notification successful
+D/.reealms_mobile( 4166): Report:  Event = {"name":"video_render","audio_event":{"app_name":"audio_app_other","id":"0","render_smooth":"0"},"dgt":"null","audio_ext":"null" }
+D/xlog_client( 4166): _xlog_write_flat_msg: send msg {"name":"video_render","audio_event":{"app_name":"audio_app_other","id":"0","render_smooth":"0"},"dgt":"null","audio_ext":"null" }
+V/xlog_client( 4166): xlog_close -1
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_DOWN, id[0]=0, pointerCount=1, eventTime=1195075211, downTime=1195075211, phoneEventTime=16:22:04.568 } moveCount:0
+D/VRI[MainActivity]( 4166): getMiuiFreeformStackInfo mTmpFrames.miuiFreeFormStackInfo: null
+I/MIUIInput( 4166): [MotionEvent] ViewRootImpl windowName 'com.reealms.reealms_mobile/com.reealms.reealms_mobile.MainActivity', { action=ACTION_UP, id[0]=0, pointerCount=1, eventTime=1195075270, downTime=1195075211, phoneEventTime=16:22:04.626 } moveCount:0
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 8s(f:0 m:0 s:0 k:0 z:8669) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 9s(f:0 m:0 s:0 k:0 z:9670) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 10s(f:0 m:0 s:0 k:0 z:10672) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+I/MediaCodec( 4166): [mId: 0] [video-debug-dec] Stats 5820ms:Client:com.reealms.reealms_mobile,Component:c2.mtk.avc.decoder,Qin:48(Avg:121ms),DQin:0/0,Render:44(Avg:132ms),Drop:0,DQout:0/0
+D/PipelineWatcher( 4166): onWorkDone: frameIndex not found (0); ignored
+D/CCodecBufferChannel( 4166): [c2.mtk.avc.decoder#427] receive c2 sleep hint!
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 11s(f:0 m:0 s:0 k:0 z:11674) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+D/AidlBufferPool( 4166): bufferpool2 0xb400007781b5c3d8 : 5(40960 size) total buffers - 0(0 size) used buffers - 327/332 (recycle/alloc) - 5/332 (fetch/transfer)
+D/AidlBufferPool( 4166): bufferpool2 0xb400007781aa41b8 : 9(18846720 size) total buffers - 8(16752640 size) used buffers - 173/182 (recycle/alloc) - 10/182 (fetch/transfer)
+D/AidlBufferPoolAcc( 4166): evictor expired: 2, evicted: 2
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 12s(f:0 m:0 s:0 k:0 z:12675) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 13s(f:0 m:0 s:0 k:0 z:13676) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 14s(f:0 m:0 s:0 k:0 z:14678) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 15s(f:0 m:0 s:0 k:0 z:15679) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+D/PipelineWatcher( 4166): onWorkDone: frameIndex not found (0); ignored
+D/CCodecBufferChannel( 4166): [c2.mtk.avc.decoder#427] ignore dup c2 sleep hint!
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 16s(f:0 m:0 s:0 k:0 z:16680) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 17s(f:0 m:0 s:0 k:0 z:17682) : pid 4166 uid 10674 sessionId 113033 sr 48000 ch 2 fmt 1
+D/AudioTrackImpl( 4166): [audioTrackData][zero] 18s(f:0 m:0 s:0 k:0 z:18684) : pid 4166 uid 10674 sessionId 113033 sr 4
