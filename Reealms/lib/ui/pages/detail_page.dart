@@ -12,15 +12,35 @@ import 'package:shimmer/shimmer.dart';
 
 class DetailPage extends StatefulWidget {
   final Movie movie;
+  final ApiService? apiService;
+  final Future<bool> Function(String movieId)? isFavoriteOverride;
+  final Future<void> Function(Movie movie)? toggleFavoriteOverride;
+  final Future<void> Function(Movie movie)? addToHistoryOverride;
+  final Widget Function(
+    String videoUrl,
+    String title,
+    bool preferLandscapeOnStart,
+  )?
+  otakudesuVideoPlayerBuilder;
+  final Widget Function(String streamUrl, String title)? animeWebViewBuilder;
 
-  const DetailPage({super.key, required this.movie});
+  const DetailPage({
+    super.key,
+    required this.movie,
+    this.apiService,
+    this.isFavoriteOverride,
+    this.toggleFavoriteOverride,
+    this.addToHistoryOverride,
+    this.otakudesuVideoPlayerBuilder,
+    this.animeWebViewBuilder,
+  });
 
   @override
   State<DetailPage> createState() => _DetailPageState();
 }
 
 class _DetailPageState extends State<DetailPage> {
-  final ApiService _apiService = ApiService();
+  late final ApiService _apiService = widget.apiService ?? ApiService();
 
   List<Episode> _episodes = [];
   bool _isLoading = true;
@@ -60,9 +80,29 @@ class _DetailPageState extends State<DetailPage> {
     }
   }
 
+  Future<bool> _isFavorite(BuildContext context, String movieId) {
+    if (widget.isFavoriteOverride != null) {
+      return widget.isFavoriteOverride!(movieId);
+    }
+    return Provider.of<AppState>(context, listen: false).isFavorite(movieId);
+  }
+
+  Future<void> _toggleFavorite(BuildContext context, Movie movie) {
+    if (widget.toggleFavoriteOverride != null) {
+      return widget.toggleFavoriteOverride!(movie);
+    }
+    return Provider.of<AppState>(context, listen: false).toggleFavorite(movie);
+  }
+
+  Future<void> _addToHistory(BuildContext context, Movie movie) {
+    if (widget.addToHistoryOverride != null) {
+      return widget.addToHistoryOverride!(movie);
+    }
+    return Provider.of<AppState>(context, listen: false).addToHistory(movie);
+  }
+
   @override
   Widget build(BuildContext context) {
-    final appState = Provider.of<AppState>(context);
     return Scaffold(
       backgroundColor: Colors.black,
       body: Container(
@@ -78,7 +118,7 @@ class _DetailPageState extends State<DetailPage> {
         ),
         child: CustomScrollView(
           slivers: [
-            _buildAppBar(context, appState),
+            _buildAppBar(context),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -122,7 +162,7 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
-  Widget _buildAppBar(BuildContext context, AppState appState) {
+  Widget _buildAppBar(BuildContext context) {
     return SliverAppBar(
       expandedHeight: 450,
       pinned: true,
@@ -146,7 +186,7 @@ class _DetailPageState extends State<DetailPage> {
             shape: BoxShape.circle,
           ),
           child: FutureBuilder<bool>(
-            future: appState.isFavorite(widget.movie.id),
+            future: _isFavorite(context, widget.movie.id),
             builder: (context, snapshot) {
               final isFav = snapshot.data ?? false;
               return IconButton(
@@ -154,7 +194,7 @@ class _DetailPageState extends State<DetailPage> {
                   isFav ? Icons.favorite : Icons.favorite_border,
                   color: isFav ? Colors.red : Colors.white,
                 ),
-                onPressed: () => appState.toggleFavorite(widget.movie),
+                onPressed: () => _toggleFavorite(context, widget.movie),
               );
             },
           ),
@@ -548,7 +588,7 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   void _handleEpisodeTap(Episode ep) async {
-    Provider.of<AppState>(context, listen: false).addToHistory(widget.movie);
+    _addToHistory(context, widget.movie);
 
     if (widget.movie.sourceType == "komik") {
       setState(() => _isLoading = true);
@@ -570,10 +610,6 @@ class _DetailPageState extends State<DetailPage> {
     } else if (widget.movie.sourceType == "otakudesu") {
       setState(() => _isLoading = true);
       try {
-        Provider.of<AppState>(
-          context,
-          listen: false,
-        ).addToHistory(widget.movie);
         final directMirrorUrl = await _apiService.getBestOtakudesuPlayableUrl(
           ep.id,
         );
@@ -585,7 +621,16 @@ class _DetailPageState extends State<DetailPage> {
             context,
             MaterialPageRoute(
               builder: (context) =>
-                  VideoPlayerPage(videoUrl: directMirrorUrl, title: ep.title),
+                  widget.otakudesuVideoPlayerBuilder?.call(
+                    directMirrorUrl,
+                    ep.title,
+                    true,
+                  ) ??
+                  VideoPlayerPage(
+                    videoUrl: directMirrorUrl,
+                    title: ep.title,
+                    preferLandscapeOnStart: true,
+                  ),
             ),
           );
           return;
@@ -604,6 +649,7 @@ class _DetailPageState extends State<DetailPage> {
               context,
               MaterialPageRoute(
                 builder: (context) =>
+                    widget.animeWebViewBuilder?.call(safeMirrorUrl, ep.title) ??
                     AnimeWebViewPage(streamUrl: safeMirrorUrl, title: ep.title),
               ),
             );

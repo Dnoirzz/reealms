@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'package:http/http.dart' as http;
 import 'package:reealms_mobile/core/app_constants.dart';
 import 'package:reealms_mobile/data/models/movie.dart';
@@ -15,15 +16,22 @@ class _OtakudesuMirrorCandidate {
   });
 }
 
-class _M3u8VariantCandidate {
+class _AnimeMirrorProbeResult {
   final String url;
-  final int height;
+  final bool isMaster;
 
-  const _M3u8VariantCandidate({required this.url, required this.height});
+  const _AnimeMirrorProbeResult({required this.url, required this.isMaster});
 }
 
 class ApiService {
-  final http.Client _client = http.Client();
+  final http.Client _client;
+  final void Function(String label, String value)? _animePlayableLogger;
+
+  ApiService({
+    http.Client? client,
+    void Function(String label, String value)? animePlayableLogger,
+  }) : _client = client ?? http.Client(),
+       _animePlayableLogger = animePlayableLogger;
 
   String _source = "dramabox";
   String _lang = "in";
@@ -193,6 +201,7 @@ class ApiService {
     'mega.nz',
     'stream',
     'embed',
+    'cloudflarestorage.com',
   ];
 
   static const String _otakudesuDefaultNonceAction =
@@ -316,8 +325,8 @@ class ApiService {
     }
   }
 
-  Future<String> _pickBestReachableMirror(List<String> rawCandidates) async {
-    if (rawCandidates.isEmpty) return '';
+  Future<List<String>> _rankReachableMirrors(List<String> rawCandidates) async {
+    if (rawCandidates.isEmpty) return const [];
 
     final uniqueCandidates = <String>{};
     for (final raw in rawCandidates) {
@@ -326,17 +335,20 @@ class ApiService {
       if (!_isSafeAnimeMirrorUrl(normalized)) continue;
       uniqueCandidates.add(normalized);
     }
-    if (uniqueCandidates.isEmpty) return '';
+    if (uniqueCandidates.isEmpty) return const [];
 
     final candidates = uniqueCandidates.toList();
     final hostCache = <String, bool>{};
+    final reachable = <String>[];
+
     for (final url in candidates) {
-      final reachable = await _isMirrorReachable(url, hostCache);
-      if (reachable) return url;
+      final isReachable = await _isMirrorReachable(url, hostCache);
+      if (isReachable) {
+        reachable.add(url);
+      }
     }
 
-    // Fallback to the first candidate when probe cannot validate availability.
-    return candidates.first;
+    return reachable;
   }
 
   bool _isDirectPlayableVideoUrl(String rawUrl) {
@@ -371,61 +383,62 @@ class ApiService {
     return (quality * 100) + (isM3u8 ? 10 : 0) + (isMp4 ? 1 : 0);
   }
 
-  Future<String> _resolvePreferredM3u8Variant(String playlistUrl) async {
+  String _pickLikelyMasterM3u8Candidate(List<String> m3u8Candidates) {
+    if (m3u8Candidates.isEmpty) return '';
+
+    int masterHintScore(String url) {
+      final normalized = url.toLowerCase();
+      if (normalized.contains('master.m3u8') ||
+          normalized.contains('/master') ||
+          normalized.contains('type=master') ||
+          normalized.contains('playlist.m3u8')) {
+        return 0;
+      }
+      if (_extractQualityHint(normalized) == 0) {
+        return 1;
+      }
+      return 2;
+    }
+
+    final sorted = m3u8Candidates.toList()
+      ..sort((a, b) {
+        final scoreA = masterHintScore(a);
+        final scoreB = masterHintScore(b);
+        if (scoreA != scoreB) return scoreA.compareTo(scoreB);
+
+        final qualityA = _extractQualityHint(a);
+        final qualityB = _extractQualityHint(b);
+        if (qualityA != qualityB) return qualityA.compareTo(qualityB);
+
+        return a.length.compareTo(b.length);
+      });
+
+    return sorted.first;
+  }
+
+  void _logAnimePlayableDecision(String label, String value) {
+    _animePlayableLogger?.call(label, value);
+    developer.log('AnimePlayable: $label => $value', name: 'ApiServiceAnime');
+  }
+
+  bool _isMasterM3u8Content(String body) {
+    return body.contains('#EXT-X-STREAM-INF');
+  }
+
+  Future<bool> _isMasterM3u8Url(String playlistUrl) async {
     final uri = Uri.tryParse(playlistUrl);
-    if (uri == null) return playlistUrl;
-    if (!uri.path.toLowerCase().endsWith('.m3u8')) return playlistUrl;
+    if (uri == null || !uri.path.toLowerCase().endsWith('.m3u8')) {
+      return false;
+    }
 
     try {
       final response = await _client
           .get(uri, headers: _headers)
           .timeout(const Duration(seconds: 8));
-      if (response.statusCode != 200) return playlistUrl;
-
-      final body = response.body;
-      if (!body.contains('#EXT-X-STREAM-INF')) {
-        return playlistUrl;
-      }
-
-      final lines = const LineSplitter().convert(body);
-      final variants = <_M3u8VariantCandidate>[];
-
-      for (var i = 0; i < lines.length; i++) {
-        final line = lines[i].trim();
-        if (!line.startsWith('#EXT-X-STREAM-INF')) continue;
-
-        final heightMatch = RegExp(
-          r'RESOLUTION=\d+x(\d+)',
-          caseSensitive: false,
-        ).firstMatch(line);
-        final height = int.tryParse(heightMatch?.group(1) ?? '') ?? 0;
-
-        String? nextPath;
-        for (var j = i + 1; j < lines.length; j++) {
-          final candidate = lines[j].trim();
-          if (candidate.isEmpty || candidate.startsWith('#')) continue;
-          nextPath = candidate;
-          break;
-        }
-        if (nextPath == null) continue;
-
-        final resolved = uri.resolve(nextPath).toString();
-        if (!_isDirectPlayableVideoUrl(resolved)) continue;
-
-        variants.add(_M3u8VariantCandidate(url: resolved, height: height));
-      }
-
-      if (variants.isEmpty) return playlistUrl;
-
-      // Prefer exact 720p; fallback to highest available variant.
-      for (final variant in variants) {
-        if (variant.height == 720) return variant.url;
-      }
-
-      variants.sort((a, b) => b.height.compareTo(a.height));
-      return variants.first.url;
+      if (response.statusCode != 200) return false;
+      return _isMasterM3u8Content(response.body);
     } catch (_) {
-      return playlistUrl;
+      return false;
     }
   }
 
@@ -451,6 +464,87 @@ class ApiService {
 
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
+    }
+
+    return '';
+  }
+
+  String _decodeHtmlEntities(String value) {
+    return value
+        .replaceAll('&quot;', '"')
+        .replaceAll('&#34;', '"')
+        .replaceAll('&#39;', "'")
+        .replaceAll('&amp;', '&')
+        .replaceAll('&lt;', '<')
+        .replaceAll('&gt;', '>');
+  }
+
+  bool _isUrlTokenBoundaryChar(String ch) {
+    return ch == '"' ||
+        ch == '\'' ||
+        ch == ' ' ||
+        ch == '\n' ||
+        ch == '\r' ||
+        ch == '\t' ||
+        ch == '<' ||
+        ch == '>';
+  }
+
+  Future<_AnimeMirrorProbeResult?> _probePlayableFromMirrors(
+    List<String> mirrors,
+  ) async {
+    if (mirrors.isEmpty) return null;
+
+    _logAnimePlayableDecision('mirror-candidates-count', mirrors.length.toString());
+
+    _AnimeMirrorProbeResult? bestNonMaster;
+    for (final mirrorUrl in mirrors) {
+      final direct = await _resolveDirectPlayableUrlFromPage(mirrorUrl);
+      if (direct.isEmpty) continue;
+
+      final isMaster = direct.toLowerCase().contains('.m3u8')
+          ? await _isMasterM3u8Url(direct)
+          : false;
+
+      if (isMaster) {
+        _logAnimePlayableDecision('playable-selected', 'master:$direct');
+        return _AnimeMirrorProbeResult(url: direct, isMaster: true);
+      }
+
+      bestNonMaster ??= _AnimeMirrorProbeResult(url: direct, isMaster: false);
+    }
+
+    if (bestNonMaster != null) {
+      _logAnimePlayableDecision('playable-selected', 'fallback:${bestNonMaster.url}');
+    }
+    return bestNonMaster;
+  }
+
+  String _extractDirectPlayableUrlFromDynamic(dynamic node, String baseUrl) {
+    if (node is String) {
+      final normalized = _normalizeExtractedUrl(node, baseUrl);
+      if (normalized.isNotEmpty &&
+          !_isBlockedAnimeUrl(normalized) &&
+          _isDirectPlayableVideoUrl(normalized)) {
+        return normalized;
+      }
+      return '';
+    }
+
+    if (node is List) {
+      for (final item in node) {
+        final extracted = _extractDirectPlayableUrlFromDynamic(item, baseUrl);
+        if (extracted.isNotEmpty) return extracted;
+      }
+      return '';
+    }
+
+    if (node is Map) {
+      for (final value in node.values) {
+        final extracted = _extractDirectPlayableUrlFromDynamic(value, baseUrl);
+        if (extracted.isNotEmpty) return extracted;
+      }
+      return '';
     }
 
     return '';
@@ -495,6 +589,60 @@ class ApiService {
       );
       collect(RegExp(r'''["']([^"']+\.mp4[^"']*)["']''', caseSensitive: false));
 
+      final decodedHtml = _decodeHtmlEntities(html);
+      if (decodedHtml != html) {
+        for (final suffix in const ['.m3u8', '.mp4', '.mkv', '.webm', '.mov']) {
+          final marker = suffix.toLowerCase();
+          var start = 0;
+          while (true) {
+            final idx = decodedHtml.toLowerCase().indexOf(marker, start);
+            if (idx < 0) break;
+
+            var left = idx;
+            while (left > 0) {
+              final ch = decodedHtml[left - 1];
+              if (_isUrlTokenBoundaryChar(ch)) break;
+              left--;
+            }
+
+            var right = idx + marker.length;
+            while (right < decodedHtml.length) {
+              final ch = decodedHtml[right];
+              if (_isUrlTokenBoundaryChar(ch)) break;
+              right++;
+            }
+
+            final raw = decodedHtml.substring(left, right).trim();
+            final normalized = _normalizeExtractedUrl(raw, pageUrl);
+            if (normalized.isNotEmpty) candidates.add(normalized);
+
+            start = idx + marker.length;
+          }
+        }
+      }
+
+      final dataPageMatch = RegExp(
+        r'''data-page=["']([^"']+)["']''',
+        caseSensitive: false,
+      ).firstMatch(html);
+      final dataPageRaw = dataPageMatch?.group(1) ?? '';
+      if (dataPageRaw.isNotEmpty) {
+        try {
+          final decodedDataPage = _decodeHtmlEntities(
+            dataPageRaw,
+          ).replaceAll(r'\\"', '"').replaceAll(r'\\/', '/');
+          final parsed = json.decode(decodedDataPage);
+          final extracted = _extractDirectPlayableUrlFromDynamic(
+            parsed,
+            pageUrl,
+          );
+          if (extracted.isNotEmpty) {
+            _logAnimePlayableDecision('inertia-data-page', extracted);
+            candidates.add(extracted);
+          }
+        } catch (_) {}
+      }
+
       final playableCandidates =
           candidates
               .where((url) => !_isBlockedAnimeUrl(url))
@@ -505,16 +653,30 @@ class ApiService {
                   _directPlayableScore(b).compareTo(_directPlayableScore(a)),
             );
 
-      for (final url in playableCandidates) {
-        final normalized = url.toLowerCase();
-        if (normalized.contains('.m3u8')) {
-          final preferredVariant = await _resolvePreferredM3u8Variant(url);
-          if (preferredVariant.isNotEmpty &&
-              _isDirectPlayableVideoUrl(preferredVariant)) {
-            return preferredVariant;
+      final m3u8Candidates = playableCandidates
+          .where((url) => url.toLowerCase().contains('.m3u8'))
+          .toList();
+      if (m3u8Candidates.isNotEmpty) {
+        for (final m3u8Url in m3u8Candidates) {
+          final isMaster = await _isMasterM3u8Url(m3u8Url);
+          if (isMaster) {
+            _logAnimePlayableDecision('page-m3u8', 'selected master $m3u8Url');
+            return m3u8Url;
           }
         }
-        return url;
+
+        final fallbackM3u8 = _pickLikelyMasterM3u8Candidate(m3u8Candidates);
+        _logAnimePlayableDecision(
+          'page-m3u8',
+          'master probe inconclusive, fallback $fallbackM3u8',
+        );
+        return fallbackM3u8;
+      }
+
+      if (playableCandidates.isNotEmpty) {
+        final picked = playableCandidates.first;
+        _logAnimePlayableDecision('page-direct', picked);
+        return picked;
       }
     } catch (e) {
       print('Error resolving direct playable URL: $e');
@@ -737,13 +899,14 @@ class ApiService {
     return '';
   }
 
-  Future<String> getOtakudesu720pStreamUrl(String episodeUrl) async {
-    if (episodeUrl.isEmpty || !episodeUrl.startsWith('http')) return '';
+  Future<List<String>> _collectOtakudesuMirrorCandidates(String episodeUrl) async {
+    if (episodeUrl.isEmpty || !episodeUrl.startsWith('http')) return const [];
+
     try {
       final response = await _client
           .get(Uri.parse(episodeUrl), headers: _headers)
           .timeout(const Duration(seconds: 10));
-      if (response.statusCode != 200) return '';
+      if (response.statusCode != 200) return const [];
 
       final html = response.body;
 
@@ -757,15 +920,14 @@ class ApiService {
         return url;
       }
 
+      final collected = <String>[];
+
       // 1) Resolve links inside m720p section first.
-      // New pages expose mirror params in `data-content`, which must be
-      // exchanged via admin-ajax before we get the real mirror URL.
       final sectionCandidates = _extractMirrorCandidatesFromQualitySection(
         html,
         'm720p',
       );
       if (sectionCandidates.isNotEmpty) {
-        final sectionResolvedUrls = <String>[];
         final prioritized = sectionCandidates.toList()
           ..sort((a, b) {
             final scoreA = _mirrorPriorityScore(a.provider);
@@ -788,7 +950,7 @@ class ApiService {
           if (candidate.href.isNotEmpty && candidate.href != '#') {
             final resolved = makeAbsolute(candidate.href);
             if (_isSafeAnimeMirrorUrl(resolved)) {
-              sectionResolvedUrls.add(resolved);
+              collected.add(resolved);
             }
           }
 
@@ -803,14 +965,7 @@ class ApiService {
             mirrorAction: mirrorAction,
             makeAbsolute: makeAbsolute,
           );
-          if (resolved.isNotEmpty) sectionResolvedUrls.add(resolved);
-        }
-
-        final pickedSectionMirror = await _pickBestReachableMirror(
-          sectionResolvedUrls,
-        );
-        if (pickedSectionMirror.isNotEmpty) {
-          return pickedSectionMirror;
+          if (resolved.isNotEmpty) collected.add(resolved);
         }
       }
 
@@ -819,17 +974,12 @@ class ApiService {
         r'''https?:\/\/[^"'\s<]+''',
         caseSensitive: false,
       );
-      final safeAbsoluteUrls = <String>[];
-      for (final m in absoluteUrlRegex.allMatches(html)) {
-        final candidate = (m.group(0) ?? '').replaceAll('&amp;', '&').trim();
-        if (_isSafeAnimeMirrorUrl(candidate)) {
-          safeAbsoluteUrls.add(candidate);
-        }
-      }
-
       final preferredAbsoluteUrls = <String>[];
       final otherAbsoluteUrls = <String>[];
-      for (final candidate in safeAbsoluteUrls) {
+
+      for (final m in absoluteUrlRegex.allMatches(html)) {
+        final candidate = (m.group(0) ?? '').replaceAll('&amp;', '&').trim();
+        if (!_isSafeAnimeMirrorUrl(candidate)) continue;
         final normalized = candidate.toLowerCase();
         if (normalized.contains('720') ||
             normalized.contains('hd') ||
@@ -840,13 +990,8 @@ class ApiService {
         }
       }
 
-      final pickedAbsoluteMirror = await _pickBestReachableMirror([
-        ...preferredAbsoluteUrls,
-        ...otherAbsoluteUrls,
-      ]);
-      if (pickedAbsoluteMirror.isNotEmpty) {
-        return pickedAbsoluteMirror;
-      }
+      collected.addAll(preferredAbsoluteUrls);
+      collected.addAll(otherAbsoluteUrls);
 
       // 3) Global fallback - any link with 720p text if section check fails.
       final any720Regex = RegExp(
@@ -863,20 +1008,26 @@ class ApiService {
         if (rawUrl != '#') {
           final resolved = makeAbsolute(rawUrl);
           if (_isSafeAnimeMirrorUrl(resolved)) {
-            final pickedFallbackMirror = await _pickBestReachableMirror([
-              resolved,
-            ]);
-            if (pickedFallbackMirror.isNotEmpty) {
-              return pickedFallbackMirror;
-            }
+            collected.add(resolved);
           }
         }
       }
+
+      return await _rankReachableMirrors(collected);
     } catch (e) {
       print("Error scraping 720p URL: $e");
     }
-    print("Anime mirror fallback: no safe 720p mirror found");
-    return '';
+
+    return const [];
+  }
+
+  Future<String> getOtakudesu720pStreamUrl(String episodeUrl) async {
+    final rankedMirrors = await _collectOtakudesuMirrorCandidates(episodeUrl);
+    if (rankedMirrors.isEmpty) {
+      print("Anime mirror fallback: no safe 720p mirror found");
+      return '';
+    }
+    return rankedMirrors.first;
   }
 
   String _extractEpisodeSlugFromUrl(String episodeUrl) {
@@ -896,70 +1047,118 @@ class ApiService {
   Future<String> getBestOtakudesuStreamUrl(String episodeUrl) async {
     if (episodeUrl.isEmpty || !episodeUrl.startsWith('http')) return '';
 
-    final scrapedUrl = await getOtakudesu720pStreamUrl(episodeUrl);
-    if (scrapedUrl.isNotEmpty && _isSafeAnimeMirrorUrl(scrapedUrl)) {
-      return scrapedUrl;
+    _logAnimePlayableDecision('episode-input', episodeUrl);
+    _logAnimePlayableDecision('stage', 'scrape-start');
+
+    final rankedMirrors = await _collectOtakudesuMirrorCandidates(episodeUrl);
+    if (rankedMirrors.isNotEmpty) {
+      _logAnimePlayableDecision('stage', 'scrape-selected');
+      return rankedMirrors.first;
     }
 
     final slug = _extractEpisodeSlugFromUrl(episodeUrl);
     if (slug.isNotEmpty) {
+      _logAnimePlayableDecision('stage', 'api-fallback');
       final directApiUrl = await getAnimeStreamUrl(slug);
       if (directApiUrl.isNotEmpty && _isSafeAnimeMirrorUrl(directApiUrl)) {
         return directApiUrl;
       }
     }
 
+    _logAnimePlayableDecision('stage', 'all-failed');
     return '';
   }
 
   /// Return direct playable URL for in-app video player.
   /// Will not return Otakudesu episode pages.
   Future<String> getBestOtakudesuPlayableUrl(String episodeUrl) async {
-    final streamUrl = await getBestOtakudesuStreamUrl(episodeUrl);
-    if (streamUrl.isEmpty) return '';
+    final rankedMirrors = await _collectOtakudesuMirrorCandidates(episodeUrl);
+    String streamUrl = '';
+
+    if (rankedMirrors.isNotEmpty) {
+      final probeResult = await _probePlayableFromMirrors(rankedMirrors);
+      if (probeResult != null && probeResult.url.isNotEmpty) {
+        _logAnimePlayableDecision(
+          'mirror-selected',
+          probeResult.isMaster ? 'master:${probeResult.url}' : probeResult.url,
+        );
+        return probeResult.url;
+      }
+
+      _logAnimePlayableDecision('playable-from-mirrors', 'empty');
+      streamUrl = rankedMirrors.first;
+    }
+
+    if (streamUrl.isEmpty) {
+      streamUrl = await getBestOtakudesuStreamUrl(episodeUrl);
+    }
+    if (streamUrl.isEmpty) {
+      _logAnimePlayableDecision('stream-url', 'empty');
+      return '';
+    }
 
     if (_isDirectPlayableVideoUrl(streamUrl)) {
       if (streamUrl.toLowerCase().contains('.m3u8')) {
-        final preferredVariant = await _resolvePreferredM3u8Variant(streamUrl);
-        if (preferredVariant.isNotEmpty) return preferredVariant;
+        final isMaster = await _isMasterM3u8Url(streamUrl);
+        _logAnimePlayableDecision(
+          'direct-m3u8',
+          isMaster ? 'master playlist kept' : 'media playlist kept',
+        );
+      } else {
+        _logAnimePlayableDecision('direct-video', streamUrl);
       }
       return streamUrl;
     }
 
     final directFromPage = await _resolveDirectPlayableUrlFromPage(streamUrl);
     if (directFromPage.isNotEmpty) {
+      _logAnimePlayableDecision('resolved-from-page', directFromPage);
       return directFromPage;
     }
 
+    _logAnimePlayableDecision('resolver-empty', episodeUrl);
     return '';
   }
 
   // DRAMABOX LATEST (Using existing logic from Python)
   Future<List<Movie>> _getDramaboxContent(String type) async {
     final endpoint = type == "foryou" ? "foryou" : "latest";
-    final url = Uri.parse(
-      "${AppConstants.dramaboxBaseUrl}/$endpoint?lang=$_lang",
-    );
+    final urls = <Uri>[
+      Uri.parse("${AppConstants.dramaboxBaseUrl}/$endpoint?lang=$_lang"),
+      Uri.parse("${AppConstants.dramaboxBaseUrl}/$endpoint"),
+    ];
 
-    try {
-      final response = await _client.get(url);
-      if (response.statusCode == 200) {
-        final decoded = json.decode(response.body);
-        List<dynamic> data = [];
-        if (decoded is List) {
-          data = decoded;
-        } else if (decoded is Map) {
-          data = decoded['data'] ?? decoded['result'] ?? decoded['books'] ?? [];
+    for (final url in urls) {
+      try {
+        final response = await _client.get(url);
+        if (response.statusCode == 200) {
+          final decoded = json.decode(response.body);
+          List<dynamic> data = [];
+          if (decoded is List) {
+            data = decoded;
+          } else if (decoded is Map) {
+            data =
+                decoded['data'] ??
+                decoded['result'] ??
+                decoded['books'] ??
+                decoded['list'] ??
+                [];
+          }
+          if (data.isNotEmpty) {
+            return data
+                .map((json) => Movie.fromJson(json, "dramabox"))
+                .toList();
+          }
+        } else {
+          print(
+            "ApiService: Dramabox failed (${response.statusCode}): ${response.body.substring(0, response.body.length > 100 ? 100 : response.body.length)}",
+          );
         }
-        return data.map((json) => Movie.fromJson(json, "dramabox")).toList();
-      } else {
-        print(
-          "ApiService: Dramabox failed (${response.statusCode}): ${response.body.substring(0, response.body.length > 100 ? 100 : response.body.length)}",
-        );
+      } catch (e) {
+        print("Error fetching Dramabox $type from $url: $e");
       }
-    } catch (e) {
-      print("Error fetching Dramabox $type: $e");
     }
+
     return [];
   }
 

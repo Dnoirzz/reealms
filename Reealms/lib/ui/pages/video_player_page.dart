@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer' as developer;
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,159 @@ class _QualityOption {
   });
 }
 
+Future<List<_QualityOption>> _parseVideoPlayerQualityOptions({
+  required String sourceUrl,
+  required http.Client client,
+}) async {
+  developer.log('[QualityParser] Received URL: $sourceUrl');
+
+  final uri = Uri.tryParse(sourceUrl);
+  final defaultOption = _QualityOption(
+    label: 'Auto',
+    url: sourceUrl,
+    rank: 9999,
+  );
+
+  if (uri == null) {
+    developer.log('[QualityParser] URI parse failed');
+    return [defaultOption];
+  }
+
+  if (!uri.path.toLowerCase().endsWith('.m3u8')) {
+    developer.log('[QualityParser] Not an .m3u8 URL, path: ${uri.path}');
+    return [defaultOption];
+  }
+
+  developer.log('[QualityParser] Parsing m3u8 playlist');
+
+  const requestHeaders = {
+    'User-Agent':
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  };
+
+  List<_QualityOption> parseMasterPlaylist(Uri playlistUri, String body) {
+    if (!body.contains('#EXT-X-STREAM-INF')) return const [];
+
+    final lines = const LineSplitter().convert(body);
+    final variants = <_QualityOption>[];
+
+    for (var i = 0; i < lines.length; i++) {
+      final line = lines[i].trim();
+      if (!line.startsWith('#EXT-X-STREAM-INF')) continue;
+
+      final heightMatch = RegExp(
+        r'RESOLUTION=\d+x(\d+)',
+        caseSensitive: false,
+      ).firstMatch(line);
+      final height = int.tryParse(heightMatch?.group(1) ?? '');
+
+      String? nextPath;
+      for (var j = i + 1; j < lines.length; j++) {
+        final next = lines[j].trim();
+        if (next.isEmpty || next.startsWith('#')) continue;
+        nextPath = next;
+        break;
+      }
+      if (nextPath == null) continue;
+
+      final resolvedUrl = playlistUri.resolve(nextPath).toString();
+      final label = height != null ? '${height}p' : 'Varian ${variants.length + 1}';
+      variants.add(
+        _QualityOption(label: label, url: resolvedUrl, rank: height ?? 0),
+      );
+    }
+
+    if (variants.isEmpty) return const [];
+
+    final byLabel = <String, _QualityOption>{};
+    for (final option in variants) {
+      byLabel[option.label] = option;
+    }
+
+    final sorted = byLabel.values.toList()
+      ..sort((a, b) => b.rank.compareTo(a.rank));
+    return sorted;
+  }
+
+  try {
+    developer.log('[QualityParser] Fetching playlist: $uri');
+    final response = await client
+        .get(uri, headers: requestHeaders)
+        .timeout(const Duration(seconds: 8));
+
+    developer.log('[QualityParser] Response status: ${response.statusCode}');
+
+    if (response.statusCode != 200) {
+      developer.log('[QualityParser] Non-200 response, returning Auto only');
+      return [defaultOption];
+    }
+
+    developer.log('[QualityParser] Response body length: ${response.body.length}');
+    developer.log('[QualityParser] Response body preview: ${response.body.substring(0, response.body.length > 200 ? 200 : response.body.length)}');
+
+    final directVariants = parseMasterPlaylist(uri, response.body);
+    developer.log('[QualityParser] Direct variants found: ${directVariants.length}');
+
+    if (directVariants.isNotEmpty) {
+      developer.log('[QualityParser] Returning ${directVariants.length + 1} options (including Auto)');
+      return [defaultOption, ...directVariants];
+    }
+
+    final pathSegments = uri.pathSegments;
+    developer.log('[QualityParser] Path segments: ${pathSegments.length}, attempting master playlist recovery');
+
+    final recoveryPatterns = <(Uri, String)>[];
+
+    if (pathSegments.length >= 1) {
+      final lastSegment = pathSegments.last;
+      final parentUri = uri.resolve('..');
+
+      if (lastSegment.toLowerCase().contains('index')) {
+        recoveryPatterns.add((uri.resolve('../master.m3u8'), 'master.m3u8'));
+        recoveryPatterns.add((uri.resolve('../playlist.m3u8'), 'playlist.m3u8'));
+      }
+
+      if (lastSegment.toLowerCase().contains('.m3u8')) {
+        final segmentName = lastSegment.toLowerCase();
+        if (segmentName.contains('720') || segmentName.contains('1080') || segmentName.contains('480')) {
+          recoveryPatterns.add((uri.resolve('../master.m3u8'), 'master.m3u8'));
+          recoveryPatterns.add((uri.resolve('../index.m3u8'), 'index.m3u8'));
+          recoveryPatterns.add((uri.resolve('../../master.m3u8'), '../../master.m3u8'));
+        }
+      }
+    }
+
+    for (final (candidateUri, label) in recoveryPatterns) {
+      developer.log('[QualityParser] Trying $label: $candidateUri');
+      try {
+        final response = await client
+            .get(candidateUri, headers: requestHeaders)
+            .timeout(const Duration(seconds: 8));
+
+        developer.log('[QualityParser] $label response status: ${response.statusCode}');
+
+        if (response.statusCode == 200) {
+          final variants = parseMasterPlaylist(candidateUri, response.body);
+          developer.log('[QualityParser] $label variants found: ${variants.length}');
+
+          if (variants.isNotEmpty) {
+            developer.log('[QualityParser] Found ${variants.length} variants via $label');
+            return [defaultOption, ...variants];
+          }
+        }
+      } catch (e) {
+        developer.log('[QualityParser] $label error: $e');
+      }
+    }
+
+    developer.log('[QualityParser] No variants found after recovery attempts, returning Auto only');
+    return [defaultOption];
+  } catch (e) {
+    developer.log('[QualityParser] Exception: $e');
+    return [defaultOption];
+  }
+}
+
 class VideoPlayerPage extends StatefulWidget {
   final String videoUrl;
   final String title;
@@ -25,6 +179,21 @@ class VideoPlayerPage extends StatefulWidget {
   final List<String>? playlistTitles;
   final int? initialPlaylistIndex;
   final bool autoPlayNext;
+  final bool disablePlaybackInitializationForTesting;
+  final bool preferLandscapeOnStart;
+
+  static http.Client Function() httpClientFactory = () => http.Client();
+
+  static Future<List<String>> parseQualityOptionsForTesting({
+    required String sourceUrl,
+    required http.Client client,
+  }) async {
+    final options = await _parseVideoPlayerQualityOptions(
+      sourceUrl: sourceUrl,
+      client: client,
+    );
+    return options.map((option) => option.label).toList();
+  }
 
   const VideoPlayerPage({
     super.key,
@@ -34,6 +203,8 @@ class VideoPlayerPage extends StatefulWidget {
     this.playlistTitles,
     this.initialPlaylistIndex,
     this.autoPlayNext = false,
+    this.disablePlaybackInitializationForTesting = false,
+    this.preferLandscapeOnStart = false,
   });
 
   @override
@@ -63,6 +234,22 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   void initState() {
     super.initState();
     _initializePlaylist();
+    if (widget.preferLandscapeOnStart) {
+      SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+      SystemChrome.setPreferredOrientations(const [
+        DeviceOrientation.landscapeLeft,
+        DeviceOrientation.landscapeRight,
+      ]);
+      _wasInFullScreen = true;
+    }
+    if (widget.disablePlaybackInitializationForTesting) {
+      _qualityOptions = [
+        _QualityOption(label: 'Auto', url: widget.videoUrl, rank: 9999),
+      ];
+      _selectedQualityLabel = 'Auto';
+      _isLoading = false;
+      return;
+    }
     _initializePlayer();
   }
 
@@ -101,6 +288,21 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     final initialUrl = _playlistUrls.isNotEmpty
         ? _playlistUrls[_playlistIndex]
         : widget.videoUrl;
+
+    if (mounted) {
+      setState(() {
+        _qualityOptions = [
+          _QualityOption(label: 'Auto', url: initialUrl, rank: 9999),
+        ];
+        _selectedQualityLabel = 'Auto';
+      });
+    } else {
+      _qualityOptions = [
+        _QualityOption(label: 'Auto', url: initialUrl, rank: 9999),
+      ];
+      _selectedQualityLabel = 'Auto';
+    }
+
     final ok = await _setupPlayer(url: initialUrl, shouldAutoPlay: true);
     if (ok) {
       await _loadQualityOptions(initialUrl);
@@ -208,96 +410,25 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   }
 
   Future<void> _loadQualityOptions(String sourceUrl) async {
-    final uri = Uri.tryParse(sourceUrl);
-    final defaultOption = _QualityOption(
-      label: 'Auto',
-      url: sourceUrl,
-      rank: 9999,
+    developer.log('[VideoPlayerPage] Loading quality options for: $sourceUrl');
+
+    final client = VideoPlayerPage.httpClientFactory();
+    final parsedOptions = await _parseVideoPlayerQualityOptions(
+      sourceUrl: sourceUrl,
+      client: client,
     );
+    client.close();
 
-    if (uri == null || !uri.path.toLowerCase().endsWith('.m3u8')) {
-      if (mounted) {
-        setState(() {
-          _qualityOptions = [defaultOption];
-          _selectedQualityLabel = 'Auto';
-        });
-      }
-      return;
+    developer.log('[VideoPlayerPage] Parsed ${parsedOptions.length} quality options');
+    for (final option in parsedOptions) {
+      developer.log('[VideoPlayerPage]   - ${option.label}: ${option.url}');
     }
 
-    try {
-      final response = await http
-          .get(
-            uri,
-            headers: const {
-              'User-Agent':
-                  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            },
-          )
-          .timeout(const Duration(seconds: 8));
-      if (response.statusCode != 200) return;
-      if (!response.body.contains('#EXT-X-STREAM-INF')) {
-        if (mounted) {
-          setState(() {
-            _qualityOptions = [defaultOption];
-            _selectedQualityLabel = 'Auto';
-          });
-        }
-        return;
-      }
-
-      final lines = const LineSplitter().convert(response.body);
-      final variants = <_QualityOption>[];
-
-      for (var i = 0; i < lines.length; i++) {
-        final line = lines[i].trim();
-        if (!line.startsWith('#EXT-X-STREAM-INF')) continue;
-
-        final heightMatch = RegExp(
-          r'RESOLUTION=\d+x(\d+)',
-          caseSensitive: false,
-        ).firstMatch(line);
-        final height = int.tryParse(heightMatch?.group(1) ?? '');
-
-        String? nextPath;
-        for (var j = i + 1; j < lines.length; j++) {
-          final next = lines[j].trim();
-          if (next.isEmpty || next.startsWith('#')) continue;
-          nextPath = next;
-          break;
-        }
-        if (nextPath == null) continue;
-
-        final resolvedUrl = uri.resolve(nextPath).toString();
-        final label = height != null
-            ? '${height}p'
-            : 'Varian ${variants.length + 1}';
-        variants.add(
-          _QualityOption(label: label, url: resolvedUrl, rank: height ?? 0),
-        );
-      }
-
-      if (!mounted || variants.isEmpty) return;
-
-      final byLabel = <String, _QualityOption>{};
-      for (final option in variants) {
-        byLabel[option.label] = option;
-      }
-
-      final sorted = byLabel.values.toList()
-        ..sort((a, b) => b.rank.compareTo(a.rank));
-
-      setState(() {
-        _qualityOptions = [defaultOption, ...sorted];
-        _selectedQualityLabel = 'Auto';
-      });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _qualityOptions = [defaultOption];
-        _selectedQualityLabel = 'Auto';
-      });
-    }
+    if (!mounted) return;
+    setState(() {
+      _qualityOptions = parsedOptions;
+      _selectedQualityLabel = 'Auto';
+    });
   }
 
   Future<void> _switchQuality(_QualityOption option) async {
@@ -376,17 +507,23 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     _isAutoAdvancing = true;
     _hasHandledCurrentCompletion = true;
 
+    final targetUrl = _playlistUrls[targetIndex];
+    final targetDefaultOption = _QualityOption(
+      label: 'Auto',
+      url: targetUrl,
+      rank: 9999,
+    );
+
     if (mounted) {
       setState(() {
         _selectedQualityLabel = 'Auto';
-        _qualityOptions = const [];
+        _qualityOptions = [targetDefaultOption];
       });
     } else {
       _selectedQualityLabel = 'Auto';
-      _qualityOptions = const [];
+      _qualityOptions = [targetDefaultOption];
     }
 
-    final targetUrl = _playlistUrls[targetIndex];
     final targetTitle =
         (_playlistTitles.length > targetIndex &&
             _playlistTitles[targetIndex].isNotEmpty)
@@ -494,36 +631,46 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
-          if (_qualityOptions.isNotEmpty)
-            PopupMenuButton<String>(
-              tooltip: 'Pilih kualitas',
-              icon: const Icon(Icons.more_vert),
-              onSelected: (selectedUrl) {
-                final selected = _qualityOptions.firstWhere(
-                  (q) => q.url == selectedUrl,
-                  orElse: () => _qualityOptions.first,
+          PopupMenuButton<String>(
+            tooltip: 'Pilih kualitas',
+            icon: const Icon(Icons.more_vert),
+            onSelected: (selectedUrl) {
+              if (selectedUrl.isEmpty || _qualityOptions.isEmpty) return;
+              final selected = _qualityOptions.firstWhere(
+                (q) => q.url == selectedUrl,
+                orElse: () => _qualityOptions.first,
+              );
+              _switchQuality(selected);
+            },
+            itemBuilder: (context) {
+              if (_qualityOptions.isEmpty) {
+                return const [
+                  PopupMenuItem<String>(
+                    enabled: false,
+                    value: '',
+                    child: Text('Memuat kualitas...'),
+                  ),
+                ];
+              }
+
+              return _qualityOptions.map((option) {
+                final isSelected = option.label == _selectedQualityLabel;
+                return PopupMenuItem<String>(
+                  value: option.url,
+                  child: Row(
+                    children: [
+                      if (isSelected)
+                        const Icon(Icons.check, size: 16)
+                      else
+                        const SizedBox(width: 16),
+                      const SizedBox(width: 8),
+                      Text(option.label),
+                    ],
+                  ),
                 );
-                _switchQuality(selected);
-              },
-              itemBuilder: (context) {
-                return _qualityOptions.map((option) {
-                  final isSelected = option.label == _selectedQualityLabel;
-                  return PopupMenuItem<String>(
-                    value: option.url,
-                    child: Row(
-                      children: [
-                        if (isSelected)
-                          const Icon(Icons.check, size: 16)
-                        else
-                          const SizedBox(width: 16),
-                        const SizedBox(width: 8),
-                        Text(option.label),
-                      ],
-                    ),
-                  );
-                }).toList();
-              },
-            ),
+              }).toList();
+            },
+          ),
         ],
       ),
       extendBodyBehindAppBar: true,
