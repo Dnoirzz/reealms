@@ -181,7 +181,10 @@ export function movieFromJson(json: JsonRecord, sourceType: ContentSource): Movi
     sourceType: normalizedSource,
     genres: [...genres],
     episodes: [],
-    totalChapters: numberValue(json.total_chapters),
+    totalChapters:
+      numberValue(json.total_chapters) ||
+      numberValue(json.chapterCount) ||
+      numberValue(json.chapter_count),
   };
 }
 

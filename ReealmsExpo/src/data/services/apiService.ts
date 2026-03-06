@@ -52,6 +52,27 @@ function arrayFromUnknown(value: unknown): unknown[] {
   return Array.isArray(value) ? value : [];
 }
 
+function stringFromUnknown(value: unknown): string {
+  if (typeof value === 'string') {
+    return value.trim();
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value);
+  }
+
+  return '';
+}
+
+function numberFromUnknown(value: unknown): number {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value;
+  }
+
+  const parsed = Number(stringFromUnknown(value));
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 function firstListCandidate(payload: unknown, keys: string[]): unknown[] {
   if (Array.isArray(payload)) {
     return payload;
@@ -1402,7 +1423,7 @@ export class ApiService {
       }
     }
 
-    return [];
+    return this.getDramaboxContentFromOfficialPage();
   }
 
   private async getKomikContent() {
@@ -1511,9 +1532,70 @@ export class ApiService {
       const payload = await this.requestJson<unknown>(
         `${appConstants.dramaboxBaseUrl}/allepisode?bookId=${encodeURIComponent(movieId)}&lang=in`,
       );
-      return arrayFromUnknown(payload).filter(isJsonRecord).map(episodeFromJson);
+      const episodes = arrayFromUnknown(payload).filter(isJsonRecord).map(episodeFromJson);
+      if (episodes.length > 0) {
+        return episodes;
+      }
     } catch (error) {
       console.warn('Dramabox episodes failed:', error);
+    }
+
+    return this.getDramaboxEpisodesFromOfficialPage(movieId);
+  }
+
+  private async getDramaboxContentFromOfficialPage(): Promise<Movie[]> {
+    try {
+      const html = await this.requestText(`${appConstants.dramaboxWebBaseUrl}/`, { timeoutMs: 10000 });
+      const nextDataMatch = html.match(/<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/i);
+      if (!nextDataMatch?.[1]) {
+        return [];
+      }
+
+      const payload = JSON.parse(nextDataMatch[1]) as unknown;
+      const pageProps =
+        isJsonRecord(payload) &&
+        isJsonRecord(payload.props) &&
+        isJsonRecord(payload.props.pageProps)
+          ? payload.props.pageProps
+          : null;
+
+      if (!pageProps) {
+        return [];
+      }
+
+      const candidates: JsonRecord[] = [];
+      const seenIds = new Set<string>();
+      const pushMovieCandidate = (entry: unknown) => {
+        if (!isJsonRecord(entry)) {
+          return;
+        }
+
+        const normalized = movieFromJson(entry, 'dramabox');
+        if (!normalized.id || seenIds.has(normalized.id)) {
+          return;
+        }
+
+        seenIds.add(normalized.id);
+        candidates.push(entry);
+      };
+
+      for (const entry of arrayFromUnknown(pageProps.bigList)) {
+        pushMovieCandidate(entry);
+      }
+
+      for (const section of arrayFromUnknown(pageProps.smallData)) {
+        if (!isJsonRecord(section)) {
+          continue;
+        }
+
+        for (const entry of arrayFromUnknown(section.items)) {
+          pushMovieCandidate(entry);
+        }
+      }
+
+      return candidates.map((entry) => movieFromJson(entry, 'dramabox'));
+    } catch (error) {
+      console.warn('Official DramaBox home fallback failed:', error);
       return [];
     }
   }
@@ -1564,6 +1646,62 @@ export class ApiService {
         .reverse();
     } catch (error) {
       console.warn('Anime episodes failed:', error);
+      return [];
+    }
+  }
+
+  private async getDramaboxEpisodesFromOfficialPage(movieId: string): Promise<Episode[]> {
+    if (!movieId) {
+      return [];
+    }
+
+    try {
+      const html = await this.requestText(
+        `${appConstants.dramaboxWebBaseUrl}/movie/${encodeURIComponent(movieId)}/reealms-fallback`,
+        { timeoutMs: 10000 },
+      );
+      const nextDataMatch = html.match(/<script id="__NEXT_DATA__" type="application\/json">([\s\S]*?)<\/script>/i);
+      if (!nextDataMatch?.[1]) {
+        return [];
+      }
+
+      const payload = JSON.parse(nextDataMatch[1]) as unknown;
+      const pageProps =
+        isJsonRecord(payload) &&
+        isJsonRecord(payload.props) &&
+        isJsonRecord(payload.props.pageProps)
+          ? payload.props.pageProps
+          : null;
+
+      const chapterList = pageProps ? arrayFromUnknown(pageProps.chapterList) : [];
+      if (chapterList.length === 0) {
+        return [];
+      }
+
+      return chapterList
+        .filter(isJsonRecord)
+        .map((entry, index) => {
+          const zeroBasedIndex = numberFromUnknown(entry.index);
+          const hasIndex = Object.prototype.hasOwnProperty.call(entry, 'index');
+          const order = hasIndex ? zeroBasedIndex + 1 : index + 1;
+          const streamUrl =
+            stringFromUnknown(entry.m3u8Url) ||
+            stringFromUnknown(entry.mp4) ||
+            stringFromUnknown(entry.playUrl) ||
+            stringFromUnknown(entry.url);
+
+          return {
+            id: stringFromUnknown(entry.id) || stringFromUnknown(entry.chapterId) || `${movieId}-${order}`,
+            title: `Episode ${order}`,
+            streamUrl,
+            order,
+            duration: stringFromUnknown(entry.duration),
+          } satisfies Episode;
+        })
+        .filter((entry) => entry.streamUrl.length > 0)
+        .sort((left, right) => left.order - right.order);
+    } catch (error) {
+      console.warn('Official DramaBox episode fallback failed:', error);
       return [];
     }
   }

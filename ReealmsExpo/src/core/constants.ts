@@ -6,6 +6,7 @@ export const appConstants = {
   appName: 'Reealms',
   captainBaseUrl: 'https://captain.sapimu.au',
   dramaboxBaseUrl: 'https://dramabox.sansekai.my.id/api/dramabox',
+  dramaboxWebBaseUrl: 'https://www.dramaboxdb.com',
   komikBaseUrl: 'https://api.sansekai.my.id/api',
   animeBaseUrl: 'https://otakudesu-unofficial-api.vercel.app/v1',
   defaultCaptainToken:
