@@ -390,7 +390,7 @@ export function DramaPlayerScreen({
             {currentEpisode.title}
           </Text>
           <Text numberOfLines={1} style={styles.subtitle}>
-            Episode {currentIndex + 1} of {episodes.length}
+            Episode {currentIndex + 1} dari {episodes.length}
           </Text>
         </View>
         <View style={styles.headerMetaColumn}>
@@ -451,7 +451,7 @@ export function DramaPlayerScreen({
         {statusEvent?.status === 'loading' ? (
           <View style={styles.videoOverlay}>
             <ActivityIndicator color={palette.accent} size="large" />
-            <Text style={styles.videoOverlayText}>Loading stream...</Text>
+            <Text style={styles.videoOverlayText}>Menyiapkan stream...</Text>
           </View>
         ) : null}
       </View>
@@ -495,11 +495,11 @@ export function DramaPlayerScreen({
       </View>
 
       <View style={styles.statusCard}>
-        <Text style={styles.statusTitle}>Player status</Text>
+        <Text style={styles.statusTitle}>Status player</Text>
         <Text style={styles.statusBody}>{statusMessage}</Text>
       </View>
 
-      <Text style={styles.queueTitle}>Episode queue</Text>
+      <Text style={styles.queueTitle}>Daftar episode</Text>
       <ScrollView
         contentContainerStyle={[styles.queueRow, { paddingBottom: Math.max(insets.bottom + 20, 20) }]}
         horizontal
@@ -531,13 +531,13 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: palette.background,
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
   },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    marginBottom: 14,
+    gap: 14,
+    marginBottom: 18,
   },
   iconButton: {
     width: 42,
@@ -545,32 +545,32 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.surface,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
   },
   headerCopy: {
     flex: 1,
-    gap: 3,
+    gap: 4,
   },
   headerMetaColumn: {
     alignItems: 'flex-end',
-    gap: 8,
+    gap: 10,
   },
   title: {
     color: palette.textPrimary,
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: '700',
   },
   subtitle: {
-    color: palette.textMuted,
+    color: palette.textFaint,
     fontSize: 12,
   },
   headerBadge: {
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 999,
-    backgroundColor: palette.surface,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
   },
@@ -583,10 +583,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
     borderRadius: 999,
-    backgroundColor: palette.surface,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
   },
@@ -600,20 +600,20 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   qualityTrayScroll: {
-    marginBottom: 14,
+    marginBottom: 16,
   },
   qualityTray: {
     gap: 10,
-    paddingBottom: 2,
+    paddingBottom: 4,
   },
   qualityPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 13,
+    paddingVertical: 9,
     borderRadius: 999,
-    backgroundColor: palette.surface,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
   },
@@ -631,7 +631,7 @@ const styles = StyleSheet.create({
   },
   playerCard: {
     overflow: 'hidden',
-    borderRadius: 28,
+    borderRadius: 30,
     borderWidth: 1,
     borderColor: palette.border,
     backgroundColor: '#000000',
@@ -647,20 +647,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 12,
-    backgroundColor: 'rgba(0, 0, 0, 0.18)',
+    backgroundColor: 'rgba(0, 0, 0, 0.28)',
   },
   videoOverlayText: {
     color: palette.textPrimary,
     fontSize: 14,
+    fontWeight: '600',
   },
   progressBlock: {
-    marginTop: 16,
-    gap: 8,
+    marginTop: 18,
+    gap: 10,
   },
   progressTrack: {
-    height: 6,
+    height: 8,
     borderRadius: 999,
-    backgroundColor: palette.surface,
+    backgroundColor: palette.surfaceOverlay,
     overflow: 'hidden',
   },
   bufferTrack: {
@@ -682,28 +683,30 @@ const styles = StyleSheet.create({
   progressText: {
     color: palette.textMuted,
     fontSize: 12,
+    fontWeight: '600',
   },
   controlsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10,
-    marginTop: 16,
+    marginTop: 18,
   },
   controlButton: {
     minWidth: 74,
-    minHeight: 54,
+    minHeight: 56,
     paddingHorizontal: 14,
-    borderRadius: 18,
+    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
-    backgroundColor: palette.surface,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
   },
   controlButtonPrimary: {
     backgroundColor: palette.accent,
     borderColor: palette.accentStrong,
+    minWidth: 92,
   },
   controlDisabled: {
     opacity: 0.45,
@@ -719,10 +722,10 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   statusCard: {
-    marginTop: 16,
-    padding: 16,
-    borderRadius: 20,
-    backgroundColor: palette.surface,
+    marginTop: 18,
+    padding: 18,
+    borderRadius: 24,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
     gap: 8,
@@ -738,21 +741,21 @@ const styles = StyleSheet.create({
     lineHeight: 19,
   },
   queueTitle: {
-    marginTop: 18,
+    marginTop: 20,
     color: palette.textPrimary,
     fontSize: 16,
     fontWeight: '700',
   },
   queueRow: {
-    gap: 12,
-    paddingTop: 12,
+    gap: 14,
+    paddingTop: 14,
   },
   queueCard: {
-    width: 150,
-    minHeight: 92,
-    padding: 14,
-    borderRadius: 20,
-    backgroundColor: palette.surface,
+    width: 158,
+    minHeight: 100,
+    padding: 15,
+    borderRadius: 24,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
     gap: 8,

@@ -227,7 +227,7 @@ export function AnimeWebViewScreen({
               {title}
             </Text>
             <Text numberOfLines={1} style={styles.subtitle}>
-              Anime playback via in-app WebView
+              Playback anime langsung
             </Text>
           </View>
           <View style={styles.headerMetaColumn}>
@@ -305,9 +305,9 @@ export function AnimeWebViewScreen({
         {!pageLoaded || (!messageState.videoReady && !messageState.terminalError) ? (
           <View style={styles.loadingOverlay}>
             <ActivityIndicator color={palette.accent} size="large" />
-            <Text style={styles.loadingTitle}>Preparing anime player</Text>
+            <Text style={styles.loadingTitle}>Menyiapkan player anime</Text>
             <Text style={styles.loadingBody}>
-              Loading the direct stream inside the app and retrying alternate hosts if needed.
+              Memuat stream langsung di dalam aplikasi dan mencoba host alternatif saat dibutuhkan.
             </Text>
           </View>
         ) : null}
@@ -315,7 +315,7 @@ export function AnimeWebViewScreen({
 
       {!messageState.isFullscreen ? (
         <View style={styles.statusCard}>
-          <Text style={styles.statusTitle}>Player status</Text>
+          <Text style={styles.statusTitle}>Status player</Text>
           <Text style={styles.statusBody}>{visibleStatusMessage}</Text>
         </View>
       ) : null}
@@ -327,13 +327,13 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: palette.background,
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
   },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10,
-    marginBottom: 14,
+    gap: 14,
+    marginBottom: 18,
   },
   iconButton: {
     width: 42,
@@ -341,35 +341,35 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.surface,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
   },
   headerCopy: {
     flex: 1,
-    gap: 3,
+    gap: 4,
   },
   headerMetaColumn: {
     alignItems: 'flex-end',
-    gap: 8,
+    gap: 10,
   },
   title: {
     color: palette.textPrimary,
-    fontSize: 17,
+    fontSize: 20,
     fontWeight: '700',
   },
   subtitle: {
-    color: palette.textMuted,
+    color: palette.textFaint,
     fontSize: 12,
   },
   qualityTrigger: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
     borderRadius: 999,
-    backgroundColor: palette.surface,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
   },
@@ -383,20 +383,20 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   qualityTrayScroll: {
-    marginBottom: 14,
+    marginBottom: 16,
   },
   qualityTray: {
     gap: 10,
-    paddingBottom: 2,
+    paddingBottom: 4,
   },
   qualityPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 13,
+    paddingVertical: 9,
     borderRadius: 999,
-    backgroundColor: palette.surface,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
   },
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
   webCard: {
     flex: 1,
     overflow: 'hidden',
-    borderRadius: 26,
+    borderRadius: 30,
     borderWidth: 1,
     borderColor: palette.border,
     backgroundColor: '#000000',
@@ -426,7 +426,7 @@ const styles = StyleSheet.create({
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.72)',
+    backgroundColor: 'rgba(0, 0, 0, 0.78)',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 28,
@@ -445,11 +445,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   statusCard: {
-    marginTop: 16,
+    marginTop: 18,
     marginBottom: 20,
-    padding: 16,
-    borderRadius: 20,
-    backgroundColor: palette.surface,
+    padding: 18,
+    borderRadius: 24,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
     gap: 8,

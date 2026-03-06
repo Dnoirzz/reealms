@@ -52,7 +52,11 @@ export function MovieCard({ movie, isFavorite = false, onPress }: MovieCardProps
           <View style={styles.sourceBadge}>
             <Text style={styles.sourceBadgeText}>{prettySourceLabel(movie.sourceType)}</Text>
           </View>
-          {isFavorite ? <Ionicons color={palette.accentGold} name="bookmark" size={18} /> : null}
+          {isFavorite ? (
+            <View style={styles.favoriteBadge}>
+              <Ionicons color={palette.accentGold} name="bookmark" size={15} />
+            </View>
+          ) : null}
         </View>
       </View>
 
@@ -61,11 +65,16 @@ export function MovieCard({ movie, isFavorite = false, onPress }: MovieCardProps
           {movie.title}
         </Text>
         <View style={styles.metaRow}>
-          <Text numberOfLines={1} style={styles.metaText}>
-            {metaLabel}
-          </Text>
+          <View style={styles.metaPill}>
+            <Text numberOfLines={1} style={styles.metaText}>
+              {metaLabel}
+            </Text>
+          </View>
           {movie.rating > 0 ? (
-            <Text style={styles.ratingText}>{movie.rating.toFixed(1)}</Text>
+            <View style={styles.ratingWrap}>
+              <Ionicons color={palette.accentGold} name="star" size={12} />
+              <Text style={styles.ratingText}>{movie.rating.toFixed(1)}</Text>
+            </View>
           ) : null}
         </View>
       </View>
@@ -75,7 +84,7 @@ export function MovieCard({ movie, isFavorite = false, onPress }: MovieCardProps
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 24,
+    borderRadius: 28,
     overflow: 'hidden',
     backgroundColor: palette.surface,
     borderWidth: 1,
@@ -83,10 +92,10 @@ const styles = StyleSheet.create({
   },
   cardPressed: {
     opacity: 0.92,
-    transform: [{ scale: 0.99 }],
+    transform: [{ scale: 0.988 }],
   },
   posterFrame: {
-    aspectRatio: 0.74,
+    aspectRatio: 0.735,
     backgroundColor: palette.surfaceRaised,
   },
   poster: {
@@ -110,48 +119,72 @@ const styles = StyleSheet.create({
   },
   badgeRow: {
     position: 'absolute',
-    top: 12,
-    left: 12,
-    right: 12,
+    top: 14,
+    left: 14,
+    right: 14,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   sourceBadge: {
-    paddingHorizontal: 10,
+    paddingHorizontal: 11,
     paddingVertical: 6,
     borderRadius: 999,
-    backgroundColor: 'rgba(4, 5, 10, 0.72)',
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.12)',
+    borderColor: palette.border,
   },
   sourceBadgeText: {
     color: palette.textPrimary,
     fontSize: 10,
     fontWeight: '700',
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
+  },
+  favoriteBadge: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: palette.surfaceOverlay,
+    borderWidth: 1,
+    borderColor: palette.border,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   copyBlock: {
-    gap: 8,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
+    gap: 10,
+    paddingHorizontal: 15,
+    paddingTop: 14,
+    paddingBottom: 16,
   },
   title: {
     color: palette.textPrimary,
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '700',
-    lineHeight: 18,
+    lineHeight: 20,
   },
   metaRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 8,
+    gap: 10,
     alignItems: 'center',
+  },
+  metaPill: {
+    flex: 1,
+    borderRadius: 999,
+    backgroundColor: palette.surfaceRaised,
+    borderWidth: 1,
+    borderColor: palette.border,
+    paddingHorizontal: 10,
+    paddingVertical: 7,
   },
   metaText: {
     color: palette.textMuted,
     fontSize: 11,
-    flex: 1,
+  },
+  ratingWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   ratingText: {
     color: palette.accentGold,

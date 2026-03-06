@@ -1,4 +1,5 @@
 import React from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import {
   ActivityIndicator,
@@ -12,7 +13,7 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { palette } from '../../core/theme';
+import { gradients, palette } from '../../core/theme';
 import { ApiService } from '../../data/services/apiService';
 import type { Episode, Movie } from '../../data/models/media';
 import type { AnimePlaybackManifest } from '../../data/models/playback';
@@ -33,7 +34,7 @@ const episodeRangeSize = 30;
 
 function buildSynopsis(movie: Movie) {
   if (movie.synopsis.startsWith('http')) {
-    return 'This title uses a provider page URL as its source reference. Episodes and playback are resolved from the provider at runtime.';
+    return 'Episode dan playback untuk judul ini diambil langsung dari halaman penyedia saat dibuka.';
   }
 
   if (movie.synopsis) {
@@ -41,6 +42,19 @@ function buildSynopsis(movie: Movie) {
   }
 
   return 'Belum ada deskripsi untuk konten ini.';
+}
+
+function prettySourceLabel(sourceType: string) {
+  switch (sourceType) {
+    case 'dramabox':
+      return 'Drama';
+    case 'otakudesu':
+      return 'Anime';
+    case 'komik':
+      return 'Komik';
+    default:
+      return sourceType;
+  }
 }
 
 function episodeSortKey(episode: Episode) {
@@ -246,13 +260,13 @@ export function DetailScreen({ movie, onBack }: DetailScreenProps) {
         isLoading ? (
           <View style={styles.loadingWrap}>
             <ActivityIndicator color={palette.accent} size="large" />
-            <Text style={styles.loadingText}>Loading episodes and chapters...</Text>
+            <Text style={styles.loadingText}>Memuat episode dan chapter...</Text>
           </View>
         ) : (
           <EmptyState
-            description="The list did not come back from the provider yet. This can happen with rate limits or missing source data."
+            description="Daftar belum kembali dari penyedia. Biasanya ini terjadi saat sumber sedang lambat atau datanya belum tersedia."
             icon="albums-outline"
-            title="No entries found"
+            title="Belum ada daftar"
           />
         )
       }
@@ -277,7 +291,12 @@ export function DetailScreen({ movie, onBack }: DetailScreenProps) {
             </Pressable>
           </View>
 
-          <View style={[styles.heroCard, width >= 760 ? styles.heroCardWide : null]}>
+          <LinearGradient
+            colors={gradients.heroPanel}
+            end={{ x: 1, y: 1 }}
+            start={{ x: 0, y: 0 }}
+            style={[styles.heroCard, width >= 760 ? styles.heroCardWide : null]}
+          >
             {movie.posterUrl ? (
               <Image source={{ uri: movie.posterUrl }} style={[styles.poster, width >= 760 ? styles.posterWide : null]} />
             ) : (
@@ -286,14 +305,22 @@ export function DetailScreen({ movie, onBack }: DetailScreenProps) {
               </View>
             )}
             <View style={styles.heroCopy}>
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{movie.sourceType.toUpperCase()}</Text>
-              </View>
+              <Text style={styles.eyebrow}>Unggulan {prettySourceLabel(movie.sourceType)}</Text>
               <Text style={styles.title}>{movie.title}</Text>
-              <Text style={styles.metaText}>
-                {movie.year || 'Unknown year'}
-                {movie.rating > 0 ? `  •  ${movie.rating.toFixed(1)}` : ''}
-              </Text>
+              <View style={styles.metaRow}>
+                <View style={styles.metaPill}>
+                  <Text style={styles.metaPillText}>{prettySourceLabel(movie.sourceType)}</Text>
+                </View>
+                <View style={styles.metaPill}>
+                  <Text style={styles.metaPillText}>{movie.year || 'Tahun tidak diketahui'}</Text>
+                </View>
+                {movie.rating > 0 ? (
+                  <View style={styles.metaPill}>
+                    <Ionicons color={palette.accentGold} name="star" size={12} />
+                    <Text style={styles.metaPillText}>{movie.rating.toFixed(1)}</Text>
+                  </View>
+                ) : null}
+              </View>
               <Text style={styles.synopsis}>{buildSynopsis(movie)}</Text>
 
               {movie.genres.length > 0 ? (
@@ -308,19 +335,29 @@ export function DetailScreen({ movie, onBack }: DetailScreenProps) {
 
               <View style={styles.actionRow}>
                 <ActionButton
-                  label={isFavorite ? 'Remove favorite' : 'Save favorite'}
+                  label={isFavorite ? 'Tersimpan' : 'Simpan favorit'}
                   onPress={() => void toggleFavorite(movie)}
                   variant="secondary"
+                  style={styles.actionButton}
                 />
-                <ActionButton label="Save to history" onPress={() => void addToHistory(movie)} />
+                <ActionButton
+                  label="Tambah ke riwayat"
+                  onPress={() => void addToHistory(movie)}
+                  variant="ghost"
+                  style={styles.actionButton}
+                />
               </View>
             </View>
-          </View>
+          </LinearGradient>
 
           <View style={styles.sectionHeader}>
-            <View>
+            <View style={styles.sectionHeaderCopy}>
+              <Text style={styles.sectionEyebrow}>{movie.sourceType === 'komik' ? 'Reader' : 'Daftar'}</Text>
               <Text style={styles.sectionTitle}>{movie.sourceType === 'komik' ? 'Chapters' : 'Episodes'}</Text>
-              <Text style={styles.sectionSubtitle}>{episodes.length} loaded from the current provider</Text>
+              <Text style={styles.sectionSubtitle}>{episodes.length} tersedia dari sumber aktif</Text>
+            </View>
+            <View style={styles.sectionCountPill}>
+              <Text style={styles.sectionCountText}>{episodes.length}</Text>
             </View>
           </View>
 
@@ -396,10 +433,10 @@ export function DetailScreen({ movie, onBack }: DetailScreenProps) {
                 </Text>
                 <Text style={styles.episodeCaption}>
                   {movie.sourceType === 'komik'
-                    ? 'Tap to open reader'
+                    ? 'Tap untuk buka reader'
                     : movie.sourceType === 'otakudesu'
-                      ? 'Tap to play directly'
-                      : 'Tap to prepare playback'}
+                      ? 'Tap untuk putar langsung'
+                      : 'Tap untuk mulai playback'}
                 </Text>
               </View>
             </View>
@@ -416,7 +453,7 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 18,
+    marginBottom: 20,
   },
   iconButton: {
     width: 42,
@@ -429,8 +466,12 @@ const styles = StyleSheet.create({
     borderColor: palette.border,
   },
   heroCard: {
-    gap: 18,
-    marginBottom: 24,
+    gap: 20,
+    marginBottom: 28,
+    padding: 18,
+    borderRadius: 32,
+    borderWidth: 1,
+    borderColor: palette.border,
   },
   heroCardWide: {
     flexDirection: 'row',
@@ -439,7 +480,7 @@ const styles = StyleSheet.create({
   poster: {
     width: '100%',
     aspectRatio: 0.74,
-    borderRadius: 30,
+    borderRadius: 28,
     backgroundColor: palette.surfaceRaised,
   },
   posterWide: {
@@ -448,7 +489,7 @@ const styles = StyleSheet.create({
   posterFallback: {
     width: '100%',
     aspectRatio: 0.74,
-    borderRadius: 30,
+    borderRadius: 28,
     backgroundColor: palette.surfaceRaised,
     alignItems: 'center',
     justifyContent: 'center',
@@ -460,37 +501,46 @@ const styles = StyleSheet.create({
   },
   heroCopy: {
     flex: 1,
-    gap: 12,
+    gap: 14,
   },
-  badge: {
-    alignSelf: 'flex-start',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: palette.surface,
-    borderWidth: 1,
-    borderColor: palette.border,
-  },
-  badgeText: {
-    color: palette.accentCool,
-    fontSize: 11,
+  eyebrow: {
+    color: palette.accentGold,
+    fontSize: 10,
     fontWeight: '700',
-    letterSpacing: 1.1,
+    letterSpacing: 1.6,
+    textTransform: 'uppercase',
   },
   title: {
     color: palette.textPrimary,
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: '700',
-    lineHeight: 34,
+    lineHeight: 36,
   },
-  metaText: {
-    color: palette.textMuted,
-    fontSize: 13,
+  metaRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  metaPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 11,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: palette.surfaceOverlay,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  metaPillText: {
+    color: palette.textSecondary,
+    fontSize: 11,
+    fontWeight: '700',
   },
   synopsis: {
     color: palette.textSecondary,
     fontSize: 14,
-    lineHeight: 22,
+    lineHeight: 23,
   },
   genreRow: {
     flexDirection: 'row',
@@ -501,7 +551,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 999,
-    backgroundColor: palette.surface,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
   },
@@ -515,36 +565,70 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     gap: 12,
   },
+  actionButton: {
+    minWidth: 156,
+  },
   sectionHeader: {
-    marginBottom: 14,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  sectionHeaderCopy: {
+    flex: 1,
+  },
+  sectionEyebrow: {
+    color: palette.accentGold,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1.6,
+    textTransform: 'uppercase',
   },
   sectionTitle: {
     color: palette.textPrimary,
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: '700',
   },
   sectionSubtitle: {
     color: palette.textMuted,
     fontSize: 13,
     marginTop: 4,
+    lineHeight: 20,
+  },
+  sectionCountPill: {
+    minWidth: 42,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: palette.surfaceRaised,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  sectionCountText: {
+    color: palette.textPrimary,
+    fontSize: 12,
+    fontWeight: '700',
   },
   rangeRow: {
     gap: 10,
     marginBottom: 8,
   },
   rangePill: {
-    minHeight: 36,
-    paddingHorizontal: 14,
+    minHeight: 38,
+    paddingHorizontal: 16,
     borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.surface,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
   },
   rangePillSelected: {
-    backgroundColor: palette.surfaceRaised,
-    borderColor: palette.borderStrong,
+    backgroundColor: palette.accentSoft,
+    borderColor: palette.accentStrong,
   },
   rangeText: {
     color: palette.textMuted,
@@ -555,8 +639,8 @@ const styles = StyleSheet.create({
     color: palette.textPrimary,
   },
   episodeGridCard: {
-    borderRadius: 18,
-    backgroundColor: palette.surface,
+    borderRadius: 22,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
     alignItems: 'center',
@@ -569,16 +653,16 @@ const styles = StyleSheet.create({
   },
   episodeNumber: {
     color: palette.textPrimary,
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '700',
   },
   episodeListCard: {
-    minHeight: 80,
+    minHeight: 86,
     marginBottom: 12,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderRadius: 22,
-    backgroundColor: palette.surface,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
+    borderRadius: 24,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
     flexDirection: 'row',
@@ -593,8 +677,8 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   episodeIndexCircle: {
-    width: 44,
-    height: 44,
+    width: 48,
+    height: 48,
     borderRadius: 999,
     backgroundColor: palette.surfaceRaised,
     alignItems: 'center',
@@ -612,7 +696,7 @@ const styles = StyleSheet.create({
   episodeTitle: {
     color: palette.textPrimary,
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   episodeCaption: {
     color: palette.textMuted,
@@ -621,7 +705,7 @@ const styles = StyleSheet.create({
   loadingWrap: {
     alignItems: 'center',
     gap: 14,
-    paddingVertical: 44,
+    paddingVertical: 52,
   },
   loadingText: {
     color: palette.textMuted,

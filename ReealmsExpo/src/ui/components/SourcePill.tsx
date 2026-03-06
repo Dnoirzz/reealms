@@ -21,7 +21,13 @@ export function SourcePill({ option, selected, onPress }: SourcePillProps) {
         pressed ? styles.pillPressed : null,
       ]}
     >
-      <View style={[styles.iconWrap, selected ? { backgroundColor: option.accent } : null]}>
+      <View style={[styles.accentBar, selected ? { backgroundColor: option.accent } : null]} />
+      <View
+        style={[
+          styles.iconWrap,
+          selected ? { backgroundColor: option.accent, borderColor: option.accent } : null,
+        ]}
+      >
         <Ionicons
           color={selected ? palette.background : palette.textSecondary}
           name={option.icon}
@@ -40,15 +46,18 @@ export function SourcePill({ option, selected, onPress }: SourcePillProps) {
 
 const styles = StyleSheet.create({
   pill: {
-    width: 188,
-    minHeight: 86,
-    padding: 14,
-    borderRadius: 22,
+    width: 176,
+    minHeight: 82,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    borderRadius: 24,
     backgroundColor: palette.surface,
     borderWidth: 1,
     borderColor: palette.border,
     flexDirection: 'row',
     gap: 12,
+    position: 'relative',
+    overflow: 'hidden',
   },
   pillSelected: {
     backgroundColor: palette.surfaceRaised,
@@ -57,21 +66,32 @@ const styles = StyleSheet.create({
   pillPressed: {
     opacity: 0.92,
   },
+  accentBar: {
+    position: 'absolute',
+    left: 0,
+    top: 14,
+    bottom: 14,
+    width: 3,
+    borderRadius: 999,
+    backgroundColor: 'transparent',
+  },
   iconWrap: {
-    width: 34,
-    height: 34,
-    borderRadius: 12,
+    width: 38,
+    height: 38,
+    borderRadius: 14,
     backgroundColor: palette.surfaceRaised,
+    borderWidth: 1,
+    borderColor: palette.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
   copy: {
     flex: 1,
-    gap: 4,
+    gap: 6,
   },
   label: {
     color: palette.textPrimary,
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '700',
   },
   labelSelected: {
@@ -80,6 +100,6 @@ const styles = StyleSheet.create({
   blurb: {
     color: palette.textMuted,
     fontSize: 11,
-    lineHeight: 16,
+    lineHeight: 15,
   },
 });

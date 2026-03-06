@@ -1,9 +1,11 @@
 import React from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import {
   ActivityIndicator,
   FlatList,
   Image,
+  Pressable,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -24,6 +26,32 @@ type HomeScreenProps = {
   onOpenMovie: (movie: Movie) => void;
 };
 
+function getRailTitle(sourceId: string) {
+  switch (sourceId) {
+    case 'dramabox':
+      return 'Drama pilihan';
+    case 'otakudesu':
+      return 'Anime terbaru';
+    case 'komik':
+      return 'Komik pilihan';
+    default:
+      return 'Katalog pilihan';
+  }
+}
+
+function getRailSubtitle(sourceId: string) {
+  switch (sourceId) {
+    case 'dramabox':
+      return 'Cerita vertikal yang lagi ramai di Dramabox.';
+    case 'otakudesu':
+      return 'Episode dan rilisan anime terbaru dari Otakudesu.';
+    case 'komik':
+      return 'Chapter dan seri komik yang lagi update.';
+    default:
+      return 'Konten pilihan yang siap Anda buka sekarang.';
+  }
+}
+
 export function HomeScreen({ onOpenMovie }: HomeScreenProps) {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
@@ -43,68 +71,121 @@ export function HomeScreen({ onOpenMovie }: HomeScreenProps) {
   const cardWidth = (width - horizontalPadding * 2 - gap * (columnCount - 1)) / columnCount;
   const favoriteIds = React.useMemo(() => new Set(favorites.map((movie) => movie.id)), [favorites]);
   const activeSource = sourceOptions.find((option) => option.id === currentSource) ?? sourceOptions[0];
+  const featuredMovie = history[0] ?? homeMovies[0] ?? null;
+  const heroDescription =
+    featuredMovie?.synopsis?.trim() ||
+    `Pilihan ${activeSource.label.toLowerCase()} terbaru yang siap dilanjutkan di Reealms.`;
 
   return (
-    <>
-      <FlatList
-        contentContainerStyle={{
-          paddingBottom: 28,
-          paddingHorizontal: horizontalPadding,
-          paddingTop: insets.top + 24,
-        }}
-        columnWrapperStyle={columnCount > 1 ? { justifyContent: 'space-between' } : undefined}
-        data={homeMovies}
-        key={columnCount}
-        keyExtractor={(item) => item.id}
-        ListEmptyComponent={
-          isLoading ? (
-            <View style={styles.loadingWrap}>
-              <ActivityIndicator color={palette.accent} size="large" />
-              <Text style={styles.loadingText}>Fetching the first Expo feed from {activeSource.label}...</Text>
-            </View>
-          ) : (
-            <EmptyState
-              description="The selected source did not return content right now. Pull to retry or switch source."
-              icon="cloud-offline-outline"
-              title="No content yet"
-            />
-          )
-        }
-        ListHeaderComponent={
-          <View style={styles.headerBlock}>
-            <LinearGradient
-              colors={gradients.cardGlow}
-              end={{ x: 1, y: 1 }}
-              start={{ x: 0, y: 0 }}
-              style={styles.heroCard}
-            >
-              <View style={styles.heroTopRow}>
-                <View style={styles.brandLockup}>
-                  <Image source={require('../../../assets/branding/logo.png')} style={styles.logo} />
-                  <View style={styles.brandCopy}>
-                    <Text style={styles.eyebrow}>Expo migration</Text>
-                    <Text style={styles.brandTitle}>Reealms</Text>
-                  </View>
-                </View>
-                <View style={styles.liveBadge}>
-                  <Text style={styles.liveBadgeText}>Live data</Text>
+    <FlatList
+      contentContainerStyle={{
+        paddingBottom: 28,
+        paddingHorizontal: horizontalPadding,
+        paddingTop: insets.top + 24,
+      }}
+      columnWrapperStyle={columnCount > 1 ? { justifyContent: 'space-between' } : undefined}
+      data={homeMovies}
+      key={columnCount}
+      keyExtractor={(item) => item.id}
+      ListEmptyComponent={
+        isLoading ? (
+          <View style={styles.loadingWrap}>
+            <ActivityIndicator color={palette.accent} size="large" />
+            <Text style={styles.loadingText}>
+              Memuat katalog {activeSource.label.toLowerCase()} untuk Anda...
+            </Text>
+          </View>
+        ) : (
+          <EmptyState
+            description="Sumber yang dipilih belum mengembalikan katalog. Tarik untuk muat ulang atau pindah sumber."
+            icon="cloud-offline-outline"
+            title="Konten belum tersedia"
+          />
+        )
+      }
+      ListHeaderComponent={
+        <View style={styles.headerBlock}>
+          <Pressable
+            disabled={!featuredMovie}
+            onPress={() => {
+              if (featuredMovie) {
+                onOpenMovie(featuredMovie);
+              }
+            }}
+            style={({ pressed }) => [styles.heroCard, pressed ? styles.heroCardPressed : null]}
+          >
+            {featuredMovie?.posterUrl ? (
+              <Image resizeMode="cover" source={{ uri: featuredMovie.posterUrl }} style={styles.heroPoster} />
+            ) : null}
+            <LinearGradient colors={gradients.heroPanel} style={styles.heroGradient} />
+            <LinearGradient colors={gradients.heroScrim} style={styles.heroScrim} />
+            <View style={styles.heroTopRow}>
+              <View style={styles.brandLockup}>
+                <Image source={require('../../../assets/branding/logo.png')} style={styles.logo} />
+                <View style={styles.brandCopy}>
+                  <Text style={styles.eyebrow}>Reealms</Text>
+                  <Text style={styles.brandTitle}>Pilihan premium</Text>
                 </View>
               </View>
-              <Text style={styles.heroHeadline}>Drama, anime, and comics now loaded from a TypeScript shell.</Text>
-              <Text style={styles.heroBody}>
-                This first phase keeps the backend shape and replaces the Flutter home flow with Expo-native state and storage.
+              <View style={styles.liveBadge}>
+                <Text style={styles.liveBadgeText}>{activeSource.label}</Text>
+              </View>
+            </View>
+
+            <View style={styles.heroContent}>
+              <Text style={styles.heroHeadline}>
+                {featuredMovie ? featuredMovie.title : `Masuk ke dunia ${activeSource.label.toLowerCase()}`}
               </Text>
+              <Text numberOfLines={3} style={styles.heroBody}>
+                {heroDescription}
+              </Text>
+              <View style={styles.heroInfoRow}>
+                <View style={styles.heroInfoPill}>
+                  <Ionicons color={palette.accentGold} name="sparkles" size={12} />
+                  <Text style={styles.heroInfoText}>
+                    {featuredMovie?.year || `Katalog ${activeSource.label}`}
+                  </Text>
+                </View>
+                {featuredMovie?.rating ? (
+                  <View style={styles.heroInfoPill}>
+                    <Ionicons color={palette.accentGold} name="star" size={12} />
+                    <Text style={styles.heroInfoText}>{featuredMovie.rating.toFixed(1)}</Text>
+                  </View>
+                ) : null}
+                <View style={styles.heroInfoPill}>
+                  <Ionicons color={palette.accentCool} name="layers-outline" size={12} />
+                  <Text style={styles.heroInfoText}>{homeMovies.length} judul</Text>
+                </View>
+              </View>
               {history[0] ? (
                 <View style={styles.recentCard}>
-                  <Text style={styles.recentLabel}>Recent pick</Text>
+                  <Text style={styles.recentLabel}>Lanjutkan tontonan</Text>
                   <Text numberOfLines={1} style={styles.recentTitle}>
                     {history[0].title}
                   </Text>
+                  <Text numberOfLines={1} style={styles.recentHint}>
+                    Kembali ke detail dan lanjutkan dari koleksi terakhir Anda.
+                  </Text>
                 </View>
               ) : null}
-            </LinearGradient>
+              {featuredMovie ? (
+                <View style={styles.heroActionRow}>
+                  <Text style={styles.heroActionText}>Buka detail</Text>
+                  <Ionicons color={palette.textPrimary} name="arrow-forward" size={16} />
+                </View>
+              ) : null}
+            </View>
+          </Pressable>
 
-            <Text style={styles.sectionTitle}>Sources</Text>
+          <View style={styles.sectionLead}>
+            <Text style={styles.sectionEyebrow}>Jelajah</Text>
+            <Text style={styles.sectionTitle}>Pilih dunia favorit Anda</Text>
+            <Text style={styles.sectionSubtitle}>
+              Setiap sumber punya karakter yang berbeda, tapi tetap terasa satu rumah.
+            </Text>
+          </View>
+
+          <View style={styles.selectorShell}>
             <ScrollView
               horizontal
               contentContainerStyle={styles.sourceRow}
@@ -119,46 +200,67 @@ export function HomeScreen({ onOpenMovie }: HomeScreenProps) {
                 />
               ))}
             </ScrollView>
+          </View>
 
-            <View style={styles.sectionHeadingRow}>
-              <View>
-                <Text style={styles.sectionTitle}>Now loading</Text>
-                <Text style={styles.sectionSubtitle}>{activeSource.blurb}</Text>
-              </View>
+          <View style={styles.sectionHeadingRow}>
+            <View style={styles.sectionCopy}>
+              <Text style={styles.sectionTitle}>{getRailTitle(currentSource)}</Text>
+              <Text style={styles.sectionSubtitle}>{getRailSubtitle(currentSource)}</Text>
+            </View>
+            <View style={styles.sectionCountPill}>
+              <Text style={styles.sectionCountText}>{homeMovies.length}</Text>
             </View>
           </View>
-        }
-        numColumns={columnCount}
-        refreshControl={<RefreshControl onRefresh={refreshHome} refreshing={isLoading} tintColor={palette.accent} />}
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: gap, width: cardWidth }}>
-            <MovieCard isFavorite={favoriteIds.has(item.id)} movie={item} onPress={() => onOpenMovie(item)} />
-          </View>
-        )}
-        showsVerticalScrollIndicator={false}
-      />
-    </>
+        </View>
+      }
+      numColumns={columnCount}
+      refreshControl={<RefreshControl onRefresh={refreshHome} refreshing={isLoading} tintColor={palette.accent} />}
+      renderItem={({ item }) => (
+        <View style={{ marginBottom: gap, width: cardWidth }}>
+          <MovieCard isFavorite={favoriteIds.has(item.id)} movie={item} onPress={() => onOpenMovie(item)} />
+        </View>
+      )}
+      showsVerticalScrollIndicator={false}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   headerBlock: {
-    gap: 20,
-    marginBottom: 20,
+    gap: 24,
+    marginBottom: 24,
   },
   heroCard: {
-    borderRadius: 30,
+    borderRadius: 32,
     borderWidth: 1,
     borderColor: palette.border,
     overflow: 'hidden',
-    padding: 22,
-    gap: 14,
+    minHeight: 310,
+    padding: 24,
+    justifyContent: 'space-between',
+    backgroundColor: palette.surface,
+  },
+  heroCardPressed: {
+    opacity: 0.96,
+    transform: [{ scale: 0.992 }],
+  },
+  heroPoster: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: '100%',
+  },
+  heroGradient: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  heroScrim: {
+    ...StyleSheet.absoluteFillObject,
   },
   heroTopRow: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
-    gap: 10,
+    gap: 12,
+    zIndex: 1,
   },
   brandLockup: {
     flexDirection: 'row',
@@ -166,29 +268,29 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   brandCopy: {
-    gap: 2,
+    gap: 4,
   },
   logo: {
-    width: 52,
-    height: 52,
-    borderRadius: 18,
+    width: 54,
+    height: 54,
+    borderRadius: 20,
   },
   eyebrow: {
-    color: palette.accentCool,
-    fontSize: 11,
-    letterSpacing: 1.2,
+    color: palette.accentGold,
+    fontSize: 10,
+    letterSpacing: 1.6,
     textTransform: 'uppercase',
   },
   brandTitle: {
     color: palette.textPrimary,
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '700',
   },
   liveBadge: {
     paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingVertical: 7,
     borderRadius: 999,
-    backgroundColor: 'rgba(4, 5, 10, 0.46)',
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
   },
@@ -197,58 +299,133 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '700',
   },
+  heroContent: {
+    gap: 14,
+    zIndex: 1,
+  },
   heroHeadline: {
     color: palette.textPrimary,
-    fontSize: 24,
+    fontSize: 29,
     fontWeight: '700',
-    lineHeight: 31,
+    lineHeight: 36,
   },
   heroBody: {
     color: palette.textSecondary,
     fontSize: 14,
-    lineHeight: 22,
+    lineHeight: 23,
+  },
+  heroInfoRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  heroInfoPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 11,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: palette.surfaceOverlay,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  heroInfoText: {
+    color: palette.textSecondary,
+    fontSize: 11,
+    fontWeight: '600',
   },
   recentCard: {
-    gap: 4,
-    padding: 14,
-    borderRadius: 20,
-    backgroundColor: 'rgba(4, 5, 10, 0.4)',
+    gap: 5,
+    padding: 15,
+    borderRadius: 22,
+    backgroundColor: palette.surfaceOverlay,
     borderWidth: 1,
     borderColor: palette.border,
   },
   recentLabel: {
-    color: palette.textMuted,
-    fontSize: 11,
+    color: palette.textFaint,
+    fontSize: 10,
     textTransform: 'uppercase',
-    letterSpacing: 1.2,
+    letterSpacing: 1.4,
   },
   recentTitle: {
     color: palette.textPrimary,
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  recentHint: {
+    color: palette.textMuted,
+    fontSize: 12,
+    lineHeight: 18,
+  },
+  heroActionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  heroActionText: {
+    color: palette.textPrimary,
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  sectionLead: {
+    gap: 6,
+  },
+  sectionEyebrow: {
+    color: palette.accentGold,
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 1.6,
+    textTransform: 'uppercase',
   },
   sectionTitle: {
     color: palette.textPrimary,
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: '700',
+  },
+  selectorShell: {
+    marginHorizontal: -4,
   },
   sourceRow: {
     gap: 12,
+    paddingHorizontal: 4,
   },
   sectionHeadingRow: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     justifyContent: 'space-between',
+    gap: 12,
+  },
+  sectionCopy: {
+    flex: 1,
   },
   sectionSubtitle: {
     color: palette.textMuted,
     fontSize: 13,
     marginTop: 4,
+    lineHeight: 20,
+  },
+  sectionCountPill: {
+    minWidth: 40,
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: palette.surfaceRaised,
+    borderWidth: 1,
+    borderColor: palette.border,
+  },
+  sectionCountText: {
+    color: palette.textPrimary,
+    fontSize: 12,
+    fontWeight: '700',
   },
   loadingWrap: {
     alignItems: 'center',
     gap: 14,
-    paddingVertical: 40,
+    paddingVertical: 52,
   },
   loadingText: {
     color: palette.textMuted,
