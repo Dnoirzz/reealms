@@ -147,3 +147,117 @@ test('getOtakudesuPlaybackManifest promotes the best fallback quality when the i
     global.fetch = originalFetch;
   }
 });
+
+test('getBestOtakudesuPlayableSource prefers the Flutter-ranked 720p mirror over filedon-first HTML order', async () => {
+  const api = new ApiService();
+  api.setSource('otakudesu');
+
+  const originalFetch = global.fetch;
+  const filedonMirrorHtml = Buffer.from('<iframe src="https://filedon.example.com/720-player"></iframe>').toString(
+    'base64',
+  );
+  const ondesuMirrorHtml = Buffer.from(
+    '<iframe src="https://desustream.example.com/dstream/ondesu/hd/player"></iframe>',
+  ).toString('base64');
+
+  global.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input);
+    const body = init?.body ? String(init.body) : '';
+
+    if (url === 'https://otakudesu.blog/episode/priority-check/' && (!init?.method || init.method === 'GET')) {
+      return new Response(
+        `
+          <script>
+            data: { action: "aa1208d27f29ca340c92c66d1926f13f" };
+            nonce: window.__x__nonce, action: "2a3505c93b0035d3f455df82bf976b84";
+          </script>
+          <ul class="m720p">
+            <li><a href="#" data-content="eyJpZCI6MSwiaSI6MCwicSI6IjcyMHAifQ==">filedon</a></li>
+            <li><a href="#" data-content="eyJpZCI6MSwiaSI6MSwicSI6IjcyMHAifQ==">ondesuhd</a></li>
+          </ul>
+        `,
+        { status: 200 },
+      );
+    }
+
+    if (url === 'https://otakudesu.blog/wp-admin/admin-ajax.php' && body === 'action=aa1208d27f29ca340c92c66d1926f13f') {
+      return new Response(JSON.stringify({ data: 'nonce-token' }), { status: 200 });
+    }
+
+    if (
+      url === 'https://otakudesu.blog/wp-admin/admin-ajax.php' &&
+      body.includes('action=2a3505c93b0035d3f455df82bf976b84') &&
+      body.includes('nonce=nonce-token') &&
+      body.includes('q=720p') &&
+      body.includes('i=0')
+    ) {
+      return new Response(JSON.stringify({ data: filedonMirrorHtml }), { status: 200 });
+    }
+
+    if (
+      url === 'https://otakudesu.blog/wp-admin/admin-ajax.php' &&
+      body.includes('action=2a3505c93b0035d3f455df82bf976b84') &&
+      body.includes('nonce=nonce-token') &&
+      body.includes('q=720p') &&
+      body.includes('i=1')
+    ) {
+      return new Response(JSON.stringify({ data: ondesuMirrorHtml }), { status: 200 });
+    }
+
+    if (url === 'https://filedon.example.com/720-player' && (!init?.method || init.method === 'GET')) {
+      return new Response('<video src="https://cdn.example.com/filedon-720.mp4"></video>', { status: 200 });
+    }
+
+    if (url === 'https://desustream.example.com/dstream/ondesu/hd/player' && (!init?.method || init.method === 'GET')) {
+      return new Response('<iframe src="https://www.blogger.com/video.g?token=ondesu-720"></iframe>', { status: 200 });
+    }
+
+    if (url === 'https://www.blogger.com/video.g?token=ondesu-720' && (!init?.method || init.method === 'GET')) {
+      return new Response(
+        `
+          <script>
+            "FdrFJe":"f-sid-token";
+            "cfb2h":"bl-token";
+          </script>
+        `,
+        { status: 200 },
+      );
+    }
+
+    if (
+      url.startsWith('https://www.blogger.com/_/BloggerVideoPlayerUi/data/batchexecute?') &&
+      init?.method === 'POST'
+    ) {
+      return new Response(
+        'https://rr1---sn-example.googlevideo.com/videoplayback?mime=video/mp4&itag=22\nhttps://rr1---sn-example.googlevideo.com/videoplayback?mime=video/mp4&itag=18',
+        { status: 200 },
+      );
+    }
+
+    if (url.startsWith('https://otakudesu-unofficial-api.vercel.app/')) {
+      return new Response(JSON.stringify({ data: {} }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    return new Response('', { status: 404 });
+  }) as typeof fetch;
+
+  try {
+    const source = await api.getBestOtakudesuPlayableSource('https://otakudesu.blog/episode/priority-check/');
+
+    assert.ok(source);
+    assert.match(source?.url ?? '', /googlevideo\.com\/videoplayback/);
+    assert.deepEqual(source?.fallbackUrls, ['https://cdn.example.com/filedon-720.mp4']);
+    assert.deepEqual(
+      source?.qualityOptions.map((entry) => [entry.label, entry.rank]),
+      [
+        ['720p', 720],
+        ['360p', 360],
+      ],
+    );
+  } finally {
+    global.fetch = originalFetch;
+  }
+});

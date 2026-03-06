@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "Reealms",
+    "slug": "reealms-expo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/branding/logo.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/branding/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#04050A"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#04050A",
+        "foregroundImage": "./assets/branding/logo.png",
+        "monochromeImage": "./assets/branding/logo.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-video",
+      "expo-font"
+    ]
+  }
+}

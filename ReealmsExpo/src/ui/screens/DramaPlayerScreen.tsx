@@ -16,7 +16,7 @@ import { palette } from '../../core/theme';
 import type { Episode } from '../../data/models/media';
 import type { AnimePlaybackManifest, PlaybackQualityOption } from '../../data/models/playback';
 import { ApiService } from '../../data/services/apiService';
-import { getEpisodeManifest } from './playerQualitySessionUtils';
+import { getEpisodeManifest, pickNextFallbackUrl } from './playerQualitySessionUtils';
 import { buildQualityStatusMessage, buildSelectableQualityItems } from './playerQualitySwitchUtils';
 
 type DramaPlayerScreenProps = {
@@ -123,6 +123,9 @@ export function DramaPlayerScreen({
   );
   const playerRef = React.useRef(player);
   const playerPendingReleaseRef = React.useRef<VideoPlayer | null>(null);
+  const triedSourceUrlsRef = React.useRef(
+    new Set<string>((bootstrapSourceUrl || currentEpisode.streamUrl) ? [bootstrapSourceUrl || currentEpisode.streamUrl] : []),
+  );
 
   React.useEffect(() => {
     playerRef.current = player;
@@ -191,12 +194,14 @@ export function DramaPlayerScreen({
     }
 
     try {
+      setQualityError(null);
       const nextPlayer = buildPlayer(nextUrl, options.shouldPlay, options.seekToSeconds);
       const previousPlayer = playerRef.current;
       playerPendingReleaseRef.current = previousPlayer;
       playerRef.current = nextPlayer;
       setPlayer(nextPlayer);
       setActiveSourceUrl(nextUrl);
+      triedSourceUrlsRef.current.add(nextUrl);
       return true;
     } catch (error) {
       console.warn('Player source replace failed:', error);
@@ -218,6 +223,7 @@ export function DramaPlayerScreen({
     setIsResolvingQuality(false);
 
     const nextSourceUrl = currentManifest?.initialUrl || currentEpisode.streamUrl;
+    triedSourceUrlsRef.current = new Set<string>(nextSourceUrl ? [nextSourceUrl] : []);
     void replacePlayerSource(nextSourceUrl, { shouldPlay: true });
   }, [currentEpisode.id, currentEpisode.streamUrl, currentIndex, currentManifest?.initialUrl]);
 
@@ -258,6 +264,42 @@ export function DramaPlayerScreen({
   function skipBy(seconds: number) {
     player.seekBy(seconds);
   }
+
+  React.useEffect(() => {
+    if (statusEvent?.status !== 'error') {
+      return;
+    }
+
+    if (selectedQualityLabel !== 'Auto') {
+      return;
+    }
+
+    if (!/\b403\b/.test(statusEvent.error?.message ?? '')) {
+      return;
+    }
+
+    const nextFallbackUrl = pickNextFallbackUrl({
+      activeSourceUrl,
+      fallbackUrls: currentManifest?.fallbackUrls,
+      triedUrls: triedSourceUrlsRef.current,
+    });
+
+    if (!nextFallbackUrl) {
+      return;
+    }
+
+    void replacePlayerSource(nextFallbackUrl, {
+      seekToSeconds: currentTime,
+      shouldPlay: true,
+    });
+  }, [
+    activeSourceUrl,
+    currentManifest?.fallbackUrls,
+    currentTime,
+    selectedQualityLabel,
+    statusEvent?.error?.message,
+    statusEvent?.status,
+  ]);
 
   async function handleQualitySelect(option: PlaybackQualityOption) {
     setShowQualityTray(false);

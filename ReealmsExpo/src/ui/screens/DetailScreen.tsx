@@ -19,8 +19,10 @@ import type { AnimePlaybackManifest } from '../../data/models/playback';
 import { useAppState } from '../../logic/AppStateContext';
 import { ActionButton } from '../components/ActionButton';
 import { EmptyState } from '../components/EmptyState';
+import { AnimeWebViewScreen } from './AnimeWebViewScreen';
 import { ComicReaderScreen } from './ComicReaderScreen';
 import { DramaPlayerScreen } from './DramaPlayerScreen';
+import { buildAnimeWebViewSession, type AnimeWebViewSession } from './playerQualitySessionUtils';
 
 type DetailScreenProps = {
   movie: Movie;
@@ -63,6 +65,7 @@ export function DetailScreen({ movie, onBack }: DetailScreenProps) {
     imageUrls: string[];
     title: string;
   } | null>(null);
+  const [animeSession, setAnimeSession] = React.useState<AnimeWebViewSession | null>(null);
   const [videoQueueState, setVideoQueueState] = React.useState<{
     episodes: Episode[];
     initialIndex: number;
@@ -156,22 +159,23 @@ export function DetailScreen({ movie, onBack }: DetailScreenProps) {
 
       if (movie.sourceType === 'otakudesu') {
         const playbackManifest = await apiService.getOtakudesuPlaybackManifest(episode.id);
-        const directPlayableUrl = playbackManifest?.initialUrl ?? '';
+        const directFallbackUrls =
+          playbackManifest?.qualityOptions
+            .filter((option) => option.mode === 'direct')
+            .map((option) => option.url) ?? [];
+        const session = buildAnimeWebViewSession({
+          episodeTitle: episode.title,
+          initialUrl: playbackManifest?.initialUrl ?? '',
+          fallbackUrls: [...(playbackManifest?.fallbackUrls ?? []), ...directFallbackUrls],
+          qualityOptions: playbackManifest?.qualityOptions ?? [],
+        });
 
-        if (directPlayableUrl && directPlayableUrl.startsWith('http')) {
-          setVideoQueueState({
-            episodes: [{ ...episode, streamUrl: directPlayableUrl }],
-            initialIndex: 0,
-            qualityManifestsByEpisodeId: playbackManifest
-              ? {
-                  [episode.id]: playbackManifest,
-                }
-              : undefined,
-          });
+        if (session) {
+          setAnimeSession(session);
           return;
         }
 
-        Alert.alert('Playback unavailable', 'Episode ini belum punya stream langsung yang bisa diputar tanpa halaman iklan.');
+        Alert.alert('Playback unavailable', 'Episode ini belum punya stream langsung yang bisa diputar di dalam app.');
         return;
       }
 
@@ -210,6 +214,18 @@ export function DetailScreen({ movie, onBack }: DetailScreenProps) {
         initialIndex={videoQueueState.initialIndex}
         onBack={() => setVideoQueueState(null)}
         qualityManifestsByEpisodeId={videoQueueState.qualityManifestsByEpisodeId}
+      />
+    );
+  }
+
+  if (animeSession) {
+    return (
+      <AnimeWebViewScreen
+        fallbackUrls={animeSession.fallbackUrls}
+        initialUrl={animeSession.initialUrl}
+        onBack={() => setAnimeSession(null)}
+        qualityOptions={animeSession.qualityOptions}
+        title={animeSession.title}
       />
     );
   }

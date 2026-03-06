@@ -96,6 +96,16 @@ export class ApiService {
     'embed',
     'cloudflarestorage.com',
   ];
+  private readonly animeMirrorProviderPriority = [
+    'ondesu',
+    'desustream',
+    'filemoon',
+    'filedon',
+    'vidhide',
+    'desudrive',
+    'mp4upload',
+    'mega',
+  ];
   private readonly blockedAnimeHostKeywords = [
     'qq',
     '1xbet',
@@ -111,6 +121,10 @@ export class ApiService {
     'toto',
     'bet',
   ];
+
+  private uniqueUrls(urls: string[]) {
+    return [...new Set(urls.map((url) => url.trim()).filter(Boolean))];
+  }
 
   setSource(source: ContentSource) {
     this.source = source.toLowerCase() as ContentSource;
@@ -291,11 +305,31 @@ export class ApiService {
 
     if (episodeUrlOrSlug.startsWith('http')) {
       const rankedMirrors = await this.collectOtakudesuMirrorCandidates(episodeUrlOrSlug);
+      const resolvedSources: ResolvedPlayableSource[] = [];
       for (const mirrorUrl of rankedMirrors) {
         const source = await this.resolvePlayableSourceFromPage(mirrorUrl);
         if (source?.url) {
-          return source;
+          resolvedSources.push(source);
         }
+      }
+
+      if (resolvedSources.length > 0) {
+        const primarySource = resolvedSources[0];
+        const fallbackUrls = this.uniqueUrls(
+          resolvedSources
+            .slice(1)
+            .map((candidate) => candidate.url)
+            .filter((candidateUrl) => candidateUrl !== primarySource.url),
+        );
+
+        if (fallbackUrls.length > 0) {
+          return {
+            ...primarySource,
+            fallbackUrls,
+          };
+        }
+
+        return primarySource;
       }
 
       if (rankedMirrors.length > 0) {
@@ -356,6 +390,7 @@ export class ApiService {
     const initialUrl = directSource?.url ?? '';
     return {
       initialUrl,
+      fallbackUrls: directSource?.fallbackUrls ?? [],
       qualityOptions: mergeAnimeQualityOptions({
         initialUrl,
         directOptions: this.buildManifestDirectQualityOptions(directSource),
@@ -703,6 +738,7 @@ export class ApiService {
     return {
       url: preferredOption.url,
       qualityOptions: source.qualityOptions,
+      fallbackUrls: source.fallbackUrls?.filter((candidateUrl) => candidateUrl !== preferredOption.url) ?? [],
     };
   }
 
@@ -722,7 +758,7 @@ export class ApiService {
       const mirrorAction = this.extractOtakudesuMirrorAction(html);
       let nonce = '';
 
-      for (const mirror of option.mirrors) {
+      for (const mirror of this.sortOtakudesuMirrorReferences(option.mirrors)) {
         if (mirror.href && mirror.href !== '#') {
           const resolvedHref = makeAbsolute(mirror.href);
           if (this.isSafeAnimeMirrorUrl(resolvedHref)) {
@@ -1113,6 +1149,28 @@ export class ApiService {
       ?? '2a3505c93b0035d3f455df82bf976b84';
   }
 
+  private mirrorPriorityScore(providerName: string) {
+    const provider = providerName.toLowerCase();
+    for (let index = 0; index < this.animeMirrorProviderPriority.length; index += 1) {
+      if (provider.includes(this.animeMirrorProviderPriority[index])) {
+        return index;
+      }
+    }
+
+    return this.animeMirrorProviderPriority.length + 1;
+  }
+
+  private sortOtakudesuMirrorReferences(mirrors: OtakudesuMirrorReference[]) {
+    return [...mirrors].sort((left, right) => {
+      const scoreDiff = this.mirrorPriorityScore(left.provider) - this.mirrorPriorityScore(right.provider);
+      if (scoreDiff !== 0) {
+        return scoreDiff;
+      }
+
+      return left.provider.localeCompare(right.provider);
+    });
+  }
+
   private async fetchOtakudesuNonce(ajaxUrl: string, nonceAction: string) {
     try {
       const response = await fetch(ajaxUrl, {
@@ -1262,7 +1320,9 @@ export class ApiService {
       };
 
       const collected: string[] = [];
-      const sectionCandidates = this.extractMirrorCandidatesFromQualitySection(html, 'm720p');
+      const sectionCandidates = this.sortOtakudesuMirrorReferences(
+        this.extractMirrorCandidatesFromQualitySection(html, 'm720p'),
+      );
       if (sectionCandidates.length > 0) {
         const ajaxUrl = `${episodeUri.protocol}//${episodeUri.host}/wp-admin/admin-ajax.php`;
         const nonceAction = this.extractOtakudesuNonceAction(html);

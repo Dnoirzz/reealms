@@ -1,0 +1,11 @@
+# Completion checklist
+- For Expo work, verify with:
+  - `npm test`
+  - `npm run typecheck`
+  - `npx expo-doctor`
+  - `npx expo export --platform android`
+- For Flutter-only work, verify at minimum with:
+  - `flutter test`
+  - `flutter analyze`
+- Sync durable project context back to Obsidian (`Reealms/context.md`, `Reealms/decisions.md`, `Reealms/plan.md`) when the task changes behavior, status, or decisions.
+- Avoid reverting unrelated user changes in the repo.

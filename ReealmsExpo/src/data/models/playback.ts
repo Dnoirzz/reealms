@@ -24,9 +24,11 @@ export type PlaybackQualityOption = DirectPlaybackQualityOption | DeferredPlayba
 export interface ResolvedPlayableSource {
   url: string;
   qualityOptions: DirectPlaybackQualityOption[];
+  fallbackUrls?: string[];
 }
 
 export interface AnimePlaybackManifest {
   initialUrl: string;
   qualityOptions: PlaybackQualityOption[];
+  fallbackUrls?: string[];
 }
