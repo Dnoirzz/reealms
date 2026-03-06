@@ -47,6 +47,13 @@ test('getOtakudesuPlaybackManifest returns Auto plus fallback qualities from the
       return new Response('<video src="https://cdn.example.com/test-720.mp4"></video>', { status: 200 });
     }
 
+    if (url.startsWith('https://otakudesu-unofficial-api.vercel.app/')) {
+      return new Response(JSON.stringify({ data: {} }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     return new Response('', { status: 404 });
   }) as typeof fetch;
 
@@ -62,6 +69,78 @@ test('getOtakudesuPlaybackManifest returns Auto plus fallback qualities from the
         ['720p', 'direct'],
         ['480p', 'deferred'],
         ['360p', 'deferred'],
+      ],
+    );
+  } finally {
+    global.fetch = originalFetch;
+  }
+});
+
+test('getOtakudesuPlaybackManifest promotes the best fallback quality when the initial direct source is missing', async () => {
+  const api = new ApiService();
+  api.setSource('otakudesu');
+
+  const originalFetch = global.fetch;
+  const encodedMirrorHtml = Buffer.from('<iframe src="https://filedon.example.com/1080-player"></iframe>').toString(
+    'base64',
+  );
+
+  global.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = String(input);
+    const body = init?.body ? String(init.body) : '';
+
+    if (url === 'https://otakudesu.blog/episode/fallback-only/' && (!init?.method || init.method === 'GET')) {
+      return new Response(
+        `
+          <script>
+            data: { action: "aa1208d27f29ca340c92c66d1926f13f" };
+            nonce: window.__x__nonce, action: "2a3505c93b0035d3f455df82bf976b84";
+          </script>
+          <ul class="m720p"><li><a href="#" data-content="eyJpZCI6MSwiaSI6MCwicSI6IjcyMHAifQ==">filedon</a></li></ul>
+          <ul class="m1080p"><li><a href="#" data-content="eyJpZCI6MSwiaSI6MCwicSI6IjEwODBwIn0=">filedon</a></li></ul>
+        `,
+        { status: 200 },
+      );
+    }
+
+    if (url === 'https://otakudesu.blog/wp-admin/admin-ajax.php' && body === 'action=aa1208d27f29ca340c92c66d1926f13f') {
+      return new Response(JSON.stringify({ data: 'nonce-token' }), { status: 200 });
+    }
+
+    if (
+      url === 'https://otakudesu.blog/wp-admin/admin-ajax.php' &&
+      body.includes('action=2a3505c93b0035d3f455df82bf976b84') &&
+      body.includes('nonce=nonce-token') &&
+      body.includes('q=1080p')
+    ) {
+      return new Response(JSON.stringify({ data: encodedMirrorHtml }), { status: 200 });
+    }
+
+    if (url === 'https://filedon.example.com/1080-player' && (!init?.method || init.method === 'GET')) {
+      return new Response('<video src="https://cdn.example.com/test-1080.mp4"></video>', { status: 200 });
+    }
+
+    if (url.startsWith('https://otakudesu-unofficial-api.vercel.app/')) {
+      return new Response(JSON.stringify({ data: {} }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    return new Response('', { status: 404 });
+  }) as typeof fetch;
+
+  try {
+    const manifest = await api.getOtakudesuPlaybackManifest('https://otakudesu.blog/episode/fallback-only/');
+
+    assert.ok(manifest);
+    assert.equal(manifest?.initialUrl, 'https://cdn.example.com/test-1080.mp4');
+    assert.deepEqual(
+      manifest?.qualityOptions.map((entry) => [entry.label, entry.mode]),
+      [
+        ['Auto', 'direct'],
+        ['1080p', 'direct'],
+        ['720p', 'deferred'],
       ],
     );
   } finally {

@@ -336,7 +336,18 @@ export class ApiService {
     const fallbackOptions = episodeUrlOrSlug.startsWith('http')
       ? await this.getOtakudesuFallbackQualityOptions(episodeUrlOrSlug)
       : [];
-    const directSource = await this.getBestOtakudesuPlayableSource(episodeUrlOrSlug);
+    let directSource = await this.getBestOtakudesuPlayableSource(episodeUrlOrSlug);
+
+    if (!directSource?.url && fallbackOptions.length > 0) {
+      const fallbackResolutionOrder = [...fallbackOptions].sort((left, right) => right.rank - left.rank);
+      for (const option of fallbackResolutionOrder) {
+        const resolvedFallback = await this.resolveDeferredOtakudesuQuality(option);
+        if (resolvedFallback?.url) {
+          directSource = this.preferResolvedSourceForLabel(resolvedFallback, option.label);
+          break;
+        }
+      }
+    }
 
     if (!directSource?.url && fallbackOptions.length === 0) {
       return null;
