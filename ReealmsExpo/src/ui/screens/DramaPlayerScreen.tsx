@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEvent, useEventListener } from 'expo';
-import { VideoView, useVideoPlayer, type VideoSource } from 'expo-video';
+import { VideoView, createVideoPlayer, type VideoPlayer, type VideoSource } from 'expo-video';
 import { Ionicons } from '@expo/vector-icons';
 import {
   ActivityIndicator,
@@ -65,6 +65,30 @@ function buildVideoSource(url: string): VideoSource {
   return { uri: url, contentType: 'auto', useCaching: false };
 }
 
+function configurePlayer(player: VideoPlayer, shouldPlay: boolean, seekToSeconds?: number) {
+  player.loop = false;
+  player.timeUpdateEventInterval = 0.5;
+  player.audioMixingMode = 'auto';
+  player.keepScreenOnWhilePlaying = true;
+  player.showNowPlayingNotification = false;
+
+  if (typeof seekToSeconds === 'number' && Number.isFinite(seekToSeconds) && seekToSeconds > 0) {
+    player.currentTime = seekToSeconds;
+  }
+
+  if (shouldPlay) {
+    player.play();
+  } else {
+    player.pause();
+  }
+}
+
+function buildPlayer(sourceUrl: string, shouldPlay: boolean, seekToSeconds?: number) {
+  const player = createVideoPlayer(buildVideoSource(sourceUrl));
+  configurePlayer(player, shouldPlay, seekToSeconds);
+  return player;
+}
+
 export function DramaPlayerScreen({
   episodes,
   initialIndex,
@@ -84,7 +108,6 @@ export function DramaPlayerScreen({
   const [resolvingQualityLabel, setResolvingQualityLabel] = React.useState<string | null>(null);
   const [qualityError, setQualityError] = React.useState<string | null>(null);
   const [resolvedQualityCache, setResolvedQualityCache] = React.useState<Record<string, string>>({});
-  const replaceRequestIdRef = React.useRef(0);
   const previousEpisodeKeyRef = React.useRef(bootstrapEpisode?.id || `${initialIndex}`);
   const currentEpisode = episodes[currentIndex];
   const currentManifest = React.useMemo(
@@ -95,15 +118,29 @@ export function DramaPlayerScreen({
     const nextOptions = currentManifest?.qualityOptions ?? [buildAutoQualityOption(currentEpisode.streamUrl)];
     return buildSelectableQualityItems(nextOptions);
   }, [currentEpisode.streamUrl, currentManifest]);
+  const [player, setPlayer] = React.useState(() =>
+    buildPlayer(bootstrapSourceUrl || currentEpisode.streamUrl, true),
+  );
+  const playerRef = React.useRef(player);
+  const playerPendingReleaseRef = React.useRef<VideoPlayer | null>(null);
 
-  const player = useVideoPlayer(buildVideoSource(bootstrapSourceUrl || currentEpisode.streamUrl), (videoPlayer) => {
-    videoPlayer.loop = false;
-    videoPlayer.timeUpdateEventInterval = 0.5;
-    videoPlayer.audioMixingMode = 'auto';
-    videoPlayer.keepScreenOnWhilePlaying = true;
-    videoPlayer.showNowPlayingNotification = false;
-    videoPlayer.play();
-  });
+  React.useEffect(() => {
+    playerRef.current = player;
+    if (playerPendingReleaseRef.current && playerPendingReleaseRef.current !== player) {
+      playerPendingReleaseRef.current.release();
+      playerPendingReleaseRef.current = null;
+    }
+  }, [player]);
+
+  React.useEffect(() => {
+    return () => {
+      if (playerPendingReleaseRef.current && playerPendingReleaseRef.current !== playerRef.current) {
+        playerPendingReleaseRef.current.release();
+        playerPendingReleaseRef.current = null;
+      }
+      playerRef.current.release();
+    };
+  }, []);
 
   const statusEvent = useEvent(player, 'statusChange', { status: player.status });
   const playingEvent = useEvent(player, 'playingChange', { isPlaying: player.playing });
@@ -153,24 +190,12 @@ export function DramaPlayerScreen({
       return false;
     }
 
-    const requestId = ++replaceRequestIdRef.current;
-
     try {
-      await player.replaceAsync(buildVideoSource(nextUrl));
-      if (requestId !== replaceRequestIdRef.current) {
-        return false;
-      }
-
-      if (typeof options.seekToSeconds === 'number' && Number.isFinite(options.seekToSeconds) && options.seekToSeconds > 0) {
-        player.currentTime = options.seekToSeconds;
-      }
-
-      if (options.shouldPlay) {
-        player.play();
-      } else {
-        player.pause();
-      }
-
+      const nextPlayer = buildPlayer(nextUrl, options.shouldPlay, options.seekToSeconds);
+      const previousPlayer = playerRef.current;
+      playerPendingReleaseRef.current = previousPlayer;
+      playerRef.current = nextPlayer;
+      setPlayer(nextPlayer);
       setActiveSourceUrl(nextUrl);
       return true;
     } catch (error) {
@@ -242,6 +267,11 @@ export function DramaPlayerScreen({
     const shouldResumePlayback = playingEvent?.isPlaying ?? player.playing;
 
     if (option.mode === 'direct') {
+      if (option.url === activeSourceUrl) {
+        setSelectedQualityLabel(option.label);
+        return;
+      }
+
       const switched = await replacePlayerSource(option.url, {
         seekToSeconds: previousTime,
         shouldPlay: shouldResumePlayback,
@@ -300,7 +330,7 @@ export function DramaPlayerScreen({
     : isResolvingQuality && resolvingQualityLabel
       ? buildQualityStatusMessage({ resolvingLabel: resolvingQualityLabel })
       : statusEvent?.status === 'error'
-        ? buildQualityStatusMessage({ streamFailed: true })
+        ? buildQualityStatusMessage({ streamFailed: true, errorMessage: statusEvent.error?.message })
         : statusEvent?.status === 'readyToPlay'
           ? qualityItems.length > 1
             ? 'Stream resolved. You can switch quality above without leaving the player.'

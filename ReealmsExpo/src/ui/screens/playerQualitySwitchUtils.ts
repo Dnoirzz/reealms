@@ -10,6 +10,7 @@ type QualityStatusMessageInput = {
   failedLabel?: string;
   resolvingLabel?: string;
   streamFailed?: boolean;
+  errorMessage?: string;
 };
 
 export function buildSelectableQualityItems(options: PlaybackQualityOption[]): SelectableQualityItem[] {
@@ -24,6 +25,7 @@ export function buildQualityStatusMessage({
   failedLabel,
   resolvingLabel,
   streamFailed,
+  errorMessage,
 }: QualityStatusMessageInput) {
   if (failedLabel) {
     return `${failedLabel} could not be resolved.`;
@@ -34,6 +36,10 @@ export function buildQualityStatusMessage({
   }
 
   if (streamFailed) {
+    if (errorMessage?.trim()) {
+      return `Stream failed. ${errorMessage.trim()}`;
+    }
+
     return 'Stream failed. Try another quality.';
   }
 

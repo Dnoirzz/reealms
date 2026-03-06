@@ -23,3 +23,10 @@ test('buildSelectableQualityItems keeps Auto first and marks deferred qualities 
 test('buildQualityStatusMessage formats a compact fallback resolution failure', () => {
   assert.equal(buildQualityStatusMessage({ failedLabel: '1080p' }), '1080p could not be resolved.');
 });
+
+test('buildQualityStatusMessage includes the native player error when a stream fails', () => {
+  assert.equal(
+    buildQualityStatusMessage({ streamFailed: true, errorMessage: 'Source error' }),
+    'Stream failed. Source error',
+  );
+});
