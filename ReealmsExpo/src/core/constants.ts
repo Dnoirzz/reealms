@@ -2,6 +2,29 @@ import type { ComponentProps } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import type { ContentSource } from '../data/models/media';
 
+const fallbackCaptainToken = 'b0cb1c3e8b2ddc08fd24c05e094a33b24625d334b3ca2cca0edf3a08b102b9c9';
+const fallbackSupabaseUrl = 'https://nuyhtbnmmbrnyjznvwqa.supabase.co';
+const fallbackSupabaseAnonKey =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eWh0Ym5tbWJybnlqem52d3FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2MjU1OTAsImV4cCI6MjA4ODIwMTU5MH0.8Hp_H--1cUzPcTddibHq0E1jUFqmCd7I4seBhatRf38';
+
+function isNonPlaceholder(value: string | undefined) {
+  const normalized = value?.trim() ?? '';
+  if (!normalized) {
+    return false;
+  }
+
+  return !normalized.includes('your-');
+}
+
+function resolveSupabaseUrl() {
+  const fromEnv = process.env.EXPO_PUBLIC_SUPABASE_URL?.trim() ?? '';
+  if (/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(fromEnv)) {
+    return fromEnv;
+  }
+
+  return fallbackSupabaseUrl;
+}
+
 export const appConstants = {
   appName: 'Reealms',
   captainBaseUrl: 'https://captain.sapimu.au',
@@ -10,14 +33,13 @@ export const appConstants = {
   komikBaseUrl: 'https://api.sansekai.my.id/api',
   animeBaseUrl: 'https://otakudesu-unofficial-api.vercel.app/v1',
   defaultCaptainToken:
-    process.env.EXPO_PUBLIC_CAPTAIN_TOKEN ??
-    'b0cb1c3e8b2ddc08fd24c05e094a33b24625d334b3ca2cca0edf3a08b102b9c9',
-  supabaseUrl:
-    process.env.EXPO_PUBLIC_SUPABASE_URL ??
-    'https://nuyhtbnmmbrnyjznvwqa.supabase.co',
-  supabaseAnonKey:
-    process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ??
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eWh0Ym5tbWJybnlqem52d3FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2MjU1OTAsImV4cCI6MjA4ODIwMTU5MH0.8Hp_H--1cUzPcTddibHq0E1jUFqmCd7I4seBhatRf38',
+    isNonPlaceholder(process.env.EXPO_PUBLIC_CAPTAIN_TOKEN)
+      ? process.env.EXPO_PUBLIC_CAPTAIN_TOKEN!.trim()
+      : fallbackCaptainToken,
+  supabaseUrl: resolveSupabaseUrl(),
+  supabaseAnonKey: isNonPlaceholder(process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY)
+    ? process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!.trim()
+    : fallbackSupabaseAnonKey,
 };
 
 export const storageKeys = {

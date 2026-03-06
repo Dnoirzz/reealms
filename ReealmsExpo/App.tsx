@@ -12,11 +12,10 @@ import { HomeScreen } from './src/ui/screens/HomeScreen';
 import { SearchScreen } from './src/ui/screens/SearchScreen';
 import { HistoryScreen } from './src/ui/screens/HistoryScreen';
 import { ProfileScreen } from './src/ui/screens/ProfileScreen';
-import { DetailScreen } from './src/ui/screens/DetailScreen';
 
 function ReealmsRoot() {
   const insets = useSafeAreaInsets();
-  const { canEnterMainNavigation, history, isAuthReady } = useAppState();
+  const { canEnterMainNavigation, history, isAuthReady, removeFromHistory } = useAppState();
   const [tab, setTab] = React.useState<AppTab>('home');
   const [selectedMovie, setSelectedMovie] = React.useState<Movie | null>(null);
 
@@ -53,7 +52,7 @@ function ReealmsRoot() {
         <View style={styles.bootSplash}>
           <Image source={require('./assets/branding/logo.png')} style={styles.bootLogo} />
           <Text style={styles.bootTitle}>{appConstants.appName}</Text>
-          <Text style={styles.bootCaption}>Preparing the Expo migration shell...</Text>
+          <Text style={styles.bootCaption}>Menyiapkan aplikasi...</Text>
         </View>
         <StatusBar style="light" />
       </View>
@@ -63,11 +62,6 @@ function ReealmsRoot() {
   if (!canEnterMainNavigation) {
     return (
       <View style={styles.root}>
-        <LinearGradient
-          colors={gradients.shellBackdrop}
-          locations={[0, 0.48, 1]}
-          style={StyleSheet.absoluteFill}
-        />
         <ProfileScreen authGateMode />
         <StatusBar style="light" />
       </View>
@@ -77,6 +71,8 @@ function ReealmsRoot() {
   const recentMovie = history[0];
 
   if (selectedMovie) {
+    const { DetailScreen } = require('./src/ui/screens/DetailScreen') as typeof import('./src/ui/screens/DetailScreen');
+
     return (
       <View style={styles.root}>
         <LinearGradient
@@ -113,18 +109,26 @@ function ReealmsRoot() {
       </View>
 
       {recentMovie ? (
-        <Pressable accessibilityRole="button" onPress={() => setSelectedMovie(recentMovie)} style={styles.resumeBar}>
+        <View style={styles.resumeBar}>
+          <Image source={{ uri: recentMovie.posterUrl }} style={styles.resumePoster} />
           <View style={styles.resumeCopy}>
-            <Text style={styles.resumeEyebrow}>Recently opened</Text>
+            <Text style={styles.resumeEyebrow}>Lanjutkan tontonan...</Text>
             <Text numberOfLines={1} style={styles.resumeTitle}>
               {recentMovie.title}
             </Text>
           </View>
-          <Ionicons color={palette.textPrimary} name="arrow-forward-circle-outline" size={24} />
-        </Pressable>
+          <View style={styles.resumeActions}>
+            <Pressable accessibilityRole="button" onPress={() => setSelectedMovie(recentMovie)} style={styles.resumeButton}>
+              <Text style={styles.resumeButtonText}>Lanjutkan</Text>
+            </Pressable>
+            <Pressable onPress={() => void removeFromHistory(recentMovie.id)} style={styles.resumeCloseButton}>
+              <Ionicons color={palette.textFaint} name="close" size={16} />
+            </Pressable>
+          </View>
+        </View>
       ) : null}
 
-      <View style={[styles.tabBar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
+      <View style={[styles.tabBar, { paddingBottom: Math.max(insets.bottom, 8) }]}>
         {tabOptions.map((option) => {
           const active = option.id === tab;
           return (
@@ -140,7 +144,7 @@ function ReealmsRoot() {
               ]}
             >
               <Ionicons
-                color={active ? palette.textPrimary : palette.textMuted}
+                color={active ? palette.accent : palette.textMuted}
                 name={option.icon}
                 size={20}
               />
@@ -205,65 +209,87 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   resumeBar: {
-    marginHorizontal: 18,
-    marginBottom: 12,
-    paddingHorizontal: 18,
-    paddingVertical: 14,
-    borderRadius: 22,
-    backgroundColor: palette.surfaceRaised,
-    borderWidth: 1,
-    borderColor: palette.borderStrong,
+    marginHorizontal: 14,
+    marginBottom: 2,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    backgroundColor: '#1A1A1A',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     gap: 12,
+  },
+  resumePoster: {
+    width: 44,
+    height: 44,
+    borderRadius: 6,
+    backgroundColor: palette.surfaceRaised,
   },
   resumeCopy: {
     flex: 1,
-    gap: 4,
+    gap: 2,
   },
   resumeEyebrow: {
-    color: palette.accentCool,
+    color: palette.textFaint,
     fontSize: 11,
-    letterSpacing: 1.3,
-    textTransform: 'uppercase',
   },
   resumeTitle: {
     color: palette.textPrimary,
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 13,
+    fontWeight: '700',
   },
-  tabBar: {
-    marginHorizontal: 18,
-    marginBottom: 16,
-    padding: 8,
-    borderRadius: 26,
-    backgroundColor: palette.surface,
-    borderWidth: 1,
-    borderColor: palette.border,
+  resumeActions: {
     flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
-  tabItem: {
-    flex: 1,
-    minHeight: 56,
+  resumeButton: {
+    minHeight: 32,
+    paddingHorizontal: 14,
     borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
-  tabItemActive: {
-    backgroundColor: palette.surfaceRaised,
+  resumeButtonText: {
+    color: palette.textPrimary,
+    fontSize: 11,
+    fontWeight: '700',
   },
+  resumeCloseButton: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tabBar: {
+    paddingTop: 6,
+    paddingHorizontal: 8,
+    backgroundColor: palette.background,
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  tabItem: {
+    flex: 1,
+    minHeight: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  tabItemActive: {},
   tabItemPressed: {
     opacity: 0.88,
   },
   tabLabel: {
     color: palette.textMuted,
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '600',
   },
   tabLabelActive: {
-    color: palette.textPrimary,
+    color: palette.accent,
   },
 });

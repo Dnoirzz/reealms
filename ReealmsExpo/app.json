@@ -20,7 +20,8 @@
         "foregroundImage": "./assets/branding/logo.png",
         "monochromeImage": "./assets/branding/logo.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.reealmsexpo"
     },
     "web": {
       "favicon": "./assets/favicon.png"

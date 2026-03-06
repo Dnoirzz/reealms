@@ -260,13 +260,13 @@ export function DetailScreen({ movie, onBack }: DetailScreenProps) {
         isLoading ? (
           <View style={styles.loadingWrap}>
             <ActivityIndicator color={palette.accent} size="large" />
-            <Text style={styles.loadingText}>Memuat episode dan chapter...</Text>
+            <Text style={styles.loadingText}>Memuat daftar episode...</Text>
           </View>
         ) : (
           <EmptyState
-            description="Daftar belum kembali dari penyedia. Biasanya ini terjadi saat sumber sedang lambat atau datanya belum tersedia."
+            description="Banyak episode akan segera hadir."
             icon="albums-outline"
-            title="Belum ada daftar"
+            title="Daftar belum tersedia"
           />
         )
       }
@@ -305,7 +305,7 @@ export function DetailScreen({ movie, onBack }: DetailScreenProps) {
               </View>
             )}
             <View style={styles.heroCopy}>
-              <Text style={styles.eyebrow}>Unggulan {prettySourceLabel(movie.sourceType)}</Text>
+              <Text style={styles.eyebrow}>{prettySourceLabel(movie.sourceType).toUpperCase()}</Text>
               <Text style={styles.title}>{movie.title}</Text>
               <View style={styles.metaRow}>
                 <View style={styles.metaPill}>
@@ -352,8 +352,8 @@ export function DetailScreen({ movie, onBack }: DetailScreenProps) {
 
           <View style={styles.sectionHeader}>
             <View style={styles.sectionHeaderCopy}>
-              <Text style={styles.sectionEyebrow}>{movie.sourceType === 'komik' ? 'Reader' : 'Daftar'}</Text>
-              <Text style={styles.sectionTitle}>{movie.sourceType === 'komik' ? 'Chapters' : 'Episodes'}</Text>
+              <Text style={styles.sectionEyebrow}>Daftar</Text>
+              <Text style={styles.sectionTitle}>{movie.sourceType === 'komik' ? 'Daftar Chapter' : 'Episode'}</Text>
               <Text style={styles.sectionSubtitle}>{episodes.length} tersedia dari sumber aktif</Text>
             </View>
             <View style={styles.sectionCountPill}>
@@ -433,10 +433,10 @@ export function DetailScreen({ movie, onBack }: DetailScreenProps) {
                 </Text>
                 <Text style={styles.episodeCaption}>
                   {movie.sourceType === 'komik'
-                    ? 'Tap untuk buka reader'
+                    ? 'Tap untuk buka chapter'
                     : movie.sourceType === 'otakudesu'
-                      ? 'Tap untuk putar langsung'
-                      : 'Tap untuk mulai playback'}
+                      ? 'Tap untuk putar anime'
+                      : 'Tap untuk mulai video'}
                 </Text>
               </View>
             </View>
@@ -453,25 +453,26 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 14,
   },
   iconButton: {
     width: 42,
     height: 42,
-    borderRadius: 16,
+    borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.surface,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
   },
   heroCard: {
-    gap: 20,
-    marginBottom: 28,
-    padding: 18,
-    borderRadius: 32,
+    gap: 0,
+    marginBottom: 24,
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
+    overflow: 'hidden',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
   },
   heroCardWide: {
     flexDirection: 'row',
@@ -479,17 +480,15 @@ const styles = StyleSheet.create({
   },
   poster: {
     width: '100%',
-    aspectRatio: 0.74,
-    borderRadius: 28,
+    aspectRatio: 0.72,
     backgroundColor: palette.surfaceRaised,
   },
   posterWide: {
-    width: 220,
+    width: 230,
   },
   posterFallback: {
     width: '100%',
-    aspectRatio: 0.74,
-    borderRadius: 28,
+    aspectRatio: 0.72,
     backgroundColor: palette.surfaceRaised,
     alignItems: 'center',
     justifyContent: 'center',
@@ -501,20 +500,21 @@ const styles = StyleSheet.create({
   },
   heroCopy: {
     flex: 1,
-    gap: 14,
+    gap: 12,
+    padding: 16,
   },
   eyebrow: {
-    color: palette.accentGold,
-    fontSize: 10,
+    color: palette.accentStrong,
+    fontSize: 11,
     fontWeight: '700',
-    letterSpacing: 1.6,
+    letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
   title: {
     color: palette.textPrimary,
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: '700',
-    lineHeight: 36,
+    lineHeight: 32,
   },
   metaRow: {
     flexDirection: 'row',
@@ -527,10 +527,10 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 11,
     paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: palette.surfaceOverlay,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.08)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255,255,255,0.12)',
   },
   metaPillText: {
     color: palette.textSecondary,
@@ -540,7 +540,7 @@ const styles = StyleSheet.create({
   synopsis: {
     color: palette.textSecondary,
     fontSize: 14,
-    lineHeight: 23,
+    lineHeight: 21,
   },
   genreRow: {
     flexDirection: 'row',
@@ -563,7 +563,7 @@ const styles = StyleSheet.create({
   actionRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 10,
   },
   actionButton: {
     minWidth: 156,
@@ -579,15 +579,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sectionEyebrow: {
-    color: palette.accentGold,
+    color: palette.textMuted,
     fontSize: 10,
     fontWeight: '700',
-    letterSpacing: 1.6,
+    letterSpacing: 1.2,
     textTransform: 'uppercase',
   },
   sectionTitle: {
     color: palette.textPrimary,
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '700',
   },
   sectionSubtitle: {
@@ -599,13 +599,13 @@ const styles = StyleSheet.create({
   sectionCountPill: {
     minWidth: 42,
     paddingHorizontal: 12,
-    paddingVertical: 9,
-    borderRadius: 999,
+    paddingVertical: 8,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.surfaceRaised,
+    backgroundColor: 'rgba(108, 92, 231, 0.2)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(108, 92, 231, 0.34)',
   },
   sectionCountText: {
     color: palette.textPrimary,
@@ -619,16 +619,16 @@ const styles = StyleSheet.create({
   rangePill: {
     minHeight: 38,
     paddingHorizontal: 16,
-    borderRadius: 999,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.surfaceOverlay,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   rangePillSelected: {
-    backgroundColor: palette.accentSoft,
-    borderColor: palette.accentStrong,
+    backgroundColor: 'rgba(108, 92, 231, 0.2)',
+    borderColor: 'rgba(108, 92, 231, 0.34)',
   },
   rangeText: {
     color: palette.textMuted,
@@ -639,10 +639,10 @@ const styles = StyleSheet.create({
     color: palette.textPrimary,
   },
   episodeGridCard: {
-    borderRadius: 22,
-    backgroundColor: palette.surfaceOverlay,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -653,18 +653,18 @@ const styles = StyleSheet.create({
   },
   episodeNumber: {
     color: palette.textPrimary,
-    fontSize: 22,
-    fontWeight: '700',
+    fontSize: 24,
+    fontWeight: '500',
   },
   episodeListCard: {
-    minHeight: 86,
+    minHeight: 80,
     marginBottom: 12,
     paddingHorizontal: 18,
-    paddingVertical: 16,
-    borderRadius: 24,
-    backgroundColor: palette.surfaceOverlay,
+    paddingVertical: 14,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -677,16 +677,16 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   episodeIndexCircle: {
-    width: 48,
-    height: 48,
+    width: 40,
+    height: 40,
     borderRadius: 999,
-    backgroundColor: palette.surfaceRaised,
+    backgroundColor: 'rgba(108, 92, 231, 0.14)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   episodeIndexText: {
-    color: palette.accentCool,
-    fontSize: 16,
+    color: palette.accentStrong,
+    fontSize: 14,
     fontWeight: '700',
   },
   episodeListCopy: {

@@ -1,8 +1,7 @@
 import React from 'react';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import { gradients, palette } from '../../core/theme';
+import { palette } from '../../core/theme';
 import type { Movie } from '../../data/models/media';
 
 type MovieCardProps = {
@@ -26,7 +25,7 @@ function prettySourceLabel(sourceType: string) {
 
 export function MovieCard({ movie, isFavorite = false, onPress }: MovieCardProps) {
   const [posterFailed, setPosterFailed] = React.useState(false);
-  const metaLabel = movie.year || prettySourceLabel(movie.sourceType);
+  const metaLabel = movie.genres[0] || prettySourceLabel(movie.sourceType);
 
   return (
     <Pressable
@@ -47,16 +46,17 @@ export function MovieCard({ movie, isFavorite = false, onPress }: MovieCardProps
             <Text style={styles.posterFallbackText}>{movie.title.slice(0, 1).toUpperCase()}</Text>
           </View>
         )}
-        <LinearGradient colors={gradients.posterFade} style={styles.posterFade} />
-        <View style={styles.badgeRow}>
-          <View style={styles.sourceBadge}>
-            <Text style={styles.sourceBadgeText}>{prettySourceLabel(movie.sourceType)}</Text>
+        {isFavorite ? (
+          <View style={styles.favoriteBadge}>
+            <Ionicons color={palette.accentStrong} name="bookmark" size={11} />
           </View>
-          {isFavorite ? (
-            <View style={styles.favoriteBadge}>
-              <Ionicons color={palette.accentGold} name="bookmark" size={15} />
-            </View>
-          ) : null}
+        ) : null}
+        <View style={styles.popularBadge}>
+          <Text style={styles.popularBadgeText}>Terpopuler</Text>
+        </View>
+        <View style={styles.viewerBadge}>
+          <Ionicons color={palette.textPrimary} name="play" size={10} />
+          <Text style={styles.viewerBadgeText}>15.8M</Text>
         </View>
       </View>
 
@@ -65,14 +65,12 @@ export function MovieCard({ movie, isFavorite = false, onPress }: MovieCardProps
           {movie.title}
         </Text>
         <View style={styles.metaRow}>
-          <View style={styles.metaPill}>
-            <Text numberOfLines={1} style={styles.metaText}>
-              {metaLabel}
-            </Text>
-          </View>
+          <Text numberOfLines={1} style={styles.metaText}>
+            {metaLabel}
+          </Text>
           {movie.rating > 0 ? (
             <View style={styles.ratingWrap}>
-              <Ionicons color={palette.accentGold} name="star" size={12} />
+              <Ionicons color={palette.accentStrong} name="star" size={10} />
               <Text style={styles.ratingText}>{movie.rating.toFixed(1)}</Text>
             </View>
           ) : null}
@@ -84,19 +82,16 @@ export function MovieCard({ movie, isFavorite = false, onPress }: MovieCardProps
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 28,
-    overflow: 'hidden',
-    backgroundColor: palette.surface,
-    borderWidth: 1,
-    borderColor: palette.border,
+    backgroundColor: 'transparent',
   },
   cardPressed: {
     opacity: 0.92,
-    transform: [{ scale: 0.988 }],
   },
   posterFrame: {
-    aspectRatio: 0.735,
+    aspectRatio: 0.72,
     backgroundColor: palette.surfaceRaised,
+    borderRadius: 5,
+    overflow: 'hidden',
   },
   poster: {
     ...StyleSheet.absoluteFillObject,
@@ -111,84 +106,80 @@ const styles = StyleSheet.create({
   },
   posterFallbackText: {
     color: palette.textPrimary,
-    fontSize: 34,
+    fontSize: 26,
     fontWeight: '700',
-  },
-  posterFade: {
-    ...StyleSheet.absoluteFillObject,
-  },
-  badgeRow: {
-    position: 'absolute',
-    top: 14,
-    left: 14,
-    right: 14,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  sourceBadge: {
-    paddingHorizontal: 11,
-    paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: palette.surfaceOverlay,
-    borderWidth: 1,
-    borderColor: palette.border,
-  },
-  sourceBadgeText: {
-    color: palette.textPrimary,
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 0.3,
   },
   favoriteBadge: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: palette.surfaceOverlay,
-    borderWidth: 1,
-    borderColor: palette.border,
+    position: 'absolute',
+    left: 4,
+    top: 4,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.42)',
     alignItems: 'center',
     justifyContent: 'center',
   },
+  popularBadge: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderBottomLeftRadius: 4,
+    backgroundColor: 'rgba(255, 64, 129, 0.86)',
+  },
+  popularBadgeText: {
+    color: palette.textPrimary,
+    fontSize: 8,
+    fontWeight: '700',
+  },
+  viewerBadge: {
+    position: 'absolute',
+    right: 4,
+    bottom: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderRadius: 4,
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+  },
+  viewerBadgeText: {
+    color: palette.textPrimary,
+    fontSize: 8,
+    fontWeight: '700',
+  },
   copyBlock: {
-    gap: 10,
-    paddingHorizontal: 15,
-    paddingTop: 14,
-    paddingBottom: 16,
+    marginTop: 6,
+    gap: 2,
   },
   title: {
     color: palette.textPrimary,
-    fontSize: 15,
-    fontWeight: '700',
-    lineHeight: 20,
+    fontSize: 12,
+    fontWeight: '600',
+    lineHeight: 14,
   },
   metaRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 10,
     alignItems: 'center',
-  },
-  metaPill: {
-    flex: 1,
-    borderRadius: 999,
-    backgroundColor: palette.surfaceRaised,
-    borderWidth: 1,
-    borderColor: palette.border,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
+    justifyContent: 'space-between',
+    gap: 4,
   },
   metaText: {
+    flex: 1,
     color: palette.textMuted,
-    fontSize: 11,
+    fontSize: 10,
   },
   ratingWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 2,
   },
   ratingText: {
-    color: palette.accentGold,
-    fontSize: 11,
+    color: palette.accentStrong,
+    fontSize: 9,
     fontWeight: '700',
   },
 });

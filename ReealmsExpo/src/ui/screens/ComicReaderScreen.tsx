@@ -89,7 +89,7 @@ export function ComicReaderScreen({ imageUrls, title, onBack }: ComicReaderScree
             <Text numberOfLines={1} style={styles.readerTitle}>
               {title}
             </Text>
-            <Text style={styles.readerSubtitle}>{imageUrls.length} pages</Text>
+            <Text style={styles.readerSubtitle}>{imageUrls.length} halaman</Text>
           </View>
         </View>
       ) : null}
@@ -124,16 +124,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     paddingHorizontal: 16,
-    paddingBottom: 12,
-    backgroundColor: 'rgba(0,0,0,0.82)',
+    paddingBottom: 8,
+    backgroundColor: 'rgba(0,0,0,0.54)',
   },
   readerIconButton: {
     width: 42,
     height: 42,
-    borderRadius: 16,
+    borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255,255,255,0.08)',
+    backgroundColor: 'rgba(0,0,0,0.45)',
   },
   readerHeaderCopy: {
     flex: 1,
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   },
   readerTitle: {
     color: palette.textPrimary,
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '700',
   },
   readerSubtitle: {

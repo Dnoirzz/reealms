@@ -24,7 +24,7 @@ export function extractOtakudesuEpisodeNumber(value: string) {
     .map((match) => Number(match[1]))
     .filter((entry) => Number.isFinite(entry) && entry > 0);
 
-  return numericMatches.at(-1) ?? 0;
+  return numericMatches.length > 0 ? numericMatches[numericMatches.length - 1] : 0;
 }
 
 export function buildOtakudesuEpisodeEntry(options: {

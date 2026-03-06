@@ -1399,7 +1399,7 @@ export class ApiService {
       if (episodeIndex >= 0 && segments[episodeIndex + 1]) {
         return segments[episodeIndex + 1];
       }
-      return segments.at(-1) ?? '';
+      return segments.length > 0 ? segments[segments.length - 1] : '';
     } catch {
       return '';
     }

@@ -227,7 +227,7 @@ export function AnimeWebViewScreen({
               {title}
             </Text>
             <Text numberOfLines={1} style={styles.subtitle}>
-              Playback anime langsung
+              Pemutar anime
             </Text>
           </View>
           <View style={styles.headerMetaColumn}>
@@ -305,9 +305,9 @@ export function AnimeWebViewScreen({
         {!pageLoaded || (!messageState.videoReady && !messageState.terminalError) ? (
           <View style={styles.loadingOverlay}>
             <ActivityIndicator color={palette.accent} size="large" />
-            <Text style={styles.loadingTitle}>Menyiapkan player anime</Text>
+            <Text style={styles.loadingTitle}>MENYIAPKAN HALAMAN VIDEO</Text>
             <Text style={styles.loadingBody}>
-              Memuat stream langsung di dalam aplikasi dan mencoba host alternatif saat dibutuhkan.
+              Mendeteksi player dan memuat stream...
             </Text>
           </View>
         ) : null}
@@ -315,7 +315,7 @@ export function AnimeWebViewScreen({
 
       {!messageState.isFullscreen ? (
         <View style={styles.statusCard}>
-          <Text style={styles.statusTitle}>Status player</Text>
+          <Text style={styles.statusTitle}>Status Pemutar</Text>
           <Text style={styles.statusBody}>{visibleStatusMessage}</Text>
         </View>
       ) : null}
@@ -327,23 +327,23 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: palette.background,
-    paddingHorizontal: 18,
+    paddingHorizontal: 10,
   },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
-    marginBottom: 18,
+    gap: 10,
+    marginBottom: 12,
   },
   iconButton: {
     width: 42,
     height: 42,
-    borderRadius: 16,
+    borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.surfaceOverlay,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
   },
   headerCopy: {
     flex: 1,
@@ -368,14 +368,14 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 7,
-    borderRadius: 999,
-    backgroundColor: palette.surfaceOverlay,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.07)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255,255,255,0.12)',
   },
   qualityTriggerActive: {
-    backgroundColor: palette.surfaceRaised,
-    borderColor: palette.borderStrong,
+    backgroundColor: 'rgba(108, 92, 231, 0.2)',
+    borderColor: 'rgba(108, 92, 231, 0.34)',
   },
   qualityTriggerText: {
     color: palette.textPrimary,
@@ -395,14 +395,14 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 13,
     paddingVertical: 9,
-    borderRadius: 999,
-    backgroundColor: palette.surfaceOverlay,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255,255,255,0.12)',
   },
   qualityPillActive: {
-    backgroundColor: palette.accent,
-    borderColor: palette.accentStrong,
+    backgroundColor: 'rgba(108, 92, 231, 0.25)',
+    borderColor: 'rgba(108, 92, 231, 0.38)',
   },
   qualityPillText: {
     color: palette.textSecondary,
@@ -415,9 +415,9 @@ const styles = StyleSheet.create({
   webCard: {
     flex: 1,
     overflow: 'hidden',
-    borderRadius: 30,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     backgroundColor: '#000000',
   },
   webView: {
@@ -445,13 +445,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   statusCard: {
-    marginTop: 18,
-    marginBottom: 20,
-    padding: 18,
-    borderRadius: 24,
-    backgroundColor: palette.surfaceOverlay,
+    marginTop: 12,
+    marginBottom: 14,
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.05)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     gap: 8,
   },
   statusTitle: {

@@ -375,9 +375,9 @@ export function DramaPlayerScreen({
         ? buildQualityStatusMessage({ streamFailed: true, errorMessage: statusEvent.error?.message })
         : statusEvent?.status === 'readyToPlay'
           ? qualityItems.length > 1
-            ? 'Stream resolved. You can switch quality above without leaving the player.'
+            ? 'Video siap diputar. Kualitas bisa diganti dari menu atas.'
             : buildQualityStatusMessage({})
-          : 'Preparing the stream inside Expo Go.';
+          : 'Menyiapkan video...';
 
   return (
     <View style={styles.root}>
@@ -470,7 +470,7 @@ export function DramaPlayerScreen({
       <View style={styles.controlsRow}>
         <Pressable onPress={playPrevious} style={[styles.controlButton, !canGoPrevious ? styles.controlDisabled : null]}>
           <Ionicons color={palette.textPrimary} name="play-skip-back" size={18} />
-          <Text style={styles.controlLabel}>Prev</Text>
+          <Text style={styles.controlLabel}>Sblm</Text>
         </Pressable>
         <Pressable onPress={() => skipBy(-10)} style={styles.controlButton}>
           <Ionicons color={palette.textPrimary} name="play-back" size={18} />
@@ -490,12 +490,12 @@ export function DramaPlayerScreen({
         </Pressable>
         <Pressable onPress={playNext} style={[styles.controlButton, !canGoNext ? styles.controlDisabled : null]}>
           <Ionicons color={palette.textPrimary} name="play-skip-forward" size={18} />
-          <Text style={styles.controlLabel}>Next</Text>
+          <Text style={styles.controlLabel}>Lanjut</Text>
         </Pressable>
       </View>
 
       <View style={styles.statusCard}>
-        <Text style={styles.statusTitle}>Status player</Text>
+        <Text style={styles.statusTitle}>Status Pemutar</Text>
         <Text style={styles.statusBody}>{statusMessage}</Text>
       </View>
 
@@ -531,23 +531,23 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: palette.background,
-    paddingHorizontal: 18,
+    paddingHorizontal: 12,
   },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
-    marginBottom: 18,
+    gap: 12,
+    marginBottom: 14,
   },
   iconButton: {
     width: 42,
     height: 42,
-    borderRadius: 16,
+    borderRadius: 999,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.surfaceOverlay,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255, 255, 255, 0.12)',
   },
   headerCopy: {
     flex: 1,
@@ -568,14 +568,14 @@ const styles = StyleSheet.create({
   },
   headerBadge: {
     paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 999,
-    backgroundColor: palette.surfaceOverlay,
+    paddingVertical: 5,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.07)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255,255,255,0.12)',
   },
   headerBadgeText: {
-    color: palette.accentCool,
+    color: palette.accentStrong,
     fontSize: 11,
     fontWeight: '700',
   },
@@ -585,14 +585,14 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 12,
     paddingVertical: 7,
-    borderRadius: 999,
-    backgroundColor: palette.surfaceOverlay,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.07)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255,255,255,0.12)',
   },
   qualityTriggerActive: {
-    backgroundColor: palette.surfaceRaised,
-    borderColor: palette.borderStrong,
+    backgroundColor: 'rgba(108, 92, 231, 0.2)',
+    borderColor: 'rgba(108, 92, 231, 0.34)',
   },
   qualityTriggerText: {
     color: palette.textPrimary,
@@ -612,14 +612,14 @@ const styles = StyleSheet.create({
     gap: 6,
     paddingHorizontal: 13,
     paddingVertical: 9,
-    borderRadius: 999,
-    backgroundColor: palette.surfaceOverlay,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255,255,255,0.12)',
   },
   qualityPillActive: {
-    backgroundColor: palette.accent,
-    borderColor: palette.accentStrong,
+    backgroundColor: 'rgba(108, 92, 231, 0.25)',
+    borderColor: 'rgba(108, 92, 231, 0.38)',
   },
   qualityPillText: {
     color: palette.textSecondary,
@@ -631,9 +631,9 @@ const styles = StyleSheet.create({
   },
   playerCard: {
     overflow: 'hidden',
-    borderRadius: 30,
+    borderRadius: 12,
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
     backgroundColor: '#000000',
     aspectRatio: 16 / 9,
   },
@@ -660,8 +660,8 @@ const styles = StyleSheet.create({
   },
   progressTrack: {
     height: 8,
-    borderRadius: 999,
-    backgroundColor: palette.surfaceOverlay,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255,255,255,0.16)',
     overflow: 'hidden',
   },
   bufferTrack: {
@@ -688,25 +688,25 @@ const styles = StyleSheet.create({
   controlsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10,
-    marginTop: 18,
+    gap: 8,
+    marginTop: 16,
   },
   controlButton: {
-    minWidth: 74,
-    minHeight: 56,
-    paddingHorizontal: 14,
-    borderRadius: 20,
+    minWidth: 68,
+    minHeight: 52,
+    paddingHorizontal: 12,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 4,
-    backgroundColor: palette.surfaceOverlay,
+    backgroundColor: 'rgba(255,255,255,0.06)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   controlButtonPrimary: {
     backgroundColor: palette.accent,
     borderColor: palette.accentStrong,
-    minWidth: 92,
+    minWidth: 84,
   },
   controlDisabled: {
     opacity: 0.45,
@@ -722,12 +722,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   statusCard: {
-    marginTop: 18,
-    padding: 18,
-    borderRadius: 24,
-    backgroundColor: palette.surfaceOverlay,
+    marginTop: 14,
+    padding: 14,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.05)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     gap: 8,
   },
   statusTitle: {
@@ -751,18 +751,18 @@ const styles = StyleSheet.create({
     paddingTop: 14,
   },
   queueCard: {
-    width: 158,
-    minHeight: 100,
-    padding: 15,
-    borderRadius: 24,
-    backgroundColor: palette.surfaceOverlay,
+    width: 146,
+    minHeight: 92,
+    padding: 13,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.05)',
     borderWidth: 1,
-    borderColor: palette.border,
+    borderColor: 'rgba(255,255,255,0.1)',
     gap: 8,
   },
   queueCardActive: {
-    backgroundColor: palette.surfaceRaised,
-    borderColor: palette.borderStrong,
+    backgroundColor: 'rgba(108, 92, 231, 0.2)',
+    borderColor: 'rgba(108, 92, 231, 0.34)',
   },
   queueIndex: {
     color: palette.accentCool,
