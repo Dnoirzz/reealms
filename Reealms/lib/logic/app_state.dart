@@ -1,10 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:reealms_mobile/data/models/app_preferences.dart';
+import 'package:reealms_mobile/data/models/login_device_entry.dart';
 import 'package:reealms_mobile/data/models/movie.dart';
 import 'package:reealms_mobile/data/services/api_service.dart';
 import 'package:reealms_mobile/data/services/storage_service.dart';
 import 'package:reealms_mobile/data/services/auth_service.dart';
+import 'package:reealms_mobile/data/services/settings_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:reealms_mobile/data/services/sync_service.dart';
 
@@ -14,6 +18,7 @@ class AppState extends ChangeNotifier {
   final StorageService _storageService = StorageService();
   final AuthService _authService = AuthService();
   final SyncService _syncService = SyncService();
+  final SettingsService _settingsService = SettingsService();
 
   List<Movie> _homeMovies = [];
   List<Movie> _history = [];
@@ -25,6 +30,8 @@ class AppState extends ChangeNotifier {
   bool _isAuthReady = false;
   bool _allowAnonymousForCurrentLaunch = false;
   bool _isClearingAnonymousSession = false;
+  bool _isPasswordRecoveryFlowActive = false;
+  AppPreferences _preferences = AppPreferences.defaults;
 
   List<Movie> get homeMovies => _homeMovies;
   List<Movie> get history => _history;
@@ -39,6 +46,11 @@ class AppState extends ChangeNotifier {
   bool get isMemberLoggedIn =>
       _currentUser != null && !(_currentUser?.isAnonymous ?? true);
   bool get isAuthReady => _isAuthReady;
+  bool get isPasswordRecoveryFlowActive => _isPasswordRecoveryFlowActive;
+  AppPreferences get preferences => _preferences;
+  String get defaultVideoQuality => _preferences.defaultQuality;
+  bool get autoplayNextEpisode => _preferences.autoplayNextEpisode;
+  bool get autoLandscapeOnStart => _preferences.autoLandscapeOnStart;
   bool get canEnterMainNavigation {
     final user = _currentUser;
     if (user == null) return false;
@@ -56,6 +68,7 @@ class AppState extends ChangeNotifier {
     if (_currentUser?.isAnonymous ?? false) {
       await _clearAnonymousSession(notify: false);
     }
+    await loadSettings(notify: false);
     _storageService.setScope(_storageScopeForUser(_currentUser));
     await loadHistory();
     await loadFavorites();
@@ -69,6 +82,12 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> _handleAuthStateChange(AuthState data) async {
+    if (data.event == AuthChangeEvent.passwordRecovery) {
+      _isPasswordRecoveryFlowActive = true;
+    } else if (data.event == AuthChangeEvent.signedOut) {
+      _isPasswordRecoveryFlowActive = false;
+    }
+
     final incomingUser = data.session?.user;
     if ((incomingUser?.isAnonymous ?? false) &&
         !_allowAnonymousForCurrentLaunch) {
@@ -246,6 +265,7 @@ class AppState extends ChangeNotifier {
   Future<void> signIn(String email, String password) async {
     _allowAnonymousForCurrentLaunch = false;
     await _authService.signInWithEmail(email, password);
+    await _authService.logLoginEvent();
   }
 
   Future<void> signUp(
@@ -265,7 +285,71 @@ class AppState extends ChangeNotifier {
 
   Future<void> signOut() async {
     _allowAnonymousForCurrentLaunch = false;
+    _isPasswordRecoveryFlowActive = false;
     await _authService.signOut();
+  }
+
+  Future<void> signOutAllDevices() async {
+    _allowAnonymousForCurrentLaunch = false;
+    _isPasswordRecoveryFlowActive = false;
+    await _authService.signOutAllDevices();
+  }
+
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+  }) async {
+    await _authService.changePassword(
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    );
+  }
+
+  Future<void> deleteAccount() async {
+    _allowAnonymousForCurrentLaunch = false;
+    _isPasswordRecoveryFlowActive = false;
+    await _authService.deleteCurrentAccount();
+    _currentUser = null;
+    _storageService.setScope(_storageScopeForUser(null));
+    _history = [];
+    _favorites = [];
+    notifyListeners();
+  }
+
+  Future<List<LoginDeviceEntry>> getLoginHistory() async {
+    return await _authService.getLoginHistory();
+  }
+
+  Future<void> clearImageCache() async {
+    PaintingBinding.instance.imageCache.clear();
+    PaintingBinding.instance.imageCache.clearLiveImages();
+    await DefaultCacheManager().emptyCache();
+  }
+
+  Future<void> loadSettings({bool notify = true}) async {
+    _preferences = await _settingsService.loadPreferences();
+    if (notify) {
+      notifyListeners();
+    }
+  }
+
+  Future<void> updateDefaultQuality(String quality) async {
+    final normalized = AppPreferences.normalizeQuality(quality);
+    await _settingsService.saveDefaultQuality(normalized);
+    _preferences = _preferences.copyWith(defaultQuality: normalized);
+    notifyListeners();
+  }
+
+  Future<void> toggleAutoplayNext(bool enabled) async {
+    await _settingsService.saveAutoplayNextEpisode(enabled);
+    _preferences = _preferences.copyWith(autoplayNextEpisode: enabled);
+    notifyListeners();
+  }
+
+  Future<void> toggleAutoLandscape(bool enabled) async {
+    await _settingsService.saveAutoLandscapeOnStart(enabled);
+    _preferences = _preferences.copyWith(autoLandscapeOnStart: enabled);
+    notifyListeners();
   }
 
   Future<void> signInGuest() async {
@@ -280,5 +364,15 @@ class AppState extends ChangeNotifier {
 
   Future<void> resendEmailVerification(String email) async {
     await _authService.resendSignUpVerificationEmail(email);
+  }
+
+  Future<void> requestPasswordReset(String email) async {
+    await _authService.sendPasswordResetEmail(email);
+  }
+
+  Future<void> updateRecoveredPassword(String newPassword) async {
+    await _authService.updatePassword(newPassword);
+    _isPasswordRecoveryFlowActive = false;
+    notifyListeners();
   }
 }

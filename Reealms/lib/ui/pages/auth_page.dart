@@ -17,6 +17,8 @@ class _AuthPageState extends State<AuthPage> {
   final _passwordController = TextEditingController();
   bool _isLogin = true;
   bool _isSubmitting = false;
+  bool _isSendingPasswordReset = false;
+  bool _obscurePassword = true;
   DateTime? _signupCooldownUntil;
 
   static const String _signupVerificationMessage =
@@ -123,6 +125,45 @@ class _AuthPageState extends State<AuthPage> {
     return int.tryParse(match.group(1) ?? '');
   }
 
+  Future<void> _sendPasswordReset() async {
+    if (_isSendingPasswordReset) {
+      _showInfo("Permintaan sedang diproses, mohon tunggu.");
+      return;
+    }
+
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      _showInfo("Masukkan alamat email terlebih dahulu.");
+      return;
+    }
+
+    setState(() => _isSendingPasswordReset = true);
+    try {
+      final state = Provider.of<AppState>(context, listen: false);
+      await state.requestPasswordReset(email);
+      _showInfo(
+        "Link reset kata sandi telah dikirim. Silakan cek Inbox, Spam, atau Promosi.",
+      );
+    } catch (e) {
+      final rawError = e.toString().toLowerCase();
+      final isEmailRateLimited =
+          rawError.contains('over_email_send_rate_limit') ||
+          rawError.contains('email rate limit exceeded');
+      if (isEmailRateLimited) {
+        final retrySeconds = _extractRetrySeconds(rawError) ?? 60;
+        _showInfo(
+          "Terlalu sering meminta reset. Coba lagi dalam $retrySeconds detik.",
+        );
+      } else {
+        _showInfo("Gagal mengirim link reset. Silakan coba lagi.");
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSendingPasswordReset = false);
+      }
+    }
+  }
+
   void _showInfo(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(
@@ -160,9 +201,7 @@ class _AuthPageState extends State<AuthPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                _isLogin
-                    ? "Selamat Datang di Reealms"
-                    : "Mulai coba Reealms",
+                _isLogin ? "Selamat Datang di Reealms" : "Mulai coba Reealms",
                 style: GoogleFonts.outfit(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -206,11 +245,56 @@ class _AuthPageState extends State<AuthPage> {
               const SizedBox(height: 20),
               TextField(
                 controller: _passwordController,
-                obscureText: true,
+                obscureText: _obscurePassword,
                 style: const TextStyle(color: Colors.white),
-                decoration: _inputDecoration("Kata Sandi", Icons.lock_outline),
+                decoration: _inputDecoration(
+                  "Kata Sandi",
+                  Icons.lock_outline,
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() => _obscurePassword = !_obscurePassword);
+                    },
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      color: Colors.white38,
+                      size: 20,
+                    ),
+                  ),
+                ),
               ),
-              const SizedBox(height: 32),
+              if (_isLogin) ...[
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: _isSendingPasswordReset
+                        ? null
+                        : _sendPasswordReset,
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      minimumSize: const Size(0, 0),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    child: _isSendingPasswordReset
+                        ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white70,
+                            ),
+                          )
+                        : const Text(
+                            "Lupa Kata Sandi?",
+                            style: TextStyle(color: Colors.white70),
+                          ),
+                  ),
+                ),
+              ],
+              SizedBox(height: _isLogin ? 16 : 32),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
@@ -236,7 +320,7 @@ class _AuthPageState extends State<AuthPage> {
                           ),
                         )
                       : Text(
-                          _isLogin ? "Masuk & Lanjutkan" : "Daftar",
+                          _isLogin ? "Masuk & Lanjutkan" : "Buat Akun",
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
@@ -314,11 +398,16 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  InputDecoration _inputDecoration(String label, IconData icon) {
+  InputDecoration _inputDecoration(
+    String label,
+    IconData icon, {
+    Widget? suffixIcon,
+  }) {
     return InputDecoration(
       labelText: label,
       labelStyle: const TextStyle(color: Colors.white54, fontSize: 14),
       prefixIcon: Icon(icon, color: Colors.white38, size: 20),
+      suffixIcon: suffixIcon,
       filled: true,
       fillColor: Colors.white.withOpacity(0.05),
       enabledBorder: OutlineInputBorder(

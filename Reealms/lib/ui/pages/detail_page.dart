@@ -138,7 +138,9 @@ class _DetailPageState extends State<DetailPage> {
     if (_isGuestUser) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Anda perlu login untuk menyimpan konten ini jadi favorit"),
+          content: Text(
+            "Anda perlu login untuk menyimpan konten ini jadi favorit",
+          ),
         ),
       );
       return;
@@ -511,6 +513,54 @@ class _DetailPageState extends State<DetailPage> {
     );
   }
 
+  AppState? _tryGetAppState(BuildContext context, {required bool listen}) {
+    try {
+      return Provider.of<AppState>(context, listen: listen);
+    } on ProviderNotFoundException {
+      return null;
+    }
+  }
+
+  Movie? _historyMovieForCurrent(AppState state) {
+    if (!state.isMemberLoggedIn) return null;
+
+    Movie? historyMovie;
+    for (final movie in state.history) {
+      if (movie.id == widget.movie.id) {
+        historyMovie = movie;
+        break;
+      }
+    }
+    return historyMovie;
+  }
+
+  bool _isLastWatchedEpisode(Episode episode, Movie historyMovie) {
+    if (historyMovie.id != widget.movie.id) return false;
+
+    final savedEpisodeId = historyMovie.lastWatchedEpisodeId.trim();
+    if (savedEpisodeId.isNotEmpty && savedEpisodeId == episode.id.trim()) {
+      return true;
+    }
+
+    final savedOrder = historyMovie.lastWatchedEpisodeOrder;
+    final currentOrder = _episodeSortKey(episode) > 0
+        ? _episodeSortKey(episode)
+        : episode.order;
+    if (savedOrder != null && savedOrder > 0 && currentOrder == savedOrder) {
+      return true;
+    }
+
+    final savedTitle = historyMovie.lastWatchedEpisodeTitle
+        .trim()
+        .toLowerCase();
+    if (savedTitle.isNotEmpty &&
+        savedTitle == episode.title.trim().toLowerCase()) {
+      return true;
+    }
+
+    return false;
+  }
+
   Widget _buildEpisodeList() {
     if (_useGridEpisodeLayout) {
       return _buildEpisodeGrid();
@@ -709,6 +759,10 @@ class _DetailPageState extends State<DetailPage> {
         : (screenWidth >= 430 ? 6 : 5);
     final baseOrder =
         ((_selectedEpisodeRangeIndex ?? 0) * _episodeRangeSize) + 1;
+    final appState = _tryGetAppState(context, listen: true);
+    final historyMovie = appState == null
+        ? null
+        : _historyMovieForCurrent(appState);
 
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -725,6 +779,8 @@ class _DetailPageState extends State<DetailPage> {
               ? _episodeSortKey(ep)
               : (baseOrder + index);
           final isLocked = _isEpisodeLocked(ep);
+          final isLastWatched =
+              historyMovie != null && _isLastWatchedEpisode(ep, historyMovie);
 
           return InkWell(
             borderRadius: BorderRadius.circular(10),
@@ -737,12 +793,18 @@ class _DetailPageState extends State<DetailPage> {
                 : () => _handleEpisodeTap(ep),
             child: Ink(
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(isLocked ? 0.03 : 0.05),
+                color: isLocked
+                    ? Colors.white.withOpacity(0.03)
+                    : (isLastWatched
+                          ? Theme.of(context).primaryColor.withOpacity(0.2)
+                          : Colors.white.withOpacity(0.05)),
                 borderRadius: BorderRadius.circular(10),
                 border: Border.all(
                   color: isLocked
                       ? Colors.white.withOpacity(0.06)
-                      : Colors.white.withOpacity(0.1),
+                      : (isLastWatched
+                            ? Theme.of(context).primaryColor.withOpacity(0.7)
+                            : Colors.white.withOpacity(0.1)),
                 ),
               ),
               child: Stack(
@@ -751,12 +813,37 @@ class _DetailPageState extends State<DetailPage> {
                     child: Text(
                       "$epNumber",
                       style: TextStyle(
-                        color: isLocked ? Colors.white54 : Colors.white,
+                        color: isLocked
+                            ? Colors.white54
+                            : (isLastWatched ? Colors.white : Colors.white),
                         fontSize: 24,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
+                  if (isLastWatched && !isLocked)
+                    Positioned(
+                      top: 6,
+                      left: 6,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.18),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: const Text(
+                          "Terakhir",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
                   if (isLocked)
                     const Positioned(
                       top: 6,
@@ -791,7 +878,20 @@ class _DetailPageState extends State<DetailPage> {
       return;
     }
 
-    _addToHistory(widget.movie);
+    final appState = Provider.of<AppState>(context, listen: false);
+    final autoPlayNextEnabled = appState.autoplayNextEpisode;
+    final autoLandscapeOnStart = appState.autoLandscapeOnStart;
+    final preferredQuality = appState.defaultVideoQuality;
+
+    final episodeOrder = _episodeSortKey(ep) > 0
+        ? _episodeSortKey(ep)
+        : ep.order;
+    final historyMovie = widget.movie.copyWith(
+      lastWatchedEpisodeId: ep.id,
+      lastWatchedEpisodeTitle: ep.title,
+      lastWatchedEpisodeOrder: episodeOrder > 0 ? episodeOrder : null,
+    );
+    _addToHistory(historyMovie);
 
     if (widget.movie.sourceType == "komik") {
       setState(() => _isLoading = true);
@@ -827,12 +927,13 @@ class _DetailPageState extends State<DetailPage> {
                   widget.otakudesuVideoPlayerBuilder?.call(
                     directMirrorUrl,
                     ep.title,
-                    false,
+                    autoLandscapeOnStart,
                   ) ??
                   VideoPlayerPage(
                     videoUrl: directMirrorUrl,
                     title: ep.title,
-                    preferLandscapeOnStart: false,
+                    preferLandscapeOnStart: autoLandscapeOnStart,
+                    defaultQuality: preferredQuality,
                   ),
             ),
           );
@@ -898,7 +999,9 @@ class _DetailPageState extends State<DetailPage> {
                     .map((item) => item.title)
                     .toList(),
                 initialPlaylistIndex: startIndex,
-                autoPlayNext: true,
+                autoPlayNext: autoPlayNextEnabled,
+                preferLandscapeOnStart: autoLandscapeOnStart,
+                defaultQuality: preferredQuality,
               ),
             ),
           );
@@ -908,8 +1011,12 @@ class _DetailPageState extends State<DetailPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) =>
-              VideoPlayerPage(videoUrl: ep.streamUrl, title: ep.title),
+          builder: (context) => VideoPlayerPage(
+            videoUrl: ep.streamUrl,
+            title: ep.title,
+            preferLandscapeOnStart: autoLandscapeOnStart,
+            defaultQuality: preferredQuality,
+          ),
         ),
       );
     } else {

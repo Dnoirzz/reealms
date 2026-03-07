@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:reealms_mobile/logic/app_state.dart';
+import 'package:reealms_mobile/ui/pages/about_page.dart';
 import 'package:reealms_mobile/ui/pages/auth_page.dart';
+import 'package:reealms_mobile/ui/pages/help_support_page.dart';
 import 'package:reealms_mobile/ui/pages/history_page.dart';
+import 'package:reealms_mobile/ui/pages/settings_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -119,19 +122,40 @@ class ProfilePage extends StatelessWidget {
                     context,
                     Icons.settings_outlined,
                     "Pengaturan",
-                    () {},
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SettingsPage(),
+                        ),
+                      );
+                    },
                   ),
                   _buildProfileOption(
                     context,
                     Icons.help_outline,
                     "Bantuan & Dukungan",
-                    () {},
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HelpSupportPage(),
+                        ),
+                      );
+                    },
                   ),
                   _buildProfileOption(
                     context,
                     Icons.info_outline,
                     "Tentang Reealms",
-                    () {},
+                    () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AboutPage(),
+                        ),
+                      );
+                    },
                   ),
                   const Spacer(),
                   SizedBox(

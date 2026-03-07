@@ -75,7 +75,9 @@ Future<List<_QualityOption>> _parseVideoPlayerQualityOptions({
       if (nextPath == null) continue;
 
       final resolvedUrl = playlistUri.resolve(nextPath).toString();
-      final label = height != null ? '${height}p' : 'Varian ${variants.length + 1}';
+      final label = height != null
+          ? '${height}p'
+          : 'Varian ${variants.length + 1}';
       variants.add(
         _QualityOption(label: label, url: resolvedUrl, rank: height ?? 0),
       );
@@ -106,37 +108,54 @@ Future<List<_QualityOption>> _parseVideoPlayerQualityOptions({
       return [defaultOption];
     }
 
-    developer.log('[QualityParser] Response body length: ${response.body.length}');
-    developer.log('[QualityParser] Response body preview: ${response.body.substring(0, response.body.length > 200 ? 200 : response.body.length)}');
+    developer.log(
+      '[QualityParser] Response body length: ${response.body.length}',
+    );
+    developer.log(
+      '[QualityParser] Response body preview: ${response.body.substring(0, response.body.length > 200 ? 200 : response.body.length)}',
+    );
 
     final directVariants = parseMasterPlaylist(uri, response.body);
-    developer.log('[QualityParser] Direct variants found: ${directVariants.length}');
+    developer.log(
+      '[QualityParser] Direct variants found: ${directVariants.length}',
+    );
 
     if (directVariants.isNotEmpty) {
-      developer.log('[QualityParser] Returning ${directVariants.length + 1} options (including Auto)');
+      developer.log(
+        '[QualityParser] Returning ${directVariants.length + 1} options (including Auto)',
+      );
       return [defaultOption, ...directVariants];
     }
 
     final pathSegments = uri.pathSegments;
-    developer.log('[QualityParser] Path segments: ${pathSegments.length}, attempting master playlist recovery');
+    developer.log(
+      '[QualityParser] Path segments: ${pathSegments.length}, attempting master playlist recovery',
+    );
 
     final recoveryPatterns = <(Uri, String)>[];
 
-    if (pathSegments.length >= 1) {
+    if (pathSegments.isNotEmpty) {
       final lastSegment = pathSegments.last;
-      final parentUri = uri.resolve('..');
 
       if (lastSegment.toLowerCase().contains('index')) {
         recoveryPatterns.add((uri.resolve('../master.m3u8'), 'master.m3u8'));
-        recoveryPatterns.add((uri.resolve('../playlist.m3u8'), 'playlist.m3u8'));
+        recoveryPatterns.add((
+          uri.resolve('../playlist.m3u8'),
+          'playlist.m3u8',
+        ));
       }
 
       if (lastSegment.toLowerCase().contains('.m3u8')) {
         final segmentName = lastSegment.toLowerCase();
-        if (segmentName.contains('720') || segmentName.contains('1080') || segmentName.contains('480')) {
+        if (segmentName.contains('720') ||
+            segmentName.contains('1080') ||
+            segmentName.contains('480')) {
           recoveryPatterns.add((uri.resolve('../master.m3u8'), 'master.m3u8'));
           recoveryPatterns.add((uri.resolve('../index.m3u8'), 'index.m3u8'));
-          recoveryPatterns.add((uri.resolve('../../master.m3u8'), '../../master.m3u8'));
+          recoveryPatterns.add((
+            uri.resolve('../../master.m3u8'),
+            '../../master.m3u8',
+          ));
         }
       }
     }
@@ -148,14 +167,20 @@ Future<List<_QualityOption>> _parseVideoPlayerQualityOptions({
             .get(candidateUri, headers: requestHeaders)
             .timeout(const Duration(seconds: 8));
 
-        developer.log('[QualityParser] $label response status: ${response.statusCode}');
+        developer.log(
+          '[QualityParser] $label response status: ${response.statusCode}',
+        );
 
         if (response.statusCode == 200) {
           final variants = parseMasterPlaylist(candidateUri, response.body);
-          developer.log('[QualityParser] $label variants found: ${variants.length}');
+          developer.log(
+            '[QualityParser] $label variants found: ${variants.length}',
+          );
 
           if (variants.isNotEmpty) {
-            developer.log('[QualityParser] Found ${variants.length} variants via $label');
+            developer.log(
+              '[QualityParser] Found ${variants.length} variants via $label',
+            );
             return [defaultOption, ...variants];
           }
         }
@@ -164,7 +189,9 @@ Future<List<_QualityOption>> _parseVideoPlayerQualityOptions({
       }
     }
 
-    developer.log('[QualityParser] No variants found after recovery attempts, returning Auto only');
+    developer.log(
+      '[QualityParser] No variants found after recovery attempts, returning Auto only',
+    );
     return [defaultOption];
   } catch (e) {
     developer.log('[QualityParser] Exception: $e');
@@ -181,6 +208,7 @@ class VideoPlayerPage extends StatefulWidget {
   final bool autoPlayNext;
   final bool disablePlaybackInitializationForTesting;
   final bool preferLandscapeOnStart;
+  final String defaultQuality;
 
   static http.Client Function() httpClientFactory = () => http.Client();
 
@@ -205,6 +233,7 @@ class VideoPlayerPage extends StatefulWidget {
     this.autoPlayNext = false,
     this.disablePlaybackInitializationForTesting = false,
     this.preferLandscapeOnStart = false,
+    this.defaultQuality = 'auto',
   });
 
   @override
@@ -419,7 +448,9 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
     );
     client.close();
 
-    developer.log('[VideoPlayerPage] Parsed ${parsedOptions.length} quality options');
+    developer.log(
+      '[VideoPlayerPage] Parsed ${parsedOptions.length} quality options',
+    );
     for (final option in parsedOptions) {
       developer.log('[VideoPlayerPage]   - ${option.label}: ${option.url}');
     }
@@ -429,6 +460,48 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       _qualityOptions = parsedOptions;
       _selectedQualityLabel = 'Auto';
     });
+    await _applyPreferredQuality();
+  }
+
+  String get _normalizedPreferredQuality {
+    final raw = widget.defaultQuality.trim().toLowerCase();
+    if (raw == '480p' || raw == '720p' || raw == 'auto') {
+      return raw;
+    }
+    return 'auto';
+  }
+
+  int? _qualityValueFromLabel(String label) {
+    final match = RegExp(r'(\d{3,4})p').firstMatch(label.toLowerCase());
+    if (match == null) return null;
+    return int.tryParse(match.group(1) ?? '');
+  }
+
+  _QualityOption? _resolvePreferredQualityOption() {
+    final preferred = _normalizedPreferredQuality;
+    if (preferred == 'auto') return null;
+    final targetValue = int.tryParse(preferred.replaceAll('p', ''));
+    if (targetValue == null) return null;
+
+    for (final option in _qualityOptions) {
+      final qualityValue = _qualityValueFromLabel(option.label);
+      if (qualityValue == targetValue) {
+        return option;
+      }
+    }
+    return null;
+  }
+
+  Future<void> _applyPreferredQuality() async {
+    if (!mounted || _qualityOptions.isEmpty) return;
+    final preferredOption = _resolvePreferredQualityOption();
+    if (preferredOption == null) {
+      if (_selectedQualityLabel != 'Auto' && mounted) {
+        setState(() => _selectedQualityLabel = 'Auto');
+      }
+      return;
+    }
+    await _switchQuality(preferredOption);
   }
 
   Future<void> _switchQuality(_QualityOption option) async {

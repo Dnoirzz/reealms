@@ -8,6 +8,7 @@ import 'package:reealms_mobile/ui/pages/home_page.dart';
 import 'package:reealms_mobile/ui/pages/search_page.dart';
 import 'package:reealms_mobile/ui/pages/history_page.dart';
 import 'package:reealms_mobile/ui/pages/profile_page.dart';
+import 'package:reealms_mobile/ui/pages/password_recovery_page.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -141,6 +142,10 @@ class _AppEntryGateState extends State<AppEntryGate>
             backgroundColor: Colors.black,
             body: Center(child: CircularProgressIndicator()),
           );
+        }
+
+        if (state.isPasswordRecoveryFlowActive) {
+          return const PasswordRecoveryPage();
         }
 
         if (!state.canEnterMainNavigation) {

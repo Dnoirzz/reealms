@@ -9,6 +9,9 @@ class Movie {
   final List<String> genres;
   final List<Episode> episodes;
   final int totalChapters;
+  final String lastWatchedEpisodeId;
+  final String lastWatchedEpisodeTitle;
+  final int? lastWatchedEpisodeOrder;
 
   Movie({
     required this.id,
@@ -21,6 +24,9 @@ class Movie {
     this.genres = const [],
     this.episodes = const [],
     this.totalChapters = 0,
+    this.lastWatchedEpisodeId = "",
+    this.lastWatchedEpisodeTitle = "",
+    this.lastWatchedEpisodeOrder,
   });
 
   factory Movie.fromJson(Map<String, dynamic> json, String sourceType) {
@@ -110,6 +116,22 @@ class Movie {
       sourceType: sourceType,
       genres: genreSet.toList(),
       totalChapters: json['total_chapters'] ?? 0,
+      lastWatchedEpisodeId:
+          json['last_watched_episode_id']?.toString() ??
+          json['lastWatchedEpisodeId']?.toString() ??
+          "",
+      lastWatchedEpisodeTitle:
+          json['last_watched_episode_title']?.toString() ??
+          json['lastWatchedEpisodeTitle']?.toString() ??
+          "",
+      lastWatchedEpisodeOrder: (() {
+        final raw =
+            json['last_watched_episode_order'] ??
+            json['lastWatchedEpisodeOrder'];
+        if (raw == null) return null;
+        if (raw is int) return raw;
+        return int.tryParse(raw.toString());
+      })(),
     );
   }
 
@@ -124,7 +146,44 @@ class Movie {
       'source_type': sourceType,
       'genres': genres,
       'total_chapters': totalChapters,
+      'last_watched_episode_id': lastWatchedEpisodeId,
+      'last_watched_episode_title': lastWatchedEpisodeTitle,
+      'last_watched_episode_order': lastWatchedEpisodeOrder,
     };
+  }
+
+  Movie copyWith({
+    String? id,
+    String? title,
+    String? posterUrl,
+    String? synopsis,
+    double? rating,
+    String? year,
+    String? sourceType,
+    List<String>? genres,
+    List<Episode>? episodes,
+    int? totalChapters,
+    String? lastWatchedEpisodeId,
+    String? lastWatchedEpisodeTitle,
+    int? lastWatchedEpisodeOrder,
+  }) {
+    return Movie(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      posterUrl: posterUrl ?? this.posterUrl,
+      synopsis: synopsis ?? this.synopsis,
+      rating: rating ?? this.rating,
+      year: year ?? this.year,
+      sourceType: sourceType ?? this.sourceType,
+      genres: genres ?? this.genres,
+      episodes: episodes ?? this.episodes,
+      totalChapters: totalChapters ?? this.totalChapters,
+      lastWatchedEpisodeId: lastWatchedEpisodeId ?? this.lastWatchedEpisodeId,
+      lastWatchedEpisodeTitle:
+          lastWatchedEpisodeTitle ?? this.lastWatchedEpisodeTitle,
+      lastWatchedEpisodeOrder:
+          lastWatchedEpisodeOrder ?? this.lastWatchedEpisodeOrder,
+    );
   }
 }
 
