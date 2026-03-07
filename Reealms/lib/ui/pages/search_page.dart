@@ -188,9 +188,9 @@ class _SearchPageState extends State<SearchPage> {
     try {
       final state = Provider.of<AppState>(context, listen: false);
       for (final category in categories) {
-        if (!mounted || state.source != "dramabox") break;
+        if (!mounted || state.searchSource != "dramabox") break;
         await _loadCategoryPoster(state, category.query);
-        if (!mounted || state.source != "dramabox") break;
+        if (!mounted || state.searchSource != "dramabox") break;
         await Future.delayed(const Duration(milliseconds: 120));
       }
     } finally {
@@ -201,7 +201,7 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> _loadCategoryPoster(AppState state, String query) async {
     if (_dramaboxCategoryPosters.containsKey(query) ||
         _loadingCategoryPosterQueries.contains(query) ||
-        state.source != "dramabox") {
+        state.searchSource != "dramabox") {
       return;
     }
 
@@ -276,7 +276,7 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    final source = Provider.of<AppState>(context).source;
+    final source = Provider.of<AppState>(context).searchSource;
     final isDramabox = source == "dramabox";
     final query = _searchController.text.trim();
     final showDramaboxFilters =
@@ -285,7 +285,7 @@ class _SearchPageState extends State<SearchPage> {
     if (showDramaboxFilters) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted &&
-            Provider.of<AppState>(context, listen: false).source ==
+            Provider.of<AppState>(context, listen: false).searchSource ==
                 "dramabox") {
           _ensureDramaboxCategoryPostersPrefetched();
         }
@@ -324,7 +324,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget _buildAppBar() {
-    final source = Provider.of<AppState>(context).source;
+    final source = Provider.of<AppState>(context).searchSource;
     return Container(
       padding: EdgeInsets.only(
         top: MediaQuery.of(context).padding.top + 10,
@@ -428,7 +428,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget _buildSourceChip(String id, String label, IconData icon) {
     final state = Provider.of<AppState>(context);
-    final isSelected = state.source == id;
+    final isSelected = state.searchSource == id;
     return ChoiceChip(
       label: Row(
         mainAxisSize: MainAxisSize.min,
@@ -452,7 +452,7 @@ class _SearchPageState extends State<SearchPage> {
       selected: isSelected,
       onSelected: (selected) {
         if (selected) {
-          state.setSource(id);
+          state.setSearchSource(id);
           if (_searchController.text.isNotEmpty) {
             _performSearch(_searchController.text);
           } else {

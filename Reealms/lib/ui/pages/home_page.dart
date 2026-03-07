@@ -93,9 +93,9 @@ class HomePage extends StatelessWidget {
                 ),
                 child: IconButton(
                   icon: Icon(
-                    state.currentSource == "otakudesu"
+                    state.homeSource == "otakudesu"
                         ? Icons.animation
-                        : state.currentSource == "komik"
+                        : state.homeSource == "komik"
                         ? Icons.menu_book
                         : Icons.movie_filter,
                     color: Theme.of(context).primaryColor,
@@ -162,7 +162,7 @@ class HomePage extends StatelessWidget {
               ),
               const SizedBox(height: 24),
               ...sources.map((source) {
-                final isSelected = state.currentSource == source['id'];
+                final isSelected = state.homeSource == source['id'];
                 return Container(
                   margin: const EdgeInsets.only(bottom: 12),
                   decoration: BoxDecoration(
@@ -203,7 +203,7 @@ class HomePage extends StatelessWidget {
                           )
                         : null,
                     onTap: () {
-                      state.setSource(source['id'] as String);
+                      state.setHomeSource(source['id'] as String);
                       Navigator.pop(context);
                     },
                   ),

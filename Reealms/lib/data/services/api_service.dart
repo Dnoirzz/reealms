@@ -495,7 +495,10 @@ class ApiService {
   ) async {
     if (mirrors.isEmpty) return null;
 
-    _logAnimePlayableDecision('mirror-candidates-count', mirrors.length.toString());
+    _logAnimePlayableDecision(
+      'mirror-candidates-count',
+      mirrors.length.toString(),
+    );
 
     _AnimeMirrorProbeResult? bestNonMaster;
     for (final mirrorUrl in mirrors) {
@@ -515,7 +518,10 @@ class ApiService {
     }
 
     if (bestNonMaster != null) {
-      _logAnimePlayableDecision('playable-selected', 'fallback:${bestNonMaster.url}');
+      _logAnimePlayableDecision(
+        'playable-selected',
+        'fallback:${bestNonMaster.url}',
+      );
     }
     return bestNonMaster;
   }
@@ -707,16 +713,30 @@ class ApiService {
       // Deduplicate by URL
       final seen = <String>{};
       final episodes = <Episode>[];
-      int order = 1;
+      int fallbackOrder = 1;
       for (final m in matches) {
         final url = m.group(1)!;
         var title =
             m.group(3)?.replaceAll(RegExp(r'<[^>]+>'), '').trim() ??
-            'Episode $order';
+            'Episode $fallbackOrder';
         // Clean up title - keep only "Episode N" format
         final epNumMatch = RegExp(r'[Ee]pisode\s*(\d+)').firstMatch(title);
         if (epNumMatch != null) {
           title = 'Episode ${epNumMatch.group(1)}';
+        }
+        var inferredOrder = 0;
+        final slugOrderMatch = RegExp(
+          r'episode-(\d+)-sub-indo',
+          caseSensitive: false,
+        ).firstMatch(url);
+        if (slugOrderMatch != null) {
+          inferredOrder = int.tryParse(slugOrderMatch.group(1) ?? '') ?? 0;
+        }
+        if (inferredOrder <= 0 && epNumMatch != null) {
+          inferredOrder = int.tryParse(epNumMatch.group(1) ?? '') ?? 0;
+        }
+        if (inferredOrder <= 0) {
+          inferredOrder = fallbackOrder;
         }
         if (!seen.contains(url)) {
           seen.add(url);
@@ -724,10 +744,11 @@ class ApiService {
             Episode(
               id: url, // use full URL as ID for direct opening
               title: title,
-              order: order++,
+              order: inferredOrder,
               streamUrl: '',
             ),
           );
+          fallbackOrder++;
         }
       }
       // Reverse so newest episode comes first
@@ -899,7 +920,9 @@ class ApiService {
     return '';
   }
 
-  Future<List<String>> _collectOtakudesuMirrorCandidates(String episodeUrl) async {
+  Future<List<String>> _collectOtakudesuMirrorCandidates(
+    String episodeUrl,
+  ) async {
     if (episodeUrl.isEmpty || !episodeUrl.startsWith('http')) return const [];
 
     try {

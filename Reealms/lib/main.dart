@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:reealms_mobile/core/runtime_config.dart';
+import 'package:reealms_mobile/data/models/movie.dart';
 import 'package:reealms_mobile/logic/app_state.dart';
 import 'package:reealms_mobile/ui/pages/home_page.dart';
 import 'package:reealms_mobile/ui/pages/search_page.dart';
@@ -25,11 +27,15 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Supabase (User needs to provide URL and KEY)
+  if (!RuntimeConfig.hasSupabaseConfig) {
+    runApp(const MissingConfigApp());
+    return;
+  }
+
+  // Initialize Supabase from dart-define values.
   await Supabase.initialize(
-    url: 'https://nuyhtbnmmbrnyjznvwqa.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im51eWh0Ym5tbWJybnlqem52d3FhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2MjU1OTAsImV4cCI6MjA4ODIwMTU5MH0.8Hp_H--1cUzPcTddibHq0E1jUFqmCd7I4seBhatRf38',
+    url: RuntimeConfig.supabaseUrl,
+    anonKey: RuntimeConfig.supabaseAnonKey,
   );
 
   final supabase = Supabase.instance.client;
@@ -46,6 +52,31 @@ void main() async {
       child: const ReealmsApp(),
     ),
   );
+}
+
+class MissingConfigApp extends StatelessWidget {
+  const MissingConfigApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Padding(
+            padding: EdgeInsets.all(24),
+            child: Text(
+              'Konfigurasi belum lengkap.\n'
+              'Jalankan app dengan --dart-define SUPABASE_URL dan SUPABASE_ANON_KEY.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white70, fontSize: 14),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class ReealmsApp extends StatelessWidget {
@@ -130,11 +161,12 @@ class MainNavigationPage extends StatefulWidget {
 
 class _MainNavigationPageState extends State<MainNavigationPage> {
   int _selectedIndex = 0;
+  String? _dismissedContinueMovieKey;
 
   final List<Widget> _pages = [
     const HomePage(),
     const SearchPage(),
-    const HistoryPage(),
+    const HistoryPage(showHistoryTab: false, showFavoritesTab: true),
     const ProfilePage(),
   ];
 
@@ -142,6 +174,15 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   Widget build(BuildContext context) {
     return Consumer<AppState>(
       builder: (context, state, child) {
+        final latestMovie = _latestContinueMovie(state);
+        final latestMovieKey = latestMovie == null
+            ? null
+            : _continueMovieKey(latestMovie);
+        final shouldShowContinueWatching =
+            _selectedIndex == 0 &&
+            latestMovie != null &&
+            latestMovieKey != _dismissedContinueMovieKey;
+
         return PopScope(
           canPop: _selectedIndex == 0,
           onPopInvokedWithResult: (didPop, result) {
@@ -154,8 +195,8 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             bottomNavigationBar: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (state.history.isNotEmpty)
-                  _buildContinueWatching(context, state),
+                if (shouldShowContinueWatching)
+                  _buildContinueWatching(context, state, latestMovie!),
                 BottomNavigationBar(
                   currentIndex: _selectedIndex,
                   onTap: (index) {
@@ -200,10 +241,19 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     );
   }
 
-  Widget _buildContinueWatching(BuildContext context, AppState state) {
-    if (state.history.isEmpty) return const SizedBox.shrink();
-    final movie = state.history.first;
+  Movie? _latestContinueMovie(AppState state) {
+    if (state.history.isEmpty) return null;
+    return state.history.first;
+  }
 
+  String _continueMovieKey(Movie movie) =>
+      '${movie.id}|${movie.title}|${movie.posterUrl}';
+
+  Widget _buildContinueWatching(
+    BuildContext context,
+    AppState state,
+    Movie movie,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -285,7 +335,11 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
               IconButton(
                 visualDensity: VisualDensity.compact,
                 icon: const Icon(Icons.close, color: Colors.white24, size: 16),
-                onPressed: () => state.removeFromHistory(movie.id),
+                onPressed: () {
+                  setState(() {
+                    _dismissedContinueMovieKey = _continueMovieKey(movie);
+                  });
+                },
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
               ),

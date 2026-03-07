@@ -1,3 +1,5 @@
+import 'package:reealms_mobile/core/runtime_config.dart';
+
 class AppConstants {
   static const String appName = "Reealms";
 
@@ -12,6 +14,5 @@ class AppConstants {
       "https://otakudesu-unofficial-api.vercel.app/v1"; // Verified working API
 
   // Default tokens
-  static const String defaultCaptainToken =
-      "b0cb1c3e8b2ddc08fd24c05e094a33b24625d334b3ca2cca0edf3a08b102b9c9";
+  static String get defaultCaptainToken => RuntimeConfig.captainToken;
 }

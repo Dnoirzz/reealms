@@ -9,7 +9,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:reealms_mobile/data/services/sync_service.dart';
 
 class AppState extends ChangeNotifier {
-  final ApiService _apiService = ApiService();
+  final ApiService _homeApiService = ApiService();
+  final ApiService _searchApiService = ApiService();
   final StorageService _storageService = StorageService();
   final AuthService _authService = AuthService();
   final SyncService _syncService = SyncService();
@@ -18,7 +19,8 @@ class AppState extends ChangeNotifier {
   List<Movie> _history = [];
   List<Movie> _favorites = [];
   bool _isLoading = false;
-  String _currentSource = "dramabox";
+  String _homeSource = "dramabox";
+  String _searchSource = "dramabox";
   User? _currentUser;
   bool _isAuthReady = false;
   bool _allowAnonymousForCurrentLaunch = false;
@@ -28,8 +30,10 @@ class AppState extends ChangeNotifier {
   List<Movie> get history => _history;
   List<Movie> get favorites => _favorites;
   bool get isLoading => _isLoading;
-  String get currentSource => _currentSource;
-  String get source => _currentSource;
+  String get currentSource => _homeSource;
+  String get source => _searchSource;
+  String get homeSource => _homeSource;
+  String get searchSource => _searchSource;
   User? get currentUser => _currentUser;
   bool get isLoggedIn => _currentUser != null;
   bool get isMemberLoggedIn =>
@@ -45,8 +49,6 @@ class AppState extends ChangeNotifier {
   AppState() {
     unawaited(_initAuth());
     refreshHome();
-    loadHistory();
-    loadFavorites();
   }
 
   Future<void> _initAuth() async {
@@ -54,6 +56,9 @@ class AppState extends ChangeNotifier {
     if (_currentUser?.isAnonymous ?? false) {
       await _clearAnonymousSession(notify: false);
     }
+    _storageService.setScope(_storageScopeForUser(_currentUser));
+    await loadHistory();
+    await loadFavorites();
 
     _authService.authStateChanges.listen((data) {
       unawaited(_handleAuthStateChange(data));
@@ -73,6 +78,13 @@ class AppState extends ChangeNotifier {
 
     final prevUser = _currentUser;
     _currentUser = incomingUser;
+    final prevScope = _storageScopeForUser(prevUser);
+    final nextScope = _storageScopeForUser(_currentUser);
+    if (prevScope != nextScope) {
+      _storageService.setScope(nextScope);
+      await loadHistory();
+      await loadFavorites();
+    }
 
     final isMemberNow =
         _currentUser != null && !(_currentUser?.isAnonymous ?? true);
@@ -104,6 +116,11 @@ class AppState extends ChangeNotifier {
     if (_currentUser?.isAnonymous ?? false) {
       await _clearAnonymousSession();
     }
+  }
+
+  String _storageScopeForUser(User? user) {
+    if (user == null || user.isAnonymous) return 'guest';
+    return 'user_${user.id}';
   }
 
   Future<void> syncFromCloud() async {
@@ -139,7 +156,8 @@ class AppState extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _homeMovies = await _apiService.getHomeContent();
+      _homeApiService.setSource(_homeSource);
+      _homeMovies = await _homeApiService.getHomeContent();
     } catch (e) {
       print("Error in AppState.refreshHome: $e");
     } finally {
@@ -168,13 +186,14 @@ class AppState extends ChangeNotifier {
   }
 
   Future<void> toggleFavorite(Movie movie) async {
+    // Guest accounts are read-only for favorites.
+    if (!isMemberLoggedIn) return;
+
     await _storageService.toggleFavorite(movie);
     await loadFavorites();
 
-    if (isMemberLoggedIn) {
-      final isFavNow = await isFavorite(movie.id);
-      await _syncService.saveFavorite(movie, isFavNow);
-    }
+    final isFavNow = await isFavorite(movie.id);
+    await _syncService.saveFavorite(movie, isFavNow);
   }
 
   Future<void> removeFromHistory(String movieId) async {
@@ -191,17 +210,32 @@ class AppState extends ChangeNotifier {
     return await _storageService.isFavorite(movieId);
   }
 
-  void setSource(String source) {
-    if (_currentSource != source) {
-      _currentSource = source;
-      _apiService.setSource(source);
+  void setHomeSource(String source) {
+    final normalized = source.toLowerCase();
+    if (_homeSource != normalized) {
+      _homeSource = normalized;
+      _homeApiService.setSource(normalized);
       refreshHome();
     }
   }
 
+  void setSearchSource(String source) {
+    final normalized = source.toLowerCase();
+    if (_searchSource != normalized) {
+      _searchSource = normalized;
+      notifyListeners();
+    }
+  }
+
+  // Backward-compatible alias. New code should use setHomeSource/setSearchSource.
+  void setSource(String source) {
+    setHomeSource(source);
+  }
+
   Future<List<Movie>> searchMovies(String query) async {
     try {
-      return await _apiService.search(query);
+      _searchApiService.setSource(_searchSource);
+      return await _searchApiService.search(query);
     } catch (e) {
       print("AppState: Error searching movies: $e");
       return [];
@@ -214,9 +248,19 @@ class AppState extends ChangeNotifier {
     await _authService.signInWithEmail(email, password);
   }
 
-  Future<void> signUp(String email, String password) async {
+  Future<void> signUp(
+    String email,
+    String password, {
+    String? username,
+    String? phoneNumber,
+  }) async {
     _allowAnonymousForCurrentLaunch = false;
-    await _authService.signUpWithEmail(email, password);
+    await _authService.signUpWithEmail(
+      email,
+      password,
+      username: username,
+      phoneNumber: phoneNumber,
+    );
   }
 
   Future<void> signOut() async {
@@ -232,5 +276,9 @@ class AppState extends ChangeNotifier {
       _allowAnonymousForCurrentLaunch = false;
       rethrow;
     }
+  }
+
+  Future<void> resendEmailVerification(String email) async {
+    await _authService.resendSignUpVerificationEmail(email);
   }
 }

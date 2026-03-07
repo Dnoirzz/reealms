@@ -17,6 +17,7 @@ class _FakeApiService extends ApiService {
 
   int playableCalls = 0;
   int streamCalls = 0;
+  String? lastPlayableEpisodeUrl;
 
   @override
   Future<List<Episode>> scrapeOtakudesuEpisodes(String animePageUrl) async {
@@ -26,6 +27,7 @@ class _FakeApiService extends ApiService {
   @override
   Future<String> getBestOtakudesuPlayableUrl(String episodeUrl) async {
     playableCalls++;
+    lastPlayableEpisodeUrl = episodeUrl;
     return playableResult;
   }
 
@@ -72,7 +74,9 @@ void main() {
       addToHistoryOverride: (_) async {},
       otakudesuVideoPlayerBuilder: (videoUrl, title, preferLandscapeOnStart) =>
           _NavProbePage(
-            tag: preferLandscapeOnStart ? 'native-landscape' : 'native-portrait',
+            tag: preferLandscapeOnStart
+                ? 'native-landscape'
+                : 'native-portrait',
             value: videoUrl,
           ),
       animeWebViewBuilder: (streamUrl, title) =>
@@ -80,71 +84,105 @@ void main() {
     );
   }
 
-  testWidgets(
-    'anime tap keeps native-first then webview fallback behavior',
-    (WidgetTester tester) async {
-      final api = _FakeApiService(
-        playableResult: '',
-        streamResult: 'https://filemoon.example/safe-mirror',
-        episodes: [
-          Episode(
-            id: 'https://otakudesu.blog/episode/test-1/',
-            title: 'Episode 7',
-            order: 7,
-          ),
-        ],
-      );
-
-      await tester.pumpWidget(
-        MaterialApp(home: buildPage(api, buildMovie())),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('7'));
-      await tester.pumpAndSettle();
-
-      expect(api.playableCalls, 1);
-      expect(api.streamCalls, 1);
-      expect(find.text('webview:https://filemoon.example/safe-mirror'), findsOneWidget);
-      expect(find.textContaining('native:'), findsNothing);
-    },
-  );
-
-  testWidgets('anime tap goes native player when direct playable is available', (
+  testWidgets('anime tap keeps native-first then webview fallback behavior', (
     WidgetTester tester,
   ) async {
     final api = _FakeApiService(
-      playableResult: 'https://cdn.example/direct-master.m3u8',
-      streamResult: 'https://filemoon.example/should-not-be-used',
+      playableResult: '',
+      streamResult: 'https://filemoon.example/safe-mirror',
       episodes: [
         Episode(
-          id: 'https://otakudesu.blog/episode/test-2/',
-          title: 'Episode 9',
-          order: 9,
+          id: 'https://otakudesu.blog/episode/test-1/',
+          title: 'Episode 7',
+          order: 7,
         ),
       ],
     );
 
-    await tester.pumpWidget(
-      MaterialApp(home: buildPage(api, buildMovie())),
-    );
+    await tester.pumpWidget(MaterialApp(home: buildPage(api, buildMovie())));
     await tester.pumpAndSettle();
 
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('9'));
+    await tester.tap(find.text('7'));
     await tester.pumpAndSettle();
 
     expect(api.playableCalls, 1);
-    expect(api.streamCalls, 0);
+    expect(api.streamCalls, 1);
     expect(
-      find.text('native-landscape:https://cdn.example/direct-master.m3u8'),
+      find.text('webview:https://filemoon.example/safe-mirror'),
       findsOneWidget,
     );
-    expect(find.textContaining('webview:'), findsNothing);
+    expect(find.textContaining('native:'), findsNothing);
+  });
+
+  testWidgets(
+    'anime tap goes native player when direct playable is available',
+    (WidgetTester tester) async {
+      final api = _FakeApiService(
+        playableResult: 'https://cdn.example/direct-master.m3u8',
+        streamResult: 'https://filemoon.example/should-not-be-used',
+        episodes: [
+          Episode(
+            id: 'https://otakudesu.blog/episode/test-2/',
+            title: 'Episode 9',
+            order: 9,
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(MaterialApp(home: buildPage(api, buildMovie())));
+      await tester.pumpAndSettle();
+
+      await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('9'));
+      await tester.pumpAndSettle();
+
+      expect(api.playableCalls, 1);
+      expect(api.streamCalls, 0);
+      expect(
+        find.text('native-portrait:https://cdn.example/direct-master.m3u8'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('webview:'), findsNothing);
+    },
+  );
+
+  testWidgets('anime grid number maps to matching episode URL', (
+    WidgetTester tester,
+  ) async {
+    final api = _FakeApiService(
+      playableResult: 'https://cdn.example/direct-master.m3u8',
+      episodes: [
+        Episode(
+          id: 'https://otakudesu.blog/episode/test-anime-episode-9-sub-indo/',
+          title: 'Episode 9',
+          order: 1,
+        ),
+        Episode(
+          id: 'https://otakudesu.blog/episode/test-anime-episode-1-sub-indo/',
+          title: 'Episode 1',
+          order: 9,
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(MaterialApp(home: buildPage(api, buildMovie())));
+    await tester.pumpAndSettle();
+
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('1'));
+    await tester.pumpAndSettle();
+
+    expect(api.playableCalls, 1);
+    expect(
+      api.lastPlayableEpisodeUrl,
+      'https://otakudesu.blog/episode/test-anime-episode-1-sub-indo/',
+    );
   });
 }

@@ -1,25 +1,48 @@
-# Reealms 🌌
+﻿# Reealms
 
-Reealms adalah aplikasi streaming premium yang menggabungkan konten Drama, Anime, dan Komik dalam satu genggaman. Didesain dengan estetika *Dark Space* yang modern dan fitur sinkronisasi cloud yang canggih.
+Reealms adalah aplikasi streaming yang menggabungkan konten Drama, Anime, dan Komik.
 
-## ✨ Fitur Unggulan
-- **Multi-Source Streaming**: Tonton Drama (Dramabox), Anime (Otakudesu), dan baca Komik dari sumber terpercaya.
-- **Continue Watching**: Bar navigasi pintar yang mengingat tontonan terakhir Anda.
-- **Cloud Sync**: Sinkronisasi riwayat dan favorit secara otomatis menggunakan Supabase.
-- **Guest Access**: Masuk secara instan tanpa perlu mendaftar.
-- **Dark Aesthetic**: Antarmuka premium dengan animasi transisi Hero yang halus.
+## Fitur
+- Multi-source: Dramabox, Otakudesu, Komik.
+- Continue watching.
+- Sinkronisasi riwayat dan favorit menggunakan Supabase.
+- Guest access.
 
-## 🛠️ Persiapan Backend (Supabase)
-Pastikan Anda sudah menjalankan script SQL yang ada di `supabase_setup.md` di dashboard Supabase Anda agar fitur sinkronisasi berfungsi.
+## Persiapan Backend (Supabase)
+Pastikan script SQL di `supabase_setup.md` sudah dijalankan di dashboard Supabase Anda.
 
-## 🚀 Cara Build (Android)
-Untuk membuat file instalasi APK:
-1. Pastikan Flutter sudah terinstal.
-2. Jalankan perintah:
+## Konfigurasi Secret (Wajib)
+Jangan simpan key/token langsung di source code.
+
+1. Salin file contoh:
    ```bash
-   flutter build apk --release
+   copy secrets.example.json secrets.dev.json
    ```
-3. File APK akan tersedia di: `build/app/outputs/flutter-apk/app-release.apk`
+2. Isi nilai asli di `secrets.dev.json`.
+3. Jalankan dengan `--dart-define-from-file`:
 
----
-*Developed with ❤️ for Reealms Users.*
+```bash
+flutter run --dart-define-from-file=secrets.dev.json
+```
+
+Nilai `AUTH_EMAIL_REDIRECT_TO` bersifat opsional, namun disarankan untuk
+alur verifikasi email Supabase.
+
+Contoh nilai yang direkomendasikan:
+```json
+"AUTH_EMAIL_REDIRECT_TO": "reealms://auth/callback"
+```
+
+## Setup Redirect URL di Supabase
+Agar link verifikasi email kembali ke aplikasi:
+
+1. Buka `Authentication -> URL Configuration`.
+2. Tambahkan `reealms://auth/callback` ke `Additional Redirect URLs`.
+3. Simpan perubahan.
+
+## Build Android APK
+```bash
+flutter build apk --release --dart-define-from-file=secrets.dev.json
+```
+
+APK output: `build/app/outputs/flutter-apk/app-release.apk`

@@ -10,6 +10,8 @@ class MovieCard extends StatelessWidget {
 
   const MovieCard({super.key, required this.movie, required this.onTap});
 
+  String get _heroTag => 'movie_poster_${movie.id}_${movie.hashCode}';
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -22,7 +24,8 @@ class MovieCard extends StatelessWidget {
               fit: StackFit.expand,
               children: [
                 Hero(
-                  tag: 'movie_poster_${movie.id}',
+                  tag: _heroTag,
+                  placeholderBuilder: (context, heroSize, child) => child,
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child:

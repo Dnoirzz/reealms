@@ -6,19 +6,48 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class HistoryPage extends StatelessWidget {
-  const HistoryPage({super.key});
+  final bool showHistoryTab;
+  final bool showFavoritesTab;
+
+  const HistoryPage({
+    super.key,
+    this.showHistoryTab = true,
+    this.showFavoritesTab = true,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final tabs = <Tab>[];
+    final views = <Widget>[];
+
+    if (showHistoryTab) {
+      tabs.add(const Tab(text: "Riwayat"));
+      views.add(const _HistoryList());
+    }
+    if (showFavoritesTab) {
+      tabs.add(const Tab(text: "Favorit"));
+      views.add(const _FavoritesList());
+    }
+
+    final title = showHistoryTab && showFavoritesTab
+        ? "Koleksi Saya"
+        : showHistoryTab
+        ? "Riwayat Tontonan"
+        : "Koleksi Favorit";
+
+    final bodyContent = views.length == 1
+        ? views.first
+        : TabBarView(children: views);
+
     return DefaultTabController(
-      length: 2,
+      length: tabs.isEmpty ? 1 : tabs.length,
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
           backgroundColor: Colors.black,
           elevation: 0,
           title: Text(
-            "Koleksi Saya",
+            title,
             style: GoogleFonts.outfit(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -29,7 +58,7 @@ class HistoryPage extends StatelessWidget {
             Consumer<AppState>(
               builder: (context, state, child) {
                 return Visibility(
-                  visible: state.history.isNotEmpty,
+                  visible: showHistoryTab && state.history.isNotEmpty,
                   child: IconButton(
                     icon: const Icon(
                       Icons.delete_sweep_outlined,
@@ -42,24 +71,23 @@ class HistoryPage extends StatelessWidget {
               },
             ),
           ],
-          bottom: TabBar(
-            indicatorColor: Theme.of(context).primaryColor,
-            indicatorSize: TabBarIndicatorSize.label,
-            labelStyle: GoogleFonts.outfit(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
-            unselectedLabelStyle: GoogleFonts.outfit(
-              fontSize: 16,
-              fontWeight: FontWeight.normal,
-            ),
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.grey,
-            tabs: const [
-              Tab(text: "Riwayat"),
-              Tab(text: "Favorit"),
-            ],
-          ),
+          bottom: tabs.length > 1
+              ? TabBar(
+                  indicatorColor: Theme.of(context).primaryColor,
+                  indicatorSize: TabBarIndicatorSize.label,
+                  labelStyle: GoogleFonts.outfit(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  unselectedLabelStyle: GoogleFonts.outfit(
+                    fontSize: 16,
+                    fontWeight: FontWeight.normal,
+                  ),
+                  labelColor: Colors.white,
+                  unselectedLabelColor: Colors.grey,
+                  tabs: tabs,
+                )
+              : null,
         ),
         body: Container(
           decoration: BoxDecoration(
@@ -72,7 +100,7 @@ class HistoryPage extends StatelessWidget {
               ],
             ),
           ),
-          child: const TabBarView(children: [_HistoryList(), _FavoritesList()]),
+          child: bodyContent,
         ),
       ),
     );

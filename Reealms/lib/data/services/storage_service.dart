@@ -3,8 +3,21 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:reealms_mobile/data/models/movie.dart';
 
 class StorageService {
-  static const String _historyKey = 'watch_history';
-  static const String _favoritesKey = 'favorites';
+  static const String _historyKeyBase = 'watch_history';
+  static const String _favoritesKeyBase = 'favorites';
+  String _scope = 'guest';
+
+  void setScope(String scope) {
+    final sanitized = scope.trim();
+    if (sanitized.isEmpty) {
+      _scope = 'guest';
+      return;
+    }
+    _scope = sanitized.replaceAll(RegExp(r'[^a-zA-Z0-9_\-]'), '_');
+  }
+
+  String get _historyKey => '$_historyKeyBase::$_scope';
+  String get _favoritesKey => '$_favoritesKeyBase::$_scope';
 
   // --- HISTORY ---
 

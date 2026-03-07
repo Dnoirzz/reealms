@@ -44,14 +44,22 @@ class _DetailPageState extends State<DetailPage> {
 
   List<Episode> _episodes = [];
   bool _isLoading = true;
+  bool _isPreparingAnimePlayer = false;
+  bool _isFavorite = false;
+  bool _isFavoriteReady = false;
+  bool _isTogglingFavorite = false;
   int? _selectedEpisodeRangeIndex;
 
   static const int _episodeRangeSize = 30;
+
+  String get _movieHeroTag =>
+      'movie_poster_${widget.movie.id}_${widget.movie.hashCode}';
 
   @override
   void initState() {
     super.initState();
     _loadEpisodes();
+    _loadFavoriteStatus();
   }
 
   Future<void> _loadEpisodes() async {
@@ -80,84 +88,237 @@ class _DetailPageState extends State<DetailPage> {
     }
   }
 
-  Future<bool> _isFavorite(BuildContext context, String movieId) {
+  Future<bool> _getFavoriteStatus(String movieId) {
     if (widget.isFavoriteOverride != null) {
       return widget.isFavoriteOverride!(movieId);
     }
     return Provider.of<AppState>(context, listen: false).isFavorite(movieId);
   }
 
-  Future<void> _toggleFavorite(BuildContext context, Movie movie) {
+  Future<void> _toggleFavorite(Movie movie) {
     if (widget.toggleFavoriteOverride != null) {
       return widget.toggleFavoriteOverride!(movie);
     }
     return Provider.of<AppState>(context, listen: false).toggleFavorite(movie);
   }
 
-  Future<void> _addToHistory(BuildContext context, Movie movie) {
+  Future<void> _addToHistory(Movie movie) {
     if (widget.addToHistoryOverride != null) {
       return widget.addToHistoryOverride!(movie);
     }
     return Provider.of<AppState>(context, listen: false).addToHistory(movie);
   }
 
+  Future<void> _loadFavoriteStatus() async {
+    if (_isGuestUser) {
+      if (!mounted) return;
+      setState(() {
+        _isFavorite = false;
+        _isFavoriteReady = true;
+      });
+      return;
+    }
+
+    try {
+      final isFav = await _getFavoriteStatus(widget.movie.id);
+      if (!mounted) return;
+      setState(() {
+        _isFavorite = isFav;
+        _isFavoriteReady = true;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isFavoriteReady = true;
+      });
+    }
+  }
+
+  Future<void> _handleFavoriteTap() async {
+    if (_isGuestUser) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Anda perlu login untuk menyimpan konten ini jadi favorit"),
+        ),
+      );
+      return;
+    }
+
+    if (_isTogglingFavorite) return;
+
+    final previous = _isFavorite;
+    setState(() {
+      _isFavorite = !previous;
+      _isFavoriteReady = true;
+      _isTogglingFavorite = true;
+    });
+
+    try {
+      await _toggleFavorite(widget.movie);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isFavorite = previous;
+      });
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        _isTogglingFavorite = false;
+      });
+    }
+  }
+
+  bool get _isGuestUser {
+    try {
+      final appState = Provider.of<AppState>(context, listen: false);
+      final user = appState.currentUser;
+      return user != null && user.isAnonymous;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  bool _isGuestEpisodeRestricted(Episode ep) {
+    if (!_isGuestUser) return false;
+
+    final episodeNumber = _episodeSortKey(ep);
+    if (widget.movie.sourceType == "dramabox") {
+      return episodeNumber > 10;
+    }
+    if (widget.movie.sourceType == "otakudesu") {
+      return episodeNumber != 1;
+    }
+    return false;
+  }
+
+  String _lockedEpisodeMessage(Episode ep) {
+    if (_isGuestEpisodeRestricted(ep)) {
+      if (widget.movie.sourceType == "dramabox") {
+        return "Login diperlukan untuk menikmati seluruh episode";
+      }
+      if (widget.movie.sourceType == "otakudesu") {
+        return "Login diperlukan untuk menikmati seluruh episode";
+      }
+    }
+    return "Episode ini terkunci";
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).primaryColor.withOpacity(0.05),
-              Colors.black,
-            ],
-          ),
-        ),
-        child: CustomScrollView(
-          slivers: [
-            _buildAppBar(context),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildMainInfo(context),
-                    const SizedBox(height: 24),
-                    _buildSynopsis(context),
-                    const SizedBox(height: 32),
-                    _buildEpisodeHeader(context),
-                    if (_showEpisodeRangeSelector) ...[
-                      const SizedBox(height: 12),
-                      _buildEpisodeRangeSelector(),
-                    ],
-                    const SizedBox(height: 16),
-                  ],
-                ),
+      body: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Theme.of(context).primaryColor.withOpacity(0.05),
+                  Colors.black,
+                ],
               ),
             ),
-            if (_isLoading)
-              _buildShimmerList()
-            else if (_episodes.isEmpty)
-              const SliverToBoxAdapter(
-                child: Center(
+            child: CustomScrollView(
+              slivers: [
+                _buildAppBar(context),
+                SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.all(40.0),
-                    child: Text(
-                      "Banyak episode akan segera hadir",
-                      style: TextStyle(color: Colors.white38),
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildMainInfo(context),
+                        const SizedBox(height: 24),
+                        _buildSynopsis(context),
+                        const SizedBox(height: 32),
+                        _buildEpisodeHeader(context),
+                        if (_showEpisodeRangeSelector) ...[
+                          const SizedBox(height: 12),
+                          _buildEpisodeRangeSelector(),
+                        ],
+                        const SizedBox(height: 16),
+                      ],
                     ),
                   ),
                 ),
-              )
-            else
-              _buildEpisodeList(),
-            _buildBottomSafeAreaSpacer(context),
-          ],
-        ),
+                if (_isLoading)
+                  _buildShimmerList()
+                else if (_episodes.isEmpty)
+                  const SliverToBoxAdapter(
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(40.0),
+                        child: Text(
+                          "Banyak episode akan segera hadir",
+                          style: TextStyle(color: Colors.white38),
+                        ),
+                      ),
+                    ),
+                  )
+                else
+                  _buildEpisodeList(),
+                _buildBottomSafeAreaSpacer(context),
+              ],
+            ),
+          ),
+          if (_isPreparingAnimePlayer)
+            Positioned.fill(
+              child: AbsorbPointer(
+                child: Container(
+                  color: Colors.black.withOpacity(0.45),
+                  child: Center(
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 28),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 16,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.82),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(
+                          color: Colors.white.withOpacity(0.1),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const SizedBox(
+                            width: 28,
+                            height: 28,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: Colors.white,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Text(
+                            "Sedang mempersiapkan video player...",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.outfit(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Mohon tunggu sebentar",
+                            style: GoogleFonts.outfit(
+                              color: Colors.white60,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -185,18 +346,22 @@ class _DetailPageState extends State<DetailPage> {
             color: Colors.black.withOpacity(0.5),
             shape: BoxShape.circle,
           ),
-          child: FutureBuilder<bool>(
-            future: _isFavorite(context, widget.movie.id),
-            builder: (context, snapshot) {
-              final isFav = snapshot.data ?? false;
-              return IconButton(
-                icon: Icon(
-                  isFav ? Icons.favorite : Icons.favorite_border,
-                  color: isFav ? Colors.red : Colors.white,
-                ),
-                onPressed: () => _toggleFavorite(context, widget.movie),
-              );
-            },
+          child: IconButton(
+            onPressed: _handleFavoriteTap,
+            icon: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 150),
+              switchInCurve: Curves.easeOutBack,
+              switchOutCurve: Curves.easeIn,
+              transitionBuilder: (child, animation) =>
+                  ScaleTransition(scale: animation, child: child),
+              child: Icon(
+                _isFavorite ? Icons.favorite : Icons.favorite_border,
+                key: ValueKey<bool>(_isFavorite),
+                color: _isFavorite
+                    ? Colors.red
+                    : (_isFavoriteReady ? Colors.white : Colors.white54),
+              ),
+            ),
           ),
         ),
       ],
@@ -205,7 +370,7 @@ class _DetailPageState extends State<DetailPage> {
           fit: StackFit.expand,
           children: [
             Hero(
-              tag: 'movie_poster_${widget.movie.id}',
+              tag: _movieHeroTag,
               child:
                   widget.movie.posterUrl.isNotEmpty &&
                       widget.movie.posterUrl.startsWith('http')
@@ -442,11 +607,41 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   int _episodeSortKey(Episode ep) {
+    if (widget.movie.sourceType == "otakudesu") {
+      final animeEpisodeNumber = _extractAnimeEpisodeNumber(ep);
+      if (animeEpisodeNumber > 0) return animeEpisodeNumber;
+    }
+
     if (ep.order > 0) return ep.order;
     final match = RegExp(r'\d+').firstMatch(ep.title);
     if (match != null) {
       return int.tryParse(match.group(0) ?? '') ?? 0;
     }
+    return 0;
+  }
+
+  int _extractAnimeEpisodeNumber(Episode ep) {
+    final slugMatch = RegExp(
+      r'episode-(\d+)-sub-indo',
+      caseSensitive: false,
+    ).firstMatch(ep.id);
+    if (slugMatch != null) {
+      return int.tryParse(slugMatch.group(1) ?? '') ?? 0;
+    }
+
+    final titleMatch = RegExp(
+      r'(?:episode|ep)\s*(\d+)',
+      caseSensitive: false,
+    ).firstMatch(ep.title);
+    if (titleMatch != null) {
+      return int.tryParse(titleMatch.group(1) ?? '') ?? 0;
+    }
+
+    final fallbackDigits = RegExp(r'\d+').firstMatch(ep.title);
+    if (fallbackDigits != null) {
+      return int.tryParse(fallbackDigits.group(0) ?? '') ?? 0;
+    }
+
     return 0;
   }
 
@@ -536,7 +731,7 @@ class _DetailPageState extends State<DetailPage> {
             onTap: isLocked
                 ? () {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Episode ini terkunci")),
+                      SnackBar(content: Text(_lockedEpisodeMessage(ep))),
                     );
                   }
                 : () => _handleEpisodeTap(ep),
@@ -582,13 +777,21 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   bool _isEpisodeLocked(Episode ep) {
+    if (_isGuestEpisodeRestricted(ep)) return true;
     if (widget.movie.sourceType == "otakudesu") return false;
     if (widget.movie.sourceType == "komik") return false;
     return ep.streamUrl.isEmpty;
   }
 
   void _handleEpisodeTap(Episode ep) async {
-    _addToHistory(context, widget.movie);
+    if (_isGuestEpisodeRestricted(ep)) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(_lockedEpisodeMessage(ep))));
+      return;
+    }
+
+    _addToHistory(widget.movie);
 
     if (widget.movie.sourceType == "komik") {
       setState(() => _isLoading = true);
@@ -608,7 +811,7 @@ class _DetailPageState extends State<DetailPage> {
         if (mounted) setState(() => _isLoading = false);
       }
     } else if (widget.movie.sourceType == "otakudesu") {
-      setState(() => _isLoading = true);
+      setState(() => _isPreparingAnimePlayer = true);
       try {
         final directMirrorUrl = await _apiService.getBestOtakudesuPlayableUrl(
           ep.id,
@@ -624,12 +827,12 @@ class _DetailPageState extends State<DetailPage> {
                   widget.otakudesuVideoPlayerBuilder?.call(
                     directMirrorUrl,
                     ep.title,
-                    true,
+                    false,
                   ) ??
                   VideoPlayerPage(
                     videoUrl: directMirrorUrl,
                     title: ep.title,
-                    preferLandscapeOnStart: true,
+                    preferLandscapeOnStart: false,
                   ),
             ),
           );
@@ -663,12 +866,13 @@ class _DetailPageState extends State<DetailPage> {
           ),
         );
       } finally {
-        if (mounted) setState(() => _isLoading = false);
+        if (mounted) setState(() => _isPreparingAnimePlayer = false);
       }
     } else if (ep.streamUrl.isNotEmpty) {
       if (widget.movie.sourceType == "dramabox") {
         final playableEpisodes = _orderedEpisodes
             .where((item) => item.streamUrl.trim().isNotEmpty)
+            .where((item) => !_isGuestEpisodeRestricted(item))
             .toList();
         if (playableEpisodes.isNotEmpty) {
           final idx = playableEpisodes.indexWhere(
